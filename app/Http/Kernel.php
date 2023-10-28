@@ -12,8 +12,7 @@ class Kernel
      * @var array<int, class-string|string>
      */
     public $middleware = [
-        \App\Http\Middleware\FirstMiddleware::class,
-        \App\Http\Middleware\SecondMiddleware::class,
+        \App\Http\Middleware\ExampleMiddleware::class,
     ];
 
     /**

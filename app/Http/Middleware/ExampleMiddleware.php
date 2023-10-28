@@ -6,12 +6,11 @@ use Closure;
 use App\Core\Request;
 use App\Core\Middleware\Contracts\Middleware;
 
-class SecondMiddleware implements Middleware
+class ExampleMiddleware implements Middleware
 {
     public function __invoke(Request $request, Closure $next)
     {
         $data = $request->getBody();
-        dump($data);
         return $next($request);
     }
 }
