@@ -225,8 +225,7 @@ We can define multiple global middleware. To define global middleware, just upda
 <?php
 
 public $middleware = [
-    \App\Http\Middleware\FirstMiddleware::class,
-    \App\Http\Middleware\SecondMiddleware::class,
+    \App\Http\Middleware\ExampleMiddleware::class,
 ];
 ```
 
@@ -241,7 +240,7 @@ use Closure;
 use App\Core\Request;
 use App\Core\Middleware\Contracts\Middleware;
 
-class FirstMiddleware implements Middleware
+class ExampleMiddleware implements Middleware
 {
     public function __invoke(Request $request, Closure $next)
     {
