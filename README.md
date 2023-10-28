@@ -208,7 +208,7 @@ class ProfileController
 {
     public function index(Request $request)
     {
-        $d = $request->params['id'];
+        $id = $request->params['id'];
         $username = $request->params['username'];
 
         dd($request->params);
