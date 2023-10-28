@@ -67,8 +67,18 @@ class Route
         return false;
     }
 
-    public function resolve($service)
+    /**
+     * resolve.
+     *
+     * @access	public
+     * @param	\App\Core\Middleware\Middleware $middleware	
+     * @param	contracts $serviceClass   	
+     * @return	mixed
+     */
+    public function resolve($middleware, $service)
     {
+        $middleware->handle($this->request);
+
         $callback = $this->getCallback();
 
         if (!$callback) {

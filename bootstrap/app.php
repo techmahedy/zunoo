@@ -1,8 +1,11 @@
 <?php
 
 use Dotenv\Dotenv;
+use App\Core\Route;
+use App\Core\Request;
 use App\Core\Application;
 use Illuminate\Events\Dispatcher;
+use App\Core\Middleware\Middleware;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
@@ -31,6 +34,19 @@ $capsule->setAsGlobal();
 // Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
 $capsule->bootEloquent();
 
-$app = new Application();
+/*
+|--------------------------------------------------------------------------
+| Create The Application
+|--------------------------------------------------------------------------
+*/
+$app = new Application(
+    new Route(new Request()),
+    new Middleware()
+);
 
+/*
+|--------------------------------------------------------------------------
+| Return The Application
+|--------------------------------------------------------------------------
+*/
 return $app;
