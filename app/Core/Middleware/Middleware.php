@@ -2,7 +2,6 @@
 
 namespace App\Core\Middleware;
 
-use Closure;
 use App\Core\Request;
 use App\Core\Middleware\Contracts\Middleware as ContractsMiddleware;
 

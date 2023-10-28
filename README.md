@@ -10,6 +10,7 @@
 - [Model](#section-5)
 - [Database Connection](#section-6)
 - [Views](#section-7)
+- [Global Middleware](#section-10)
 
 <a name="section-1"></a>
 
@@ -212,6 +213,41 @@ class ProfileController
         $username = $request->params['username'];
 
         dd($request->params);
+    }
+}
+```
+
+<a name="section-9"></a>
+
+## Global Middleware
+We can define multiple global middleware. To define global middleware, just update the `App\Http\Kernel.php` file's `$middleware` array as like below 
+```php
+<?php
+
+public $middleware = [
+    \App\Http\Middleware\FirstMiddleware::class,
+    \App\Http\Middleware\SecondMiddleware::class,
+];
+```
+
+Now update your middleware like
+
+```php
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use App\Core\Request;
+use App\Core\Middleware\Contracts\Middleware;
+
+class FirstMiddleware implements Middleware
+{
+    public function __invoke(Request $request, Closure $next)
+    {
+        $data = $request->getBody();
+        dump($data);
+        return $next($request);
     }
 }
 ```
