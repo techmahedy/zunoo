@@ -1,0 +1,5 @@
+/storage
+/vendor
+/.idea
+/.vscode
+.env

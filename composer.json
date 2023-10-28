@@ -1,0 +1,29 @@
+{
+    "name": "test/test",
+    "description": "test php application",
+    "type": "project",
+    "require-dev": {
+        "symfony/var-dumper": "7.0.x-dev"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        },
+        "files": [
+            "app/Core/Helpers/helpers.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "mahedi hasan"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "psr/container": "^2.0@dev",
+        "vlucas/phpdotenv": "^5.5@dev",
+        "illuminate/database": "^11.0@dev",
+        "illuminate/events": "^11.0@dev"
+    }
+}
