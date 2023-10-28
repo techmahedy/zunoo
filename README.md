@@ -217,7 +217,7 @@ class ProfileController
 }
 ```
 
-<a name="section-9"></a>
+<a name="section-10"></a>
 
 ## Global Middleware
 We can define multiple global middleware. To define global middleware, just update the `App\Http\Kernel.php` file's `$middleware` array as like below 
