@@ -14,7 +14,7 @@ class TestController extends Controller
         $this->directive('capitalize', function ($text) {
             return "<?php echo strtoupper($text) ?>";
         });
-
+        dd(env('DB_CONNECTION'));
         return view('home.index', compact('title'));
     }
 }

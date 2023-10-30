@@ -129,7 +129,7 @@ DB_PASSWORD=
 
 ```
 
-And you can print configuration value like `$_ENV['DB_CONNECTION']`
+And you can print configuration value like `$_ENV['DB_CONNECTION']` or you can use `env('DB_CONNECTION')`
 
 <a name="section-7"></a>
 
@@ -183,7 +183,7 @@ For mastering template
 </body>
 </html>
 ```
-`You can use any blade systex as you want like`
+`You can use any blade systex as you want like laravel framework`
 
 <a name="section-8"></a>
 
