@@ -5,9 +5,9 @@ use App\Http\Controllers\ExampleController;
 
 $app->route->get('/', [ExampleController::class, 'index']);
 
-// $app->route->get('/', function () {
+$app->route->get('/', function () {
 
-//     $version = Application::VERSION;
+    $version = Application::VERSION;
 
-//     return view('welcome', compact('version'));
-// });
+    return view('welcome', compact('version'));
+});

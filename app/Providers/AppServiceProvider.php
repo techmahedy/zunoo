@@ -8,8 +8,6 @@ class AppServiceProvider extends Container
 {
     public function register()
     {
-        $this->directive('capitalize', function ($text) {
-            return "<?php echo strtoupper($text) ?>";
-        });
+        //load your servicesor you can write custom blade directive here
     }
 }

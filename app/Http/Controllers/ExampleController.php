@@ -8,8 +8,6 @@ class ExampleController extends Controller
 {
     public function index()
     {
-        $title = 'blade test';
-
-        return view('home.index', compact('title'));
+        //silence is golden
     }
 }

@@ -28,7 +28,7 @@ class Controller
     {
         $this->setFileExtension('.blade.php');
         $this->setViewFolder('resources/views' . DIRECTORY_SEPARATOR);
-        $this->setCacheFolder('cache' . DIRECTORY_SEPARATOR);
+        $this->setCacheFolder('storage/cache' . DIRECTORY_SEPARATOR);
         $this->createCacheFolder();
         $this->setEchoFormat('$this->e(%s)');
 
