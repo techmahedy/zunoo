@@ -8,6 +8,7 @@ use App\Providers\AppServiceProvider;
 
 class Application extends AppServiceProvider
 {
+    public const VERSION = '1.0';
     public $resolveDependency;
     public Route $route;
     protected $middleware;

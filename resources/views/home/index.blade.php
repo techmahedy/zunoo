@@ -7,6 +7,6 @@
     <title>Welcome</title>
 </head>
 <body>
-    <h1>Welcome to mii framework. Version: {{ $version }}</h1>
+    <h1>Welcome to mii framework {{ $title }}</h1>
 </body>
 </html>

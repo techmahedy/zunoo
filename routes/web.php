@@ -1,10 +1,13 @@
 <?php
 
-$app->route->get('/', function () {
-    $data = [
-        'title' => 'My Custom Blade Template',
-        'name' => 'John Doe',
-    ];
+use App\Core\Application;
+use App\Http\Controllers\TestController;
 
-    return view('welcome', compact('data'));
-});
+$app->route->get('/', [TestController::class, 'index']);
+
+// $app->route->get('/', function () {
+
+//     $version = Application::VERSION;
+
+//     return view('welcome', compact('version'));
+// });

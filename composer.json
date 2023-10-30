@@ -1,5 +1,5 @@
 {
-    "name": "test/test",
+    "name": "laravelia/mii",
     "description": "test php application",
     "type": "project",
     "require-dev": {

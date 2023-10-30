@@ -138,21 +138,52 @@ To work with views, default view file path inside `resources/views`. Now passing
 ```php
 <?php
 
-$app->route->get('/', function () {
-    $data = [
-        'title' => 'My Custom Blade Template',
-        'name' => 'John Doe',
-    ];
+use App\Core\Application;
 
-    return view('welcome', compact('data'));
+$app->route->get('/', function () {
+    $version = Application::VERSION;
+    
+    //for nested folder file view: home.index
+    return view('welcome', compact('version'));
 });
 ```
 
 This will load `welcome.blade.php` file. We can print this value like
 
 ```HTML
-<h1>Welcome, <?php echo $data['name']; ?></h1>
+<h1>{{ $version }}</h1>
 ```
+### Avaiable blade systex
+```HTML
+@section('looping-test')
+  <p>Let's print odd numbers under 50:</p>
+  <p>
+    @foreach($numbers as $number)
+      @if($number % 2 !== 0)
+        {{ $number }} 
+      @endif
+    @endforeach
+  </p>
+@endsection
+```
+For mastering template
+```HTML
+@include('shared.header')
+<body>
+  <div id="container">
+    <h3>Welcome to <span class="reddish">{{ $title }}</span></h3>
+    <p>{{ $content }}</p>
+    
+    <p>Master file</p>
+    
+    @yield('looping-test')
+
+  </div>
+  @include('shared.footer')
+</body>
+</html>
+```
+`You can use any blade systex as you want like`
 
 <a name="section-8"></a>
 

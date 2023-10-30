@@ -1,21 +1,10 @@
 <?php
 
+use App\Core\Controllers\Controller;
+
 function view($view, $data = [])
 {
-    $viewsPath = "resources/views";
+    $blade = new Controller;
 
-    $viewPath = $viewsPath . '/' . $view . '.blade.php';
-
-    if (!file_exists($viewPath)) {
-        throw new Exception("View not found: $view");
-    }
-
-    ob_start();
-    extract($data);
-    include $viewPath;
-    $content = ob_get_clean();
-
-    // Implement Blade-like directives (e.g., @if, @foreach) and variable substitution here
-
-    return $content;
+    return $blade->render($view, $data);
 }

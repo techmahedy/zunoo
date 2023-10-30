@@ -102,7 +102,7 @@ class Route
                         return new $serviceClass();
                     }
                     if ($class === 'App\Core\Request') {
-                        return $resolveDependencies[] = $this->request;;
+                        return $resolveDependencies[] = $this->request;
                     }
                     return new $class();
                 }
