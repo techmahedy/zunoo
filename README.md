@@ -69,7 +69,7 @@ use App\Models\Post;
 use App\Core\Request;
 use App\Contracts\PaymentServiceContract;
 
-class TestController
+class TestController extends Controller
 {   
     /**
      * You can pass as many class as you want as parameter
@@ -175,7 +175,7 @@ namespace App\Controllers;
 
 use App\Core\Request;
 
-class ProfileController
+class ProfileController extends Controller
 {
     public function index(Request $request)
     {
@@ -205,7 +205,7 @@ namespace App\Controllers;
 
 use App\Core\Request;
 
-class ProfileController
+class ProfileController extends Controller
 {
     public function index(Request $request)
     {
