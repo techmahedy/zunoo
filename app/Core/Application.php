@@ -4,6 +4,7 @@ namespace App\Core;
 
 use App\Core\Route;
 use App\Core\Middleware\Middleware;
+use App\Core\Controllers\Controller;
 use App\Providers\AppServiceProvider;
 
 class Application extends AppServiceProvider

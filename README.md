@@ -11,6 +11,7 @@
 - [Database Connection](#section-6)
 - [Views](#section-7)
 - [Global Middleware](#section-10)
+- [Custom Blade Directivee](#section-11)
 
 <a name="section-1"></a>
 
@@ -280,4 +281,32 @@ class ExampleMiddleware implements Middleware
         return $next($request);
     }
 }
+```
+
+<a name="section-11"></a>
+
+## Custom Blade Directive
+We can define custom blade directive. To define it, update `App\Providers\AppServiceProvider.php` as like below 
+```php
+
+<?php
+
+namespace App\Providers;
+
+use App\Core\Container;
+
+class AppServiceProvider extends Container
+{
+    public function register()
+    {
+        $this->directive('capitalize', function ($text) {
+            return "<?php echo strtoupper($text) ?>";
+        });
+    }
+}
+```
+
+And now we can call it in a blade file like
+```HTML
+{{ strtoupper('hello') }}
 ```

@@ -15,7 +15,5 @@ use App\Core\Controllers\Controller;
  */
 function view($view, $data = []): mixed
 {
-    $blade = new Controller;
-
-    return $blade->render($view, $data);
+    return (new Controller())->render($view, $data);
 }

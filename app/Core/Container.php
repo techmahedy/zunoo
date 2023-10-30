@@ -6,11 +6,12 @@ use Closure;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionParameter;
+use App\Core\Controllers\Controller;
 use Psr\Container\ContainerInterface;
 use App\Core\Exceptions\CouldNotResolveClassException;
 use App\Core\Exceptions\CouldNotResolveAbstractionException;
 
-class Container implements ContainerInterface
+class Container extends Controller implements ContainerInterface
 {
     public array $services = [];
 

@@ -8,5 +8,6 @@
 </head>
 <body>
     <h1>Welcome to mii framework {{ $title }}</h1>
+    {{ strtoupper('hello') }}
 </body>
 </html>

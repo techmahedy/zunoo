@@ -8,5 +8,7 @@
 </head>
 <body>
     <h1>Welcome to mii framework <?php echo $this->e($title) ?></h1>
+    <?php echo $this->e(strtoupper('hello')) ?>
+
 </body>
 </html>
