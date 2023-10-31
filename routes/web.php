@@ -1,10 +1,10 @@
 <?php
 
-use App\Core\Application;
-use App\Http\Controllers\ExampleController;
+/**
+ * Application web routes
+ */
 
-$app->route->get('/register', [ExampleController::class, 'index']);
-$app->route->post('/register', [ExampleController::class, 'store']);
+use App\Core\Application;
 
 $app->route->get('/', function () {
 

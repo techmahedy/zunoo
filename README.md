@@ -7,6 +7,7 @@
 - [Multiple Route Parameters](#section-9)
 - [Binding Interface to Service Class](#section-3)
 - [Controller Method Dependency Injection](#section-4)
+- [Constructor Dependency Injection](#section-13)
 - [Model](#section-5)
 - [Database Connection](#section-6)
 - [Views](#section-7)
@@ -98,6 +99,33 @@ class TestController extends Controller
     {
         return "About";
     }
+}
+```
+<a name="section-13"></a>
+
+## Constructor Dependency Injection
+Now look at that, how you can use dependency injection using constructor.
+```php
+
+<?php
+
+namespace App\Controllers;
+
+use App\Models\User;
+use App\Models\Post;
+use App\Core\Request;
+use App\Contracts\PaymentServiceContract;
+
+class TestController extends Controller
+{   
+    /**
+     * Look at that, we are passing interface, models. How cool it is
+     */
+    public function __construct(
+        public PaymentServiceContract $payment, 
+        public User $user, 
+        public Post $post,
+    ) {}
 }
 ```
 

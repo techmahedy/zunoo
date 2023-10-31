@@ -87,11 +87,25 @@ class Route
         $resolveDependencies = [];
 
         if (is_array($callback)) {
-            $callback[0] = new $callback[0]();
+            $reflector = new ReflectionClass($callback[0]);
+            $parameters = $reflector->getConstructor()?->getParameters() ?? [];
+            if (isset($parameters)) {
+                $resolveDependencies = array_map(function (ReflectionParameter $parameter) use ($service) {
+                    $class = $parameter->getType()->getName();
+                    if (class_exists($class)) {
+                        return new $class();
+                    }
+                    if (interface_exists($class)) {
+                        $serviceClass = $service->resolveDependency->services[$class];
+                        return new $serviceClass();
+                    }
+                }, $parameters);
+            }
+
+            $callback[0] = new $callback[0](...$resolveDependencies);
             $reflector = new ReflectionClass($callback[0]);
             $actionMethod = $callback[1];
             $parameters = $reflector->getMethod($actionMethod)?->getParameters() ?? [];
-
             $resolveDependencies = array_map(function (
                 ReflectionParameter $parameter
             ) use ($service) {
