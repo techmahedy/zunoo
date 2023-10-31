@@ -380,10 +380,10 @@ class User extends Model
     public function rules(): array
     {
         return [
-            'name' => [self::REQUIRED],
-            'email' => [self::REQUIRED, self::EMAIL],
-            'password' => [self::REQUIRED, [self::MIN, 'min' => '4']],
-            'confirm_password' => [self::REQUIRED, [self::MATCH, 'match' => 'password']],
+            'name' => [self::required],
+            'email' => [self::required, self::email],
+            'password' => [self::required, [self::min, 'min' => '4']],
+            'confirm_password' => [self::required, [self::match, 'match' => 'password']]
         ];
     }
 }

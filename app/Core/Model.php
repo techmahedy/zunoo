@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 
 abstract class Model extends BaseModel
 {
-    public const REQUIRED = 'required';
-    public const EMAIL = 'email';
-    public const MIN = 'min';
-    public const MAX = 'max';
-    public const MATCH = 'match';
+    public const required = 'required';
+    public const email = 'email';
+    public const min = 'min';
+    public const max = 'max';
+    public const match = 'match';
 
     public array $errors = [];
 
@@ -34,20 +34,20 @@ abstract class Model extends BaseModel
                 if (!is_string($ruleName)) {
                     $ruleName = $rule[0];
                 }
-                if ($ruleName === self::REQUIRED && !$value) {
-                    $this->generateError($attribute, self::REQUIRED);
+                if ($ruleName === self::required && !$value) {
+                    $this->generateError($attribute, self::required);
                 }
-                if ($ruleName === self::EMAIL && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                    $this->generateError($attribute, self::EMAIL);
+                if ($ruleName === self::email && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                    $this->generateError($attribute, self::email);
                 }
-                if ($ruleName === self::MIN && strlen($value) < $rule['min']) {
-                    $this->generateError($attribute, self::MIN, $rule);
+                if ($ruleName === self::min && strlen($value) < $rule['min']) {
+                    $this->generateError($attribute, self::max, $rule);
                 }
-                if ($ruleName === self::MAX && strlen($value) > $rule['max']) {
-                    $this->generateError($attribute, self::MAX, $rule);
+                if ($ruleName === self::max && strlen($value) > $rule['max']) {
+                    $this->generateError($attribute, self::max, $rule);
                 }
-                if ($ruleName === self::MATCH && $value !== $this->{$rule['match']}) {
-                    $this->generateError($attribute, self::MATCH, $rule);
+                if ($ruleName === self::match && $value !== $this->{$rule['match']}) {
+                    $this->generateError($attribute, self::match, $rule);
                 }
             }
         }
@@ -68,11 +68,11 @@ abstract class Model extends BaseModel
     public function errorMessages()
     {
         return [
-            self::REQUIRED => 'This field is required',
-            self::EMAIL => 'This field must be valid email',
-            self::MIN => 'Min length of this field must be {min}',
-            self::MAX => 'Min length of this field must be {max}',
-            self::MATCH => 'This field must be the same as {match}'
+            self::required => 'This field is required',
+            self::email => 'This field must be valid email',
+            self::min => 'Min length of this field must be {min}',
+            self::max => 'Min length of this field must be {max}',
+            self::match => 'This field must be the same as {match}'
         ];
     }
 
