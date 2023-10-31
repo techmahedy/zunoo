@@ -323,7 +323,7 @@ $app->route->get('/register', [ExampleController::class, 'index']);
 $app->route->post('/register', [ExampleController::class, 'store']);
 ```
 
-And now we can update `ExampleController` like
+And now we can update `App\Http\Controllers\ExampleController.php` like
 ```php
 <?php
 
@@ -354,7 +354,7 @@ class ExampleController extends Controller
 }
 
 ```
-Now update the User model to validate user model fields
+Now update the User `App\Models\User.php` model to validate user model fields
 ```php
 <?php
 
