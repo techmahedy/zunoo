@@ -347,6 +347,7 @@ class ExampleController extends Controller
 
         if ($user->validated()) {
             //Validation passed
+            return redirect('/register');
         }
 
         return view('user.index', compact('user'));
