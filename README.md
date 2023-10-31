@@ -12,6 +12,7 @@
 - [Views](#section-7)
 - [Global Middleware](#section-10)
 - [Custom Blade Directivee](#section-11)
+- [From Validation](#section-12)
 
 <a name="section-1"></a>
 
@@ -106,7 +107,7 @@ class TestController extends Controller
 Now look at Model, how you can use it
 ```php
 
-use Illuminate\Database\Eloquent\Model;
+use App\Core\Model;
 
 class User extends Model
 {   
@@ -155,7 +156,7 @@ This will load `welcome.blade.php` file. We can print this value like
 <h1>{{ $version }}</h1>
 ```
 ### Avaiable blade systex
-```HTML
+```BLADE
 @section('looping-test')
   <p>Let's print odd numbers under 50:</p>
   <p>
@@ -168,7 +169,7 @@ This will load `welcome.blade.php` file. We can print this value like
 @endsection
 ```
 For mastering template
-```HTML
+```BLADE
 @include('shared.header')
 <body>
   <div id="container">
@@ -178,11 +179,9 @@ For mastering template
     <p>Master file</p>
     
     @yield('looping-test')
-
   </div>
   @include('shared.footer')
 </body>
-</html>
 ```
 `You can use any blade systex as you want like laravel framework`
 
@@ -309,4 +308,75 @@ class AppServiceProvider extends Container
 And now we can call it in a blade file like
 ```HTML
 {{ strtoupper('hello') }}
+```
+
+<a name="section-12"></a>
+
+## From Validation
+We can validate from and can show error message in blade file very easily. To validate from , just assume we have two routes
+```php
+<?php
+
+use App\Http\Controllers\ExampleController;
+
+$app->route->get('/register', [ExampleController::class, 'index']);
+$app->route->post('/register', [ExampleController::class, 'store']);
+```
+
+And now we can update `ExampleController` like
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\Core\Request;
+use App\Core\Controllers\Controller;
+
+class ExampleController extends Controller
+{
+    public function index(User $user)
+    {   
+        //$user object has to passed to show error message and old value
+        return view('user.index', compact('user'));
+    }
+
+    public function store(User $user, Request $request)
+    {   
+        $user->old($request->getBody());
+
+        if ($user->validate()) {
+            //Validation passed
+        }
+
+        return view('user.index', compact('user'));
+    }
+}
+
+```
+
+Now update the `resources/user/index.blade.php` like
+```HTML
+<form action="/register" method="post">
+    <label class="form-label">Name</label>
+    <input type="text" name="name" class="{{ $user->hasError('name') ? ' is-invalid' : '' }}"
+        value="{{ $user->name ?? '' }}">
+    {{ $user->getErrorMessage('name') }}
+
+    <label class="form-label">Email</label>
+    <input type="text" class="{{ $user->hasError('email') ? ' is-invalid' : '' }}" name="email"
+        value="{{ $user->email ?? '' }}">
+    {{ $user->getErrorMessage('email') }}
+
+    <label class="form-label">Password</label>
+    <input type="password" class="{{ $user->hasError('password') ? ' is-invalid' : '' }}" name="password"
+        value="{{ $user->password ?? '' }}">
+    {{ $user->getErrorMessage('password') }}
+
+    <label class="form-label">Confirm Password</label>
+    <input type="password" class="{{ $user->hasError('confirm_password') ? ' is-invalid' : '' }}"
+        name="confirm_password" value="{{ $user->confirm_password ?? '' }}">
+    {{ $user->getErrorMessage('confirm_password') }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
 ```
