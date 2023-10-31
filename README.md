@@ -345,7 +345,7 @@ class ExampleController extends Controller
     {   
         $user->old($request->getBody());
 
-        if ($user->validate()) {
+        if ($user->validated()) {
             //Validation passed
         }
 
