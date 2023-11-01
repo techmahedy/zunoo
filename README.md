@@ -335,7 +335,7 @@ class AppServiceProvider extends Container
 
 And now we can call it in a blade file like
 ```HTML
-{{ strtoupper('hello') }}
+{{ capitalize('hello') }}
 ```
 
 <a name="section-12"></a>
