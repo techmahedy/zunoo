@@ -19,8 +19,7 @@
 <a name="section-1"></a>
 
 ## About
-This is a mini PHP framework with some basic features like di-container, dependency injection, routing, accepting request with routing, controller and model.
-
+MII, A basic PHP MVC framework design in a way that you feel like you are working in a Laravel application. In this framework you will get all the basic features of a web application needs like routing, middleware, dependency injection, eloquent relationship, model, blade template engine and interface injection and many mores. Test it and if you like, please give a star to it.
 <a name="section-14"></a>
 
 ## How to Install
@@ -62,6 +61,10 @@ class AppServiceProvider extends Container
     public function register()
     {
        return $this->bind(PaymentServiceContract::class, StripePaymentService::class);
+       
+       //or
+       
+       return $this->singleton(PaymentServiceContract::class, StripePaymentService::class);
     }
 }
 ```
