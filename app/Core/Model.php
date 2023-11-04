@@ -12,9 +12,19 @@ abstract class Model extends BaseModel
     public const max = 'max';
     public const match = 'match';
 
+    /**
+     * @var		array	$errors
+     */
     public array $errors = [];
 
-    public function old($data)
+    /**
+     * Requested data and saving it for old form value.
+     *
+     * @access	public
+     * @param	mixed	$data	
+     * @return	void
+     */
+    public function old($data): void
     {
         foreach ($data as $key => $value) {
             if (property_exists($this, $key)) {
@@ -25,7 +35,13 @@ abstract class Model extends BaseModel
 
     abstract public function rules(): array;
 
-    public function validated()
+    /**
+     * validated.
+     *
+     * @access	public
+     * @return	void
+     */
+    public function validated(): bool
     {
         foreach ($this->rules() as $attribute => $rules) {
             $value = $this->{$attribute};
@@ -55,7 +71,16 @@ abstract class Model extends BaseModel
         return empty($this->errors);
     }
 
-    public function generateError(string $attribute, string $errorType, $params = [])
+    /**
+     * generateError.
+     *
+     * @access	public
+     * @param	string	$attribute	
+     * @param	string	$errorType	
+     * @param	array 	$params   	Default: []
+     * @return	void
+     */
+    public function generateError(string $attribute, string $errorType, $params = []): void
     {
         $message = $this->errorMessages()[$errorType] ?: '';
         foreach ($params as $key => $value) {
@@ -65,7 +90,13 @@ abstract class Model extends BaseModel
         $this->errors[$attribute][] = $message;
     }
 
-    public function errorMessages()
+    /**
+     * errorMessages.
+     *
+     * @access	public
+     * @return	array
+     */
+    public function errorMessages(): array
     {
         return [
             self::required => 'This field is required',
@@ -76,12 +107,26 @@ abstract class Model extends BaseModel
         ];
     }
 
-    public function hasError($attribute)
+    /**
+     * hasError.
+     *
+     * @access	public
+     * @param	mixed	$attribute	
+     * @return	mixed
+     */
+    public function hasError($attribute): mixed
     {
         return $this->errors[$attribute] ?? false;
     }
 
-    public function getErrorMessage($attribute)
+    /**
+     * getErrorMessage.
+     *
+     * @access	public
+     * @param	mixed	$attribute	
+     * @return	mixed
+     */
+    public function getErrorMessage($attribute): mixed
     {
         return $this->errors[$attribute][0] ?? false;
     }

@@ -39,10 +39,10 @@ class Controller
 
     /**
      * Create cache folder.
-     *
-     * @return bool
+     * 
+     * @return void
      */
-    public function createCacheFolder()
+    public function createCacheFolder(): void
     {
         if (!is_dir($this->cacheFolder)) {
             try {
@@ -66,7 +66,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileStatements($statement)
+    protected function compileStatements($statement): string
     {
         $pattern = '/\B@(@?\w+(?:->\w+)?)([ \t]*)(\( ( (?>[^()]+) | (?3) )* \))?/x';
 
@@ -100,7 +100,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileComments($comment)
+    protected function compileComments($comment): string
     {
         return preg_replace('/\{\{--((.|\s)*?)--\}\}/', '<?php /*$1*/ ?>', $comment);
     }
@@ -112,7 +112,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEchos($string)
+    protected function compileEchos($string): string
     {
         // compile escaped echoes
         $string = preg_replace_callback('/\{\{\{\s*(.+?)\s*\}\}\}(\r?\n)?/s', function ($matches) {
@@ -146,7 +146,7 @@ class Controller
      *
      * @return string
      */
-    public function compileEchoDefaults($string)
+    public function compileEchoDefaults($string): string
     {
         return preg_replace('/^(?=\$)(.+?)(?:\s+or\s+)(.+?)$/s', 'isset($1) ? $1 : $2', $string);
     }
@@ -158,7 +158,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileExtensions($string)
+    protected function compileExtensions($string): string
     {
         foreach ($this->extensions as $compiler) {
             $string = $compiler($string, $this);
@@ -174,7 +174,7 @@ class Controller
      *
      * @return string
      */
-    public function replacePhpBlocks($string)
+    public function replacePhpBlocks($string): string
     {
         $string = preg_replace_callback('/(?<!@)@php(.*?)@endphp/s', function ($matches) {
             return "<?php{$matches[1]}?>";
@@ -191,7 +191,7 @@ class Controller
      *
      * @return string
      */
-    public function e($string, $charset = null)
+    public function e($string, $charset = null): string
     {
         return htmlspecialchars($string, ENT_QUOTES, is_null($charset) ? 'UTF-8' : $charset);
     }
@@ -207,7 +207,7 @@ class Controller
      *
      * @return string
      */
-    protected function compilePhp($value)
+    protected function compilePhp($value): string
     {
         return $value ? "<?php {$value}; ?>" : "@php{$value}";
     }
@@ -219,7 +219,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileJson($data)
+    protected function compileJson($data): string
     {
         $default = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT;
 
@@ -246,7 +246,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileUnset($variable)
+    protected function compileUnset($variable): string
     {
         return "<?php unset{$variable}; ?>";
     }
@@ -258,7 +258,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileIf($condition)
+    protected function compileIf($condition): string
     {
         return "<?php if{$condition}: ?>";
     }
@@ -270,7 +270,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileElseif($condition)
+    protected function compileElseif($condition): string
     {
         return "<?php elseif{$condition}: ?>";
     }
@@ -280,7 +280,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileElse()
+    protected function compileElse(): string
     {
         return '<?php else: ?>';
     }
@@ -290,7 +290,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEndif()
+    protected function compileEndif(): string
     {
         return '<?php endif; ?>';
     }
@@ -302,7 +302,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileSwitch($condition)
+    protected function compileSwitch($condition): string
     {
         $this->firstCaseSwitch = true;
         return "<?php switch{$condition}:";
@@ -315,7 +315,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileCase($condition)
+    protected function compileCase($condition): string
     {
         if ($this->firstCaseSwitch) {
             $this->firstCaseSwitch = false;
@@ -330,7 +330,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileDefault()
+    protected function compileDefault(): string
     {
         return '<?php default: ?>';
     }
@@ -342,7 +342,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileBreak($condition)
+    protected function compileBreak($condition): string
     {
         if ($condition) {
             preg_match('/\(\s*(-?\d+)\s*\)$/', $condition, $matches);
@@ -359,7 +359,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEndswitch()
+    protected function compileEndswitch(): string
     {
         return '<?php endswitch; ?>';
     }
@@ -371,7 +371,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileIsset($variable)
+    protected function compileIsset($variable): string
     {
         return "<?php if (isset{$variable}): ?>";
     }
@@ -381,7 +381,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEndisset()
+    protected function compileEndisset(): string
     {
         return '<?php endif; ?>';
     }
@@ -393,13 +393,13 @@ class Controller
      *
      * @return string
      */
-    protected function compileContinue($condition)
+    protected function compileContinue($condition): string
     {
         if ($condition) {
             preg_match('/\(\s*(-?\d+)\s*\)$/', $condition, $matches);
             return $matches
                 ? '<?php continue ' . max(1, $matches[1]) . '; ?>'
-                : "<?php if{$value} continue; ?>";
+                : "<?php if{$condition} continue; ?>";
         }
 
         return '<?php continue; ?>';
@@ -412,7 +412,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileExit($condition)
+    protected function compileExit($condition): string
     {
         if ($condition) {
             preg_match('/\(\s*(-?\d+)\s*\)$/', $condition, $matches);
@@ -430,7 +430,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileUnless($condition)
+    protected function compileUnless($condition): string
     {
         return "<?php if (! $condition): ?>";
     }
@@ -440,7 +440,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEndunless()
+    protected function compileEndunless(): string
     {
         return '<?php endif; ?>';
     }
@@ -452,7 +452,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileFor($condition)
+    protected function compileFor($condition): string
     {
         return "<?php for{$condition}: ?>";
     }
@@ -462,7 +462,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEndfor()
+    protected function compileEndfor(): string
     {
         return '<?php endfor; ?>';
     }
@@ -474,7 +474,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileForeach($expression)
+    protected function compileForeach($expression): string
     {
         preg_match('/\( *(.*) +as *(.*)\)$/is', $expression, $matches);
 
@@ -491,7 +491,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEndforeach()
+    protected function compileEndforeach(): string
     {
         return '<?php endforeach; ?>';
     }
@@ -503,7 +503,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileForelse($expression)
+    protected function compileForelse($expression): string
     {
         preg_match('/\( *(.*) +as *(.*)\)$/is', $expression, $matches);
 
@@ -524,7 +524,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEmpty()
+    protected function compileEmpty(): string
     {
         $string = "<?php endforeach; if (\$__empty_{$this->emptyCounter}): ?>";
         --$this->emptyCounter;
@@ -537,7 +537,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEndforelse()
+    protected function compileEndforelse(): string
     {
         return '<?php endif; ?>';
     }
@@ -549,7 +549,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileWhile($condition)
+    protected function compileWhile($condition): string
     {
         return "<?php while{$condition}: ?>";
     }
@@ -559,7 +559,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEndwhile()
+    protected function compileEndwhile(): string
     {
         return '<?php endwhile; ?>';
     }
@@ -571,7 +571,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileExtends($parent)
+    protected function compileExtends($parent): string
     {
         if (isset($parent[0]) && '(' === $parent[0]) {
             $parent = substr($parent, 1, -1);
@@ -587,7 +587,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileInclude($view)
+    protected function compileInclude($view): string
     {
         if (isset($view[0]) && '(' === $view[0]) {
             $view = substr($view, 1, -1);
@@ -603,7 +603,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileYield($string)
+    protected function compileYield($string): string
     {
         return "<?php echo \$this->block{$string} ?>";
     }
@@ -615,7 +615,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileSection($name)
+    protected function compileSection($name): string
     {
         return "<?php \$this->beginBlock{$name} ?>";
     }
@@ -625,7 +625,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileEndsection()
+    protected function compileEndsection(): string
     {
         return '<?php $this->endBlock() ?>';
     }
@@ -635,7 +635,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileShow()
+    protected function compileShow(): string
     {
         return '<?php echo $this->block($this->endBlock()) ?>';
     }
@@ -645,7 +645,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileAppend()
+    protected function compileAppend(): string
     {
         return '<?php $this->endBlock() ?>';
     }
@@ -655,7 +655,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileStop()
+    protected function compileStop(): string
     {
         return '<?php $this->endBlock() ?>';
     }
@@ -665,7 +665,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileOverwrite()
+    protected function compileOverwrite(): string
     {
         return '<?php $this->endBlock(true) ?>';
     }
@@ -677,7 +677,7 @@ class Controller
      *
      * @return string
      */
-    protected function compileMethod($method)
+    protected function compileMethod($method): string
     {
         return "<input type=\"hidden\" name=\"_method\" value=\"<?php echo strtoupper{$method} ?>\">\n";
     }
@@ -696,7 +696,7 @@ class Controller
      *
      * @return string
      */
-    public function render($name, array $data = [], $returnOnly = false)
+    public function render($name, array $data = [], $returnOnly = false): string
     {
         $html = $this->fetch($name, $data);
 
@@ -712,7 +712,7 @@ class Controller
      *
      * @return bool
      */
-    public function clearCache()
+    public function clearCache(): bool
     {
         $extension = ltrim($this->fileExtension, '.');
         $files = glob($this->cacheFolder . DIRECTORY_SEPARATOR . '*.' . $extension);
@@ -733,7 +733,7 @@ class Controller
      *
      * @param string $extension
      */
-    public function setFileExtension($extension)
+    public function setFileExtension($extension): void
     {
         $this->fileExtension = $extension;
     }
@@ -744,7 +744,7 @@ class Controller
      *
      * @param string $value
      */
-    public function setViewFolder($path)
+    public function setViewFolder($path): void
     {
         $this->viewFolder = str_replace('/', DIRECTORY_SEPARATOR, $path);
     }
@@ -755,7 +755,7 @@ class Controller
      *
      * @param string $path
      */
-    public function setCacheFolder($path)
+    public function setCacheFolder($path): void
     {
         $this->cacheFolder = str_replace('/', DIRECTORY_SEPARATOR, $path);
     }
@@ -766,7 +766,7 @@ class Controller
      *
      * @param string $format
      */
-    public function setEchoFormat($format)
+    public function setEchoFormat($format): void
     {
         $this->echoFormat = $format;
     }
@@ -776,7 +776,7 @@ class Controller
      *
      * @param Closure $compiler
      */
-    public function extend(Closure $compiler)
+    public function extend(Closure $compiler): void
     {
         $this->extensions[] = $compiler;
     }
@@ -787,7 +787,7 @@ class Controller
      * @param string $name
      * @param string $callback
      */
-    public function directive($name, Closure $callback)
+    public function directive($name, Closure $callback): void
     {
         if (!preg_match('/^\w+(?:->\w+)?$/x', $name)) {
             throw new InvalidArgumentException(
@@ -804,7 +804,7 @@ class Controller
      *
      * @return array
      */
-    public function getAllDirectives()
+    public function getAllDirectives(): array
     {
         return self::$directives;
     }
@@ -814,7 +814,7 @@ class Controller
      *
      * @param string $view
      */
-    protected function prepare($view)
+    protected function prepare($view): string
     {
         $view = str_replace(['.', '/'], DIRECTORY_SEPARATOR, ltrim($view, '/'));
         $actual = $this->viewFolder . DIRECTORY_SEPARATOR . $view . $this->fileExtension;
@@ -854,7 +854,7 @@ class Controller
      * @param string $view
      * @param array  $data
      */
-    public function fetch($name, array $data = [])
+    public function fetch($name, array $data = []): string
     {
         $this->templates[] = $name;
 
@@ -876,7 +876,7 @@ class Controller
      *
      * @param string $name
      */
-    protected function addParent($name)
+    protected function addParent($name): void
     {
         $this->templates[] = $name;
     }
@@ -889,7 +889,7 @@ class Controller
      *
      * @return string
      */
-    protected function block($name, $default = '')
+    protected function block($name, $default = ''): string
     {
         return array_key_exists($name, $this->blocks) ? $this->blocks[$name] : $default;
     }
@@ -901,7 +901,7 @@ class Controller
      *
      * @return void
      */
-    protected function beginBlock($name)
+    protected function beginBlock($name): void
     {
         array_push($this->blockStacks, $name);
         ob_start();
@@ -912,9 +912,9 @@ class Controller
      *
      * @param bool $overwrite
      *
-     * @return void
+     * @return mixed
      */
-    protected function endBlock($overwrite = false)
+    protected function endBlock($overwrite = false): mixed
     {
         $name = array_pop($this->blockStacks);
 
@@ -932,7 +932,7 @@ class Controller
      *
      * @param mixed $data
      */
-    public function addLoop($data)
+    public function addLoop($data): void
     {
         $length = (is_array($data) || $data instanceof Countable) ? count($data) : null;
         $parent = empty($this->loopStacks) ? null : end($this->loopStacks);
@@ -953,7 +953,7 @@ class Controller
      *
      * @return void
      */
-    public function incrementLoopIndices()
+    public function incrementLoopIndices(): void
     {
         $loop = &$this->loopStacks[count($this->loopStacks) - 1];
         $loop['iteration']++;
@@ -971,7 +971,7 @@ class Controller
      *
      * @return \stdClass|null
      */
-    public function getFirstLoop()
+    public function getFirstLoop(): \stdClass|null
     {
         return ($last = end($this->loopStacks)) ? (object) $last : null;
     }

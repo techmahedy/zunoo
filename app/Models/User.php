@@ -6,17 +6,25 @@ use App\Core\Model;
 
 class User extends Model
 {
+    // /**
+    //  * Use any features of Laravel.
+    //  */
+
+
+    // /**
+    //  * rules.
+    //  *
+    //  * Use this methid for form valiation. If this model no need to validate, then just return an empty array
+    //  * @return	array
+    //  */
+    // public function rules(): array
+    // {
+    //     return [];
+    // }
     public string $name;
     public string $email;
     public string $password;
     public string $confirm_password;
-
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'confirm_password'
-    ];
 
     public function rules(): array
     {

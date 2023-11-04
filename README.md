@@ -5,6 +5,7 @@
 - [How to Install](#section-14)
 - [Define Route](#section-2)
 - [Route Parameter](#section-8)
+- [Request](#section-15)
 - [Multiple Route Parameters](#section-9)
 - [Binding Interface to Service Class](#section-3)
 - [Controller Method Dependency Injection](#section-4)
@@ -96,20 +97,12 @@ class ExampleController extends Controller
         PaymentServiceContract $payment //interface dependency injection
     ) {
         
-        /**
-         * The request you are sending
-         */
-        $data = $request->getBody();
-        
-        /**
-         * You can use here Laravel eloquent query
-         */
-        User::orderBy('id', 'desc')->first();
+       //Use any eloquent query of Laravel
     }
 
     public function about()
     {
-        return "About";
+        return view('about.index');
     }
 }
 ```
@@ -152,8 +145,20 @@ use App\Core\Model;
 class User extends Model
 {   
     /**
-     * You can use any features of Laravel inside this Model class
+     * Use any features of Laravel.
      */
+
+
+    /**
+     * rules.
+     *
+     * Use this methid for form valiation. If this model has validation, then just return an empty array
+     * @return	array
+     */
+    public function rules(): array
+    {
+        return [];
+    }
 }
 ```
 
@@ -183,9 +188,10 @@ To work with views, default view file path inside `resources/views`. Now passing
 use App\Core\Application;
 
 $app->route->get('/', function () {
+
     $version = Application::VERSION;
-    
     //for nested folder file view: home.index
+
     return view('welcome', compact('version'));
 });
 ```
@@ -232,7 +238,7 @@ You can pass single or multiple parameter with route as like below
 ```php
 <?php
 
-use App\Controllers\ProfileController;
+use App\Controllers\Http\ProfileController;
 
 $app->route->get('/user/{id}', [ProfileController::class, 'index']);
 ```
@@ -242,15 +248,13 @@ Now accept this param in your controller like:
 ```php
 <?php
 
-namespace App\Controllers;
-
-use App\Core\Request;
+namespace App\Http\Controllers;
 
 class ProfileController extends Controller
 {
-    public function index(Request $request)
+    public function index($id)
     {
-        return $request->params['id'];
+        return $id;
     }
 }
 ```
@@ -262,7 +266,7 @@ You can pass multiple parameter with route as like below
 ```php
 <?php
 
-use App\Controllers\ProfileController;
+use App\Controllers\Http\ProfileController;
 
 $app->route->get('/user/{id}/{username}', [ProfileController::class, 'index']);
 ```
@@ -272,20 +276,62 @@ Now accept this multiple param in your controller like:
 ```php
 <?php
 
-namespace App\Controllers;
-
-use App\Core\Request;
+namespace App\Http\Controllers;
 
 class ProfileController extends Controller
 {
-    public function index(Request $request)
+    public function index($id, $username)
     {
-        $id = $request->params['id'];
-        $username = $request->params['username'];
+        return $id;
 
-        dd($request->params);
+        return $username;
     }
 }
+```
+<a name="section-15"></a>
+
+## Request
+Request is most important thing when we work in a web application. We can use Request in this application like
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Core\Request;
+
+class ExampleController extends Controller
+{
+    public function store(Request $request)
+    {   
+        //asume we have a url like http://www.example.com/?name=mahedi. Now we can check.
+
+        if($request->has('name')){
+            
+        }
+
+        //We can also check form request data like
+        if($request->has('name') && $request->has('email')){
+            
+        }
+
+        //Now get the value from request like:
+        $name = $request->input('name');
+        $email = $request->input('email');
+
+        //We can get all the params with this way like:
+        $params = $request->params;
+        dd($params);
+
+        //You can also use global request() helper like:
+        $name = request()->input('name');
+
+        //or
+        if(request()->has('name')){
+            
+        }
+    }
+}
+
 ```
 
 <a name="section-10"></a>
@@ -315,8 +361,6 @@ class ExampleMiddleware implements Middleware
 {
     public function __invoke(Request $request, Closure $next)
     {
-        $data = $request->getBody();
-        dump($data);
         return $next($request);
     }
 }
@@ -377,7 +421,7 @@ class ExampleController extends Controller
 {
     public function index(User $user)
     {   
-        //$user object has to passed to show error message and old value
+        //$user object has to be passed to show error message and old value
         return view('user.index', compact('user'));
     }
 
@@ -409,13 +453,6 @@ class User extends Model
     public string $email;
     public string $password;
     public string $confirm_password;
-
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'confirm_password'
-    ];
 
     public function rules(): array
     {

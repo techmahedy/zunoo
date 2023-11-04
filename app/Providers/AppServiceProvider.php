@@ -6,8 +6,14 @@ use App\Core\Container;
 
 class AppServiceProvider extends Container
 {
+    /**
+     * register.
+     *
+     * Register any application services.
+     * @return	void
+     */
     public function register()
     {
-        //load your servicesor you can write custom blade directive here
+        //
     }
 }

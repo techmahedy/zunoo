@@ -10,24 +10,48 @@ class Route
 {
     protected array $routes = [];
 
+    protected array $urlParams = [];
+
     public Request $request;
 
+    /**
+     * __construct.
+     *
+     * @param	Request	$request	
+     * @return	void
+     */
     public function __construct(Request $request)
     {
         $this->request = $request;
     }
 
-    public function get($path, $callback)
+    /**
+     * get.
+     *
+     * @access	public
+     * @param	mixed	$path    	
+     * @param	mixed	$callback	
+     * @return	void
+     */
+    public function get($path, $callback): void
     {
         $this->routes['get'][$path] = $callback;
     }
 
-    public function post($path, $callback)
+    /**
+     * post.
+     *
+     * @access	public
+     * @param	mixed	$path    	
+     * @param	mixed	$callback	
+     * @return	void
+     */
+    public function post($path, $callback): void
     {
         $this->routes['post'][$path] = $callback;
     }
 
-    public function getCallback()
+    public function getCallback(): mixed
     {
         $method = $this->request->getMethod();
         $url = $this->request->getPath();
@@ -75,7 +99,7 @@ class Route
      * @param	contracts $serviceClass   	
      * @return	mixed
      */
-    public function resolve($middleware, $service)
+    public function resolve($middleware, $service): mixed
     {
         $middleware->handle($this->request);
 
@@ -85,6 +109,12 @@ class Route
             return $this->request->getPath() . ' url not found';
         }
         $resolveDependencies = [];
+
+        if (!empty($this->request->getRouteParams())) {
+            foreach ($this->request->getRouteParams() ?? [] as $key => $value) {
+                $this->urlParams[] = $value;
+            }
+        }
 
         if (is_array($callback)) {
             $reflector = new ReflectionClass($callback[0]);
@@ -115,14 +145,11 @@ class Route
                         $serviceClass = $service->resolveDependency->services[$class];
                         return new $serviceClass();
                     }
-                    if ($class === 'App\Core\Request') {
-                        return $resolveDependencies[] = $this->request;
-                    }
                     return new $class();
                 }
             }, $parameters);
         }
 
-        return call_user_func($callback, ...$resolveDependencies);
+        return call_user_func($callback, ...array_merge(array_filter($this->urlParams), array_filter($resolveDependencies)));
     }
 }

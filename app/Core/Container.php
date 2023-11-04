@@ -13,12 +13,27 @@ use App\Core\Exceptions\CouldNotResolveAbstractionException;
 
 class Container extends Controller implements ContainerInterface
 {
+    /**
+     * @var		array	$services
+     */
     public array $services = [];
 
+    /**
+     * @var		array	$instances
+     */
     protected array $instances = [];
 
+    /**
+     * @var		static	$instance
+     */
     protected static $instance;
 
+    /**
+     * getInstance.
+     *
+     * @access	public static
+     * @return	mixed
+     */
     public static function getInstance(): self
     {
         if (is_null(self::$instance)) {
@@ -28,6 +43,15 @@ class Container extends Controller implements ContainerInterface
         return self::$instance;
     }
 
+    /**
+     * bind.
+     *
+     * @access	public
+     * @param	string 	$key      	
+     * @param	mixed  	$value    	
+     * @param	boolean	$singleton	Default: false
+     * @return	mixed
+     */
     public function bind(string $key, mixed $value, bool $singleton = false): self
     {
         if (is_string($key) && class_exists($key)) {
@@ -43,11 +67,26 @@ class Container extends Controller implements ContainerInterface
         return $this;
     }
 
+    /**
+     * singleton.
+     *
+     * @access	public
+     * @param	string	$key     	
+     * @param	mixed 	$callback	
+     * @return	mixed
+     */
     public function singleton(string $key, mixed $callback): self
     {
         return $this->bind($key, $callback, true);
     }
 
+    /**
+     * get.
+     *
+     * @access	public
+     * @param	string	$service	
+     * @return	mixed
+     */
     public function get(string $service): mixed
     {
         if ($this->has($service)) {
@@ -57,11 +96,25 @@ class Container extends Controller implements ContainerInterface
         return $this->build($service);
     }
 
+    /**
+     * has.
+     *
+     * @access	public
+     * @param	string	$key	
+     * @return	mixed
+     */
     public function has(string $key): bool
     {
         return array_key_exists($key, $this->services);
     }
 
+    /**
+     * build.
+     *
+     * @access	protected
+     * @param	string	$service	
+     * @return	mixed
+     */
     protected function build(string $service)
     {
         try {
@@ -85,6 +138,13 @@ class Container extends Controller implements ContainerInterface
         return $reflector->newInstanceArgs($resolveDependencies);
     }
 
+    /**
+     * fetchBoundService.
+     *
+     * @access	protected
+     * @param	string	$service	
+     * @return	mixed
+     */
     protected function fetchBoundService(string $service)
     {
         if (

@@ -8,9 +8,15 @@ use App\Core\Middleware\Contracts\Middleware;
 
 class ExampleMiddleware implements Middleware
 {
+    /**
+     * __invoke.
+     *
+     * @param	Request	$request	
+     * @param	Closure	$next   	
+     * @return	mixed
+     */
     public function __invoke(Request $request, Closure $next)
     {
-        $data = $request->getBody();
         return $next($request);
     }
 }
