@@ -14,7 +14,6 @@ class ExampleController extends Controller
 
     public function store(Request $request, User $user)
     {
-        // return request()->input('name');
         $user->old($request->getBody());
 
         if ($user->validated()) {

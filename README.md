@@ -318,10 +318,6 @@ class ExampleController extends Controller
         $name = $request->input('name');
         $email = $request->input('email');
 
-        //We can get all the params with this way like:
-        $params = $request->params;
-        dd($params);
-
         //You can also use global request() helper like:
         $name = request()->input('name');
 
