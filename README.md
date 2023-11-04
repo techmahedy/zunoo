@@ -147,18 +147,6 @@ class User extends Model
     /**
      * Use any features of Laravel.
      */
-
-
-    /**
-     * rules.
-     *
-     * Use this methid for form valiation. If this model has validation, then just return an empty array
-     * @return	array
-     */
-    public function rules(): array
-    {
-        return [];
-    }
 }
 ```
 
