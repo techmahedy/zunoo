@@ -2,7 +2,7 @@
 
 namespace App\Core;
 
-class Request
+class Request extends Rule
 {
     /**
      * @var		array	$params

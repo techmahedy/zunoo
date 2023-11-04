@@ -1,4 +1,4 @@
-<form action="/" method="post">
+{{-- <form action="/" method="post">
     <label class="form-label">Name</label>
     <input type="text" name="name" class="{{ $user->hasError('name') ? ' is-invalid' : '' }}"
         value="{{ $user->name ?? '' }}">
@@ -19,4 +19,26 @@
         name="confirm_password" value="{{ $user->confirm_password ?? '' }}">
     {{ $user->getErrorMessage('confirm_password') }}
     <button type="submit" class="btn btn-primary">Submit</button>
+</form> --}}
+
+<form action="/" method="post">
+
+    <label class="form-label">Name</label>
+    <input type="text" name="first_name" class=""
+        value="">
+
+    <label class="form-label">Email</label>
+    <input type="text" name="email" class=""
+        value="">
+
+    <label class="form-label">Password</label>
+    <input type="text" name="last_name" class=""
+        value="">
+
+    <label class="form-label">Confirm Password</label>
+    <input type="text" name="address" class=""
+        value="">
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+
 </form>
