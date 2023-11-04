@@ -14,6 +14,8 @@ class Route
 
     public Request $request;
 
+    protected string $name;
+
     /**
      * __construct.
      *
@@ -106,7 +108,7 @@ class Route
         $callback = $this->getCallback();
 
         if (!$callback) {
-            return $this->request->getPath() . ' url not found';
+            throw new \Exception("Route path " . $this->request->getPath() . " is not defined for " . $this->request->getMethod() . ' request');
         }
         $resolveDependencies = [];
 

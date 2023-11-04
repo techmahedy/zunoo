@@ -13,6 +13,7 @@ class Kernel
      */
     public $middleware = [
         \App\Http\Middleware\ExampleMiddleware::class,
+        \App\Core\Middleware\CsrfTokenMiddleware::class,
     ];
 
     /**

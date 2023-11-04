@@ -16,6 +16,7 @@
 - [Global Middleware](#section-10)
 - [Custom Blade Directivee](#section-11)
 - [From Validation](#section-12)
+- [CSRF Token](#section-16)
 
 <a name="section-1"></a>
 
@@ -450,5 +451,17 @@ Now update the `resources/user/index.blade.php` like
     <input type="email" name="email" class="" value="">
 
     <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+```
+
+<a name="section-16"></a>
+
+## CSRF Token
+If you submit a post request form, then you must be provide `csrf_token` with your request like below, otherwise it will throw an exception error.
+
+```HTML
+<form action="/" method="post">
+    @csrf
+    <input type="submit" value="submit">
 </form>
 ```

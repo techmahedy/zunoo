@@ -4,6 +4,7 @@ use Dotenv\Dotenv;
 use App\Core\Route;
 use App\Core\Request;
 use App\Core\Application;
+use Spatie\Ignition\Ignition;
 use Illuminate\Events\Dispatcher;
 use App\Core\Middleware\Middleware;
 use Illuminate\Container\Container;
@@ -16,6 +17,11 @@ $dotenv->load();
  * Start the application session
  */
 session_start();
+
+/**
+ * Loading the spatie error page handler
+ */
+Ignition::make()->useDarkMode()->register();
 
 $capsule = new Capsule;
 

@@ -28,6 +28,7 @@
         "psr/container": "^2.0@dev",
         "vlucas/phpdotenv": "^5.5@dev",
         "illuminate/database": "^11.0@dev",
-        "illuminate/events": "^11.0@dev"
+        "illuminate/events": "^11.0@dev",
+        "spatie/ignition": "^1.11"
     }
 }

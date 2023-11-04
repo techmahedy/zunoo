@@ -682,6 +682,18 @@ class Controller
         return "<input type=\"hidden\" name=\"_method\" value=\"<?php echo strtoupper{$method} ?>\">\n";
     }
 
+    /**
+     * Usage: @csrf
+     *
+     * Generate random string to protect spumy form submit
+     *
+     * @return string
+     */
+    protected function compileCsrf()
+    {
+        return "<input type=\"hidden\" name=\"csrf_token\" value=\"<?php echo bin2hex(openssl_random_pseudo_bytes(10)) ?>\">\n";
+    }
+
     //!----------------------------------------------------------------
     //! Renderer
     //!----------------------------------------------------------------
@@ -696,7 +708,7 @@ class Controller
      *
      * @return string
      */
-    public function render($name, array $data = [], $returnOnly = false): string
+    public function render($name, array $data = [], $returnOnly = false)
     {
         $html = $this->fetch($name, $data);
 
