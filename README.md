@@ -397,7 +397,6 @@ And now we can update `App\Http\Controllers\ExampleController.php` like
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Core\Request;
 use App\Core\Controllers\Controller;
 
@@ -437,7 +436,7 @@ Now update the `resources/user/index.blade.php` like
     @endforeach
 @endif
 
-<form action="/" method="post">
+<form action="/register" method="post">
     <label class="form-label">Name</label>
     <input type="text" name="first_name" class="" value="">
 
