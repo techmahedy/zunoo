@@ -360,7 +360,14 @@ We can define multiple route middleware. To define route middleware, just update
 ```php
 <?php
 
-public $middleware = [
+/**
+ * The application's route middleware.
+ *
+ * These middleware may be assigned to groups or used individually.
+ *
+ * @var array<string, class-string|string>
+ */
+protected $routeMiddleware = [
     'auth' => \App\Http\Middleware\Authenticate::class,
 ];
 ```
