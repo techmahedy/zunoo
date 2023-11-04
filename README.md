@@ -2,6 +2,7 @@
 # How to use
 
 - [About](#section-1)
+- [How to Install](#section-14)
 - [Define Route](#section-2)
 - [Route Parameter](#section-8)
 - [Multiple Route Parameters](#section-9)
@@ -20,6 +21,14 @@
 ## About
 This is a mini PHP framework with some basic features like di-container, dependency injection, routing, accepting request with routing, controller and model.
 
+<a name="section-14"></a>
+
+## How to Install
+We can easily setup and install this application with some few steps. Before using this application, minimum `PHP 8.1` version is needed.
+- Step 1: `git clone https://github.com/techmahedy/mini-laravel.git` or download this application
+- Step 2: go to project directory with this command `cd mini-laravel` and run `composer update`
+- Step 3: Start the development server by running this command `php -S localhost:8000`
+
 <a name="section-2"></a>
 
 ## Define Route
@@ -28,10 +37,10 @@ To define route, navigate to this file and update
 ```php
 
 <?php
-use App\Controllers\TestController;
+use App\Http\Controllers\ExampleController;
 
-$app->route->get('/', [TestController::class, 'index']);
-$app->route->get('/about', [TestController::class, 'about']);
+$app->route->get('/', [ExampleController::class, 'index']);
+$app->route->get('/about', [ExampleController::class, 'about']);
 ```
 
 <a name="section-3"></a>
@@ -65,14 +74,14 @@ Now look at that, how you can use dependency injection.
 
 <?php
 
-namespace App\Controllers;
+namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Post;
 use App\Core\Request;
 use App\Contracts\PaymentServiceContract;
 
-class TestController extends Controller
+class ExampleController extends Controller
 {   
     /**
      * You can pass as many class as you want as parameter
@@ -109,14 +118,14 @@ Now look at that, how you can use dependency injection using constructor.
 
 <?php
 
-namespace App\Controllers;
+namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Post;
 use App\Core\Request;
 use App\Contracts\PaymentServiceContract;
 
-class TestController extends Controller
+class ExampleController extends Controller
 {   
     /**
      * Look at that, we are passing interface, models. How cool it is
