@@ -8,11 +8,10 @@ use App\Core\Middleware\Contracts\Middleware as ContractsMiddleware;
 
 class Middleware
 {
-
     /**
      * @var		closure	$start
      */
-    protected Closure $start;
+    public Closure $start;
 
     public function __construct()
     {

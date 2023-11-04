@@ -14,6 +14,7 @@
 - [Database Connection](#section-6)
 - [Views](#section-7)
 - [Global Middleware](#section-10)
+- [Route Middleware](#section-17)
 - [Custom Blade Directivee](#section-11)
 - [From Validation](#section-12)
 - [CSRF Token](#section-16)
@@ -346,6 +347,49 @@ class ExampleMiddleware implements Middleware
 {
     public function __invoke(Request $request, Closure $next)
     {
+        return $next($request);
+    }
+}
+```
+
+<a name="section-17"></a>
+
+## Route Middleware
+We can define multiple route middleware. To define route middleware, just update the `App\Http\Kernel.php` file's `$routeMiddleware` array as like below 
+
+```php
+<?php
+
+public $middleware = [
+    'auth' => \App\Http\Middleware\Authenticate::class,
+];
+```
+
+Now update your middleware like
+
+```php
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use App\Core\Request;
+use App\Core\Middleware\Contracts\Middleware;
+
+class Authenticate implements Middleware
+{
+    /**
+     * handle.
+     *
+     * @param	Request	$request	
+     * @param	Closure	$next   	
+     * @return	mixed
+     */
+    public function handle(Request $request, Closure $next)
+    {
+        /**
+         * code
+         */
         return $next($request);
     }
 }

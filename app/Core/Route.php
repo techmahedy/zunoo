@@ -2,11 +2,13 @@
 
 namespace App\Core;
 
+use App\Http\Kernel;
 use ReflectionClass;
 use App\Core\Request;
 use ReflectionParameter;
+use App\Core\Middleware\Middleware;
 
-class Route
+class Route extends Kernel
 {
     protected array $routes = [];
 
@@ -27,17 +29,20 @@ class Route
         $this->request = $request;
     }
 
+
     /**
      * get.
      *
      * @access	public
      * @param	mixed	$path    	
      * @param	mixed	$callback	
-     * @return	void
+     * @return	Route
      */
-    public function get($path, $callback): void
+    public function get($path, $callback): Route
     {
         $this->routes['get'][$path] = $callback;
+
+        return $this;
     }
 
     /**
@@ -46,13 +51,42 @@ class Route
      * @access	public
      * @param	mixed	$path    	
      * @param	mixed	$callback	
-     * @return	void
+     * @return	Route
      */
-    public function post($path, $callback): void
+    public function post($path, $callback): Route
     {
         $this->routes['post'][$path] = $callback;
+
+        return $this;
     }
 
+    /**
+     * middleware.
+     *
+     * @access	public
+     * @param	string	$key middleware	
+     * @return	Route
+     */
+    public function middleware(string $key): Route
+    {
+        if (!isset($this->routeMiddleware[$key])) {
+            return $this;
+        }
+
+        (new $this->routeMiddleware[$key])->handle(
+            new Request,
+            (new Middleware)->start
+        );
+
+        return $this;
+    }
+
+    /**
+     * getCallback.
+     *
+     * @access	public
+     * @return	mixed
+     */
     public function getCallback(): mixed
     {
         $method = $this->request->getMethod();

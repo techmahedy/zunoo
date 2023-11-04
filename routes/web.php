@@ -7,8 +7,7 @@
 use App\Core\Application;
 
 $app->route->get('/', function () {
-
     $version = Application::VERSION;
-
+    
     return view('welcome', compact('version'));
-});
+})->middleware('auth');

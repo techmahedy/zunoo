@@ -23,5 +23,7 @@ class Kernel
      *
      * @var array<string, class-string|string>
      */
-    public $routeMiddleware = [];
+    protected $routeMiddleware = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+    ];
 }
