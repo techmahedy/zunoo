@@ -4,9 +4,18 @@ namespace App\Core;
 
 class Rule
 {
-    public function validate($input, $rules)
+    /**
+     * validate.
+     *
+     * @access	public
+     * @param	mixed	$input	
+     * @param	mixed	$rules	
+     * @return	mixed
+     */
+    public function validate($rules): mixed
     {
         $errors = [];
+        $input = request()->getBody();
 
         if (is_array($input)) :
             foreach ($rules as $fieldName => $value) :
@@ -33,7 +42,7 @@ class Rule
                         $errors[$fieldName]['max'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field is more than " . $ruleValue . " characters of the maximum length.";
                     endif;
 
-                    if ($rule == "unique" && !$this->isRecordUnique($input, $fieldName, $ruleValue)) :
+                    if ($rule == "unique" && $this->isRecordUnique($input, $fieldName, $ruleValue)) :
                         $errors[$fieldName]['unique'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field is already exists.";
                     endif;
 
@@ -41,6 +50,10 @@ class Rule
             endforeach;
         endif;
 
+        if ($errors) {
+            session()->flash('errors', $errors);
+            return redirect()->back();
+        }
         return $errors;
     }
 

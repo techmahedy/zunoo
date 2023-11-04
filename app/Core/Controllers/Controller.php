@@ -191,7 +191,7 @@ class Controller
      *
      * @return string
      */
-    public function e($string, $charset = null): string
+    public function e(string $string, $charset = null): string
     {
         return htmlspecialchars($string, ENT_QUOTES, is_null($charset) ? 'UTF-8' : $charset);
     }

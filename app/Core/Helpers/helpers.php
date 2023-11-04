@@ -1,6 +1,8 @@
 <?php
 
 use App\Core\Request;
+use App\Core\Redirect;
+use App\Core\Session;
 use App\Core\Controllers\Controller;
 
 /**
@@ -22,20 +24,11 @@ function view($view, $data = []): mixed
  *
  * @author	Mahedi Hasan
  * @global
- * @param	mixed  	$url       	
- * @param	integer	$statusCode	Default: 302
- * @return	void
+ * @return	Redirect
  */
-function redirect($url, $statusCode = 302)
+function redirect(): Redirect
 {
-    if (!headers_sent()) {
-        // If headers haven't been sent yet, perform the redirect
-        header('Location: ' . $url, true, $statusCode);
-        exit();
-    } else {
-        // If headers have already been sent, you can output a message or handle it in some way
-        echo "Headers have already been sent. Unable to redirect.";
-    }
+    return  new Redirect();
 }
 
 
@@ -49,4 +42,15 @@ function redirect($url, $statusCode = 302)
 function request(): Request
 {
     return new Request();
+}
+
+/**
+ * session.
+ *
+ * @global
+ * @return	Session
+ */
+function session(): Session
+{
+    return new Session();
 }

@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Core\Rule;
 use App\Models\User;
 use App\Core\Request;
-use Illuminate\Support\Facades\DB;
 
 class ExampleController extends Controller
 {
@@ -14,17 +12,17 @@ class ExampleController extends Controller
         return view('welcome', compact('user'));
     }
 
-    public function store(Request $request, User $user)
+    public function store(Request $request)
     {
-        $validation = $request->validate($_REQUEST, [
+        $request->validate([
             'email' => 'required|email|unique:user|min:2|max:100',
             'first_name' => 'required|min:2|max:100',
             'last_name' => 'required|min:2|max:100',
             'address' => 'required|min:2|max:250'
         ]);
 
-        dd($validation);
+        //save the data
 
-        return view('welcome', compact('user'));
+        return redirect()->url('/test');
     }
 }

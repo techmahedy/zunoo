@@ -415,75 +415,53 @@ use App\Core\Controllers\Controller;
 
 class ExampleController extends Controller
 {
-    public function index(User $user)
+    public function index()
     {   
-        //$user object has to be passed to show error message and old value
-        return view('user.index', compact('user'));
+        return view('user.index');
     }
 
-    public function store(User $user, Request $request)
+    public function store(Request $request)
     {   
-        $user->old($request->getBody());
+        $request->validate([
+            'email' => 'required|email|unique:user|min:2|max:100',
+            'first_name' => 'required|min:2|max:100',
+            'last_name' => 'required|min:2|max:100',
+            'address' => 'required|min:2|max:250'
+        ]);
 
-        if ($user->validated()) {
-            //Validation passed
-            return redirect('/register');
-        }
+        //save the data
 
-        return view('user.index', compact('user'));
+        return redirect()->url('/test');
     }
 }
 
-```
-Now update the User `App\Models\User.php` model to validate user model fields
-```php
-<?php
-
-namespace App\Models;
-
-use App\Core\Model;
-
-class User extends Model
-{
-    public string $name;
-    public string $email;
-    public string $password;
-    public string $confirm_password;
-
-    public function rules(): array
-    {
-        return [
-            'name' => [self::required],
-            'email' => [self::required, self::email],
-            'password' => [self::required, [self::min, 'min' => '4']],
-            'confirm_password' => [self::required, [self::match, 'match' => 'password']]
-        ];
-    }
-}
 ```
 
 Now update the `resources/user/index.blade.php` like
 ```HTML
-<form action="/register" method="post">
+
+<!-- Showing Error Messages -->
+@if (session()->has('errors'))
+    @foreach (session()->get('errors') as $error)
+        @foreach ($error as $item)
+            <li>{{ $item }}</li>
+        @endforeach
+    @endforeach
+@endif
+
+<form action="/" method="post">
     <label class="form-label">Name</label>
-    <input type="text" name="name" class="{{ $user->hasError('name') ? ' is-invalid' : '' }}"
-        value="{{ $user->name ?? '' }}">
-    {{ $user->getErrorMessage('name') }}
+    <input type="text" name="first_name" class="" value="">
+
+    <label class="form-label">Last Name</label>
+    <input type="text" name="last_name" class="" value="">
+
+    <label class="form-label">Address</label>
+    <input type="text" name="address" class="" value="">
 
     <label class="form-label">Email</label>
-    <input type="text" class="{{ $user->hasError('email') ? ' is-invalid' : '' }}" name="email"
-        value="{{ $user->email ?? '' }}">
-    {{ $user->getErrorMessage('email') }}
+    <input type="email" name="email" class="" value="">
 
-    <label class="form-label">Password</label>
-    <input type="password" class="{{ $user->hasError('password') ? ' is-invalid' : '' }}" name="password"
-        value="{{ $user->password ?? '' }}">
-    {{ $user->getErrorMessage('password') }}
-
-    <label class="form-label">Confirm Password</label>
-    <input type="password" class="{{ $user->hasError('confirm_password') ? ' is-invalid' : '' }}"
-        name="confirm_password" value="{{ $user->confirm_password ?? '' }}">
-    {{ $user->getErrorMessage('confirm_password') }}
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 ```
