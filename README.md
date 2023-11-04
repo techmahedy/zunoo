@@ -372,6 +372,14 @@ protected $routeMiddleware = [
 ];
 ```
 
+And update your route like:
+
+```php
+use App\Http\Controllers\ProfileController;
+
+$app->route->get('/', [ProfileController::class,'index'])->middleware('auth');
+```
+
 Now update your middleware like
 
 ```php
