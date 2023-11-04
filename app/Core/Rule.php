@@ -57,22 +57,53 @@ class Rule
         return $errors;
     }
 
-    public function isEmptyFieldRequired($input, $fieldName)
+    /**
+     * isEmptyFieldRequired.
+     *
+     * @param	mixed	$input    	
+     * @param	mixed	$fieldName	
+     * @return	mixed
+     */
+    public function isEmptyFieldRequired($input, $fieldName): mixed
     {
         return $input[$fieldName] == "" || empty($input[$fieldName]);
     }
 
-    public function isLessThanMin($input, $fieldName, $value)
+    /**
+     * isLessThanMin.
+     *
+     * @param	mixed	$input    	
+     * @param	mixed	$fieldName	
+     * @param	mixed	$value    	
+     * @return	mixed
+     */
+    public function isLessThanMin($input, $fieldName, $value): mixed
     {
         return strlen($input[$fieldName]) < $value;
     }
 
-    public function isMoreThanMax($input, $fieldName, $value)
+    /**
+     * isMoreThanMax.
+     *
+     * @param	mixed	$input    	
+     * @param	mixed	$fieldName	
+     * @param	mixed	$value    	
+     * @return	mixed
+     */
+    public function isMoreThanMax($input, $fieldName, $value): mixed
     {
         return strlen($input[$fieldName]) > $value;
     }
 
-    public function isRecordUnique($input, $fieldName, $value)
+    /**
+     * isRecordUnique.
+     *
+     * @param	mixed	$input    	
+     * @param	mixed	$fieldName	
+     * @param	mixed	$value    	
+     * @return	mixed
+     */
+    public function isRecordUnique($input, $fieldName, $value): mixed
     {
         $modelPath = <<<TEXT
         App\Models\
@@ -81,7 +112,14 @@ class Rule
         return $model::where($fieldName, $input[$fieldName])->exists();
     }
 
-    public function isEmailValid($input, $fieldName)
+    /**
+     * isEmailValid.
+     *
+     * @param	mixed	$input    	
+     * @param	mixed	$fieldName	
+     * @return	boolean
+     */
+    public function isEmailValid($input, $fieldName): bool
     {
         $email = $input[$fieldName];
 
@@ -93,19 +131,37 @@ class Rule
     }
 
 
-    public function _removeUnderscore($string)
+    /**
+     * _removeUnderscore.
+     *
+     * @param	mixed	$string	
+     * @return	mixed
+     */
+    public function _removeUnderscore($string): mixed
     {
         return str_replace("_", " ", $string);
     }
 
-    public function _removeRuleSuffix($string)
+    /**
+     * _removeRuleSuffix.
+     *
+     * @param	mixed	$string	
+     * @return	mixed
+     */
+    public function _removeRuleSuffix($string): mixed
     {
         $arr = explode(":", $string);
 
         return $arr[0];
     }
 
-    public function _getRuleSuffix($string)
+    /**
+     * _getRuleSuffix.
+     *
+     * @param	mixed	$string	
+     * @return	mixed
+     */
+    public function _getRuleSuffix($string): mixed
     {
         $arr = explode(":", $string);
 

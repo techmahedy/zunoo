@@ -36,10 +36,6 @@ class Session
      */
     public function has($key): mixed
     {
-        // if ($this->has('errors')) {
-        //     unset($_SESSION['errors']);
-        //     return true;
-        // }
         return $_SESSION[$key] ?? false;
     }
 }

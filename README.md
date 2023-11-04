@@ -226,7 +226,7 @@ You can pass single or multiple parameter with route as like below
 ```php
 <?php
 
-use App\Controllers\Http\ProfileController;
+use App\Http\Controllers\ProfileController;
 
 $app->route->get('/user/{id}', [ProfileController::class, 'index']);
 ```
@@ -254,7 +254,7 @@ You can pass multiple parameter with route as like below
 ```php
 <?php
 
-use App\Controllers\Http\ProfileController;
+use App\Http\Controllers\ProfileController;
 
 $app->route->get('/user/{id}/{username}', [ProfileController::class, 'index']);
 ```

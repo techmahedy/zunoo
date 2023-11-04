@@ -17,6 +17,9 @@ class ExampleMiddleware implements Middleware
      */
     public function __invoke(Request $request, Closure $next)
     {
+        /**
+         * code goes here
+         */
         return $next($request);
     }
 }
