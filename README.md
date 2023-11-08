@@ -561,6 +561,7 @@ And now we can use it like:
 
 ```php
 <?php
+
 $app->route->get('/', function () {
 
     $collection = collect(['first', 'second']);
