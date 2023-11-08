@@ -29,6 +29,7 @@
         "vlucas/phpdotenv": "^5.5@dev",
         "illuminate/database": "^11.0@dev",
         "illuminate/events": "^11.0@dev",
-        "spatie/ignition": "^1.11"
+        "spatie/ignition": "^1.11",
+        "illuminate/collections": "^11.0@dev"
     }
 }

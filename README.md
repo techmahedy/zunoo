@@ -18,6 +18,7 @@
 - [Custom Blade Directivee](#section-11)
 - [From Validation](#section-12)
 - [CSRF Token](#section-16)
+- [Collection & Macro](#section-18)
 
 <a name="section-1"></a>
 
@@ -523,4 +524,48 @@ If you submit a post request form, then you must be provide `csrf_token` with yo
     @csrf
     <input type="submit" value="submit">
 </form>
+```
+
+<a name="section-18"></a>
+
+## Collection & Macro
+Like Laravel framework, in this MII framework, you can also work with Laravel collection and you can create your own custom macro. To create a custom macro, just update service provider `App\Providers\AppServiceProvider.php` like: 
+```php
+<?php
+
+namespace App\Providers;
+
+use App\Core\Container;
+use Illuminate\Support\Collection;
+
+class AppServiceProvider extends Container
+{
+    /**
+     * register.
+     *
+     * Register any application services.
+     * @return	void
+     */
+    public function register()
+    {
+        Collection::macro('toUpper', function () {
+            return $this->map(function ($value) {
+                return strtoupper($value);
+            });
+        });
+    }
+}
+```
+
+And now we can use it like:
+
+```php
+<?php
+$app->route->get('/', function () {
+
+    $collection = collect(['first', 'second']);
+    $upper = $collection->toUpper();
+
+    return $upper; //output ["FIRST","SECOND"]
+});
 ```
