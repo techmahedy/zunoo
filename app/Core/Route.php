@@ -10,13 +10,11 @@ use App\Core\Middleware\Middleware;
 
 class Route extends Kernel
 {
-    protected array $routes = [];
+    protected static array $routes = [];
 
     protected array $urlParams = [];
 
     public Request $request;
-
-    protected string $name;
 
     /**
      * __construct.
@@ -29,6 +27,13 @@ class Route extends Kernel
         $this->request = $request;
     }
 
+    public static function __callStatic($name, $arguments)
+    {
+        return match ($name) {
+            'get' => (new Route(new Request))->getRoute($arguments[0], $arguments[1]),
+            'post' => (new Route(new Request))->postRoute($arguments[0], $arguments[1]),
+        };
+    }
 
     /**
      * get.
@@ -38,9 +43,9 @@ class Route extends Kernel
      * @param	mixed	$callback	
      * @return	Route
      */
-    public function get($path, $callback): Route
+    public function getRoute($path, $callback): Route
     {
-        $this->routes['get'][$path] = $callback;
+        self::$routes['get'][$path] = $callback;
 
         return $this;
     }
@@ -53,9 +58,9 @@ class Route extends Kernel
      * @param	mixed	$callback	
      * @return	Route
      */
-    public function post($path, $callback): Route
+    public function postRoute($path, $callback): Route
     {
-        $this->routes['post'][$path] = $callback;
+        self::$routes['post'][$path] = $callback;
 
         return $this;
     }
@@ -70,7 +75,7 @@ class Route extends Kernel
     public function middleware(string $key): Route
     {
         if (!isset($this->routeMiddleware[$key])) {
-            return $this;
+            throw new \Exception("Middleware " . '[' . $key . ']' . " is not defined");
         }
 
         (new $this->routeMiddleware[$key])->handle(
@@ -91,7 +96,7 @@ class Route extends Kernel
     {
         $method = $this->request->getMethod();
         $url = $this->request->getPath();
-        $routes = $this->routes[$method] ?? [];
+        $routes = self::$routes[$method] ?? [];
         $routeParams = false;
 
         // Start iterating registed routes
@@ -142,7 +147,7 @@ class Route extends Kernel
         $callback = $this->getCallback();
 
         if (!$callback) {
-            throw new \Exception("Route path " . $this->request->getPath() . " is not defined for " . $this->request->getMethod() . ' request');
+            throw new \Exception("Route path " . '[' . $this->request->getPath() . ']' . " is not defined");
         }
         $resolveDependencies = [];
 

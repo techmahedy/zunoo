@@ -40,10 +40,12 @@ To define route, navigate to this file and update
 ```php
 
 <?php
+
+use App\Core\Route;
 use App\Http\Controllers\ExampleController;
 
-$app->route->get('/', [ExampleController::class, 'index']);
-$app->route->get('/about', [ExampleController::class, 'about']);
+Route::get('/', [ExampleController::class, 'index']);
+Route::get('/about', [ExampleController::class, 'about']);
 ```
 
 <a name="section-3"></a>
@@ -176,14 +178,12 @@ To work with views, default view file path inside `resources/views`. Now passing
 ```php
 <?php
 
+use App\Core\Route;
 use App\Core\Application;
 
-$app->route->get('/', function () {
-
+Route::get('/', function () {
     $version = Application::VERSION;
-    //for nested folder file view: home.index
-
-    return view('welcome', compact('version'));
+    return view('welcome', compact('version'));  //for nested folder file view: home.index
 });
 ```
 
@@ -229,9 +229,10 @@ You can pass single or multiple parameter with route as like below
 ```php
 <?php
 
+use App\Core\Route;
 use App\Http\Controllers\ProfileController;
 
-$app->route->get('/user/{id}', [ProfileController::class, 'index']);
+Route::get('/user/{id}', [ProfileController::class, 'index']);
 ```
 
 Now accept this param in your controller like:
@@ -259,7 +260,7 @@ You can pass multiple parameter with route as like below
 
 use App\Http\Controllers\ProfileController;
 
-$app->route->get('/user/{id}/{username}', [ProfileController::class, 'index']);
+Route::get('/user/{id}/{username}', [ProfileController::class, 'index']);
 ```
 
 Now accept this multiple param in your controller like:
@@ -376,9 +377,12 @@ protected $routeMiddleware = [
 And update your route like:
 
 ```php
+<?php
+
+use App\Core\Route;
 use App\Http\Controllers\ProfileController;
 
-$app->route->get('/', [ProfileController::class,'index'])->middleware('auth');
+Route::get('/', [ProfileController::class,'index'])->middleware('auth');
 ```
 
 Now update your middleware like
@@ -446,10 +450,11 @@ We can validate from and can show error message in blade file very easily. To va
 ```php
 <?php
 
+use App\Core\Route;
 use App\Http\Controllers\ExampleController;
 
-$app->route->get('/register', [ExampleController::class, 'index']);
-$app->route->post('/register', [ExampleController::class, 'store']);
+Route::get('/register', [ExampleController::class, 'index']);
+Route::post('/register', [ExampleController::class, 'store']);
 ```
 
 And now we can update `App\Http\Controllers\ExampleController.php` like
@@ -479,7 +484,7 @@ class ExampleController extends Controller
 
         //save the data
 
-        return redirect()->url('/test');
+        return redirect()->url('/test'); //or redirect()->back()
     }
 }
 
@@ -562,7 +567,9 @@ And now we can use it like:
 ```php
 <?php
 
-$app->route->get('/', function () {
+use App\Core\Route;
+
+Route::get('/', function () {
 
     $collection = collect(['first', 'second']);
     $upper = $collection->toUpper();

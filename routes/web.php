@@ -4,10 +4,11 @@
  * Application web routes
  */
 
+use App\Core\Route;
 use App\Core\Application;
 
-$app->route->get('/', function () {
+Route::get('/', function () {
     $version = Application::VERSION;
-    
+
     return view('welcome', compact('version'));
-})->middleware('auth');
+});
