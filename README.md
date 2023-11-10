@@ -20,6 +20,7 @@
 - [CSRF Token](#section-16)
 - [Collection & Macro](#section-18)
 - [Session Flash Message](#section-19)
+- [Log](#section-20)
 
 <a name="section-1"></a>
 
@@ -605,5 +606,17 @@ session->flash('key', 'value to be printed');
 if(session()->has('key')){
     echo session()->get('key');
 }
+
+```
+
+<a name="section-20"></a>
+
+## Log
+We can easily print important messages in a log file which is located inside `storage\logs\mii.log`. To print a message, mii provide `logger()` helper function, you just need to follow this
+```php
+<?php
+
+//logger() is a global helper function
+logger()->info('Hello');
 
 ```

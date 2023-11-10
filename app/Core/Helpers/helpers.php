@@ -1,8 +1,9 @@
 <?php
 
+use App\Core\Log as Reader;
 use App\Core\Request;
-use App\Core\Redirect;
 use App\Core\Session;
+use App\Core\Redirect;
 use App\Core\Controllers\Controller;
 
 /**
@@ -53,4 +54,15 @@ function request(): Request
 function session(): Session
 {
     return new Session();
+}
+
+/**
+ * logger.
+ *
+ * @global
+ * @return	\Monolog\Logger
+ */
+function logger(): \Monolog\Logger
+{
+    return (new Reader())->logReader();
 }

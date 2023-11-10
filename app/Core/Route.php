@@ -32,6 +32,7 @@ class Route extends Kernel
         return match ($name) {
             'get' => (new Route(new Request))->getRoute($arguments[0], $arguments[1]),
             'post' => (new Route(new Request))->postRoute($arguments[0], $arguments[1]),
+            default => throw new \Exception($name . ' method not found', true)
         };
     }
 

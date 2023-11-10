@@ -22,4 +22,5 @@ foreach ((new Kernel)->middleware as $key => $middeware) {
 | Run the application
 |--------------------------------------------------------------------------
 */
+
 $app->run();
