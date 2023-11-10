@@ -19,6 +19,7 @@
 - [From Validation](#section-12)
 - [CSRF Token](#section-16)
 - [Collection & Macro](#section-18)
+- [Session Flash Message](#section-19)
 
 <a name="section-1"></a>
 
@@ -65,11 +66,11 @@ use App\Contracts\PaymentServiceContract;
 class AppServiceProvider extends Container
 {
     public function register()
-    {
+    {  
+       //Remember, the global request() helper is available here. You can get input value here like
+       //request()->input('payment_type')
        return $this->bind(PaymentServiceContract::class, StripePaymentService::class);
-       
        //or
-       
        return $this->singleton(PaymentServiceContract::class, StripePaymentService::class);
     }
 }
@@ -296,7 +297,6 @@ class ExampleController extends Controller
     public function store(Request $request)
     {   
         //asume we have a url like http://www.example.com/?name=mahedi. Now we can check.
-
         if($request->has('name')){
             
         }
@@ -317,6 +317,10 @@ class ExampleController extends Controller
         if(request()->has('name')){
             
         }
+
+        //get all the input as an array
+        $input = $request->all();
+        dd($input);
     }
 }
 
@@ -329,6 +333,9 @@ We can define multiple global middleware. To define global middleware, just upda
 ```php
 <?php
 
+/**
+ * Application global middleware
+ */
 public $middleware = [
     \App\Http\Middleware\ExampleMiddleware::class,
 ];
@@ -348,7 +355,10 @@ use App\Core\Middleware\Contracts\Middleware;
 class ExampleMiddleware implements Middleware
 {
     public function __invoke(Request $request, Closure $next)
-    {
+    {   
+        /**
+         * Code goes here
+         */
         return $next($request);
     }
 }
@@ -476,10 +486,8 @@ class ExampleController extends Controller
     public function store(Request $request)
     {   
         $request->validate([
-            'email' => 'required|email|unique:user|min:2|max:100',
-            'first_name' => 'required|min:2|max:100',
-            'last_name' => 'required|min:2|max:100',
-            'address' => 'required|min:2|max:250'
+            'email' => 'required|email|unique:user|min:2|max:100', //unique:user -> here [user] is model
+            'password' => 'required|min:2|max:100',
         ]);
 
         //save the data
@@ -493,7 +501,7 @@ class ExampleController extends Controller
 Now update the `resources/user/index.blade.php` like
 ```HTML
 
-<!-- Showing Error Messages -->
+<!-- Showing All Error Messages -->
 @if (session()->has('errors'))
     @foreach (session()->get('errors') as $error)
         @foreach ($error as $item)
@@ -503,18 +511,23 @@ Now update the `resources/user/index.blade.php` like
 @endif
 
 <form action="/register" method="post">
-    <label class="form-label">Name</label>
-    <input type="text" name="first_name" class="" value="">
-
-    <label class="form-label">Last Name</label>
-    <input type="text" name="last_name" class="" value="">
-
-    <label class="form-label">Address</label>
-    <input type="text" name="address" class="" value="">
-
-    <label class="form-label">Email</label>
-    <input type="email" name="email" class="" value="">
-
+    @csrf
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <input type="email" class="form-control" name="email">
+        <!-- Show Specific Error Message -->
+        @if (session()->has('email'))
+            {{ session()->get('email') }}
+        @endif
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input type="password" class="form-control" name="password">
+        <!-- Show Specific Error Message -->
+        @if (session()->has('password'))
+            {{ session()->get('password') }}
+        @endif
+    </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 ```
@@ -576,4 +589,21 @@ Route::get('/', function () {
 
     return $upper; //output ["FIRST","SECOND"]
 });
+```
+
+<a name="section-19"></a>
+
+## Session Flash Message
+When we work with form submit then we need to show validation error message or success message. We can show session flash message very easily like
+```php
+<?php
+
+//Set the session flash value like
+session->flash('key', 'value to be printed');
+
+//Now you can print this value lie
+if(session()->has('key')){
+    echo session()->get('key');
+}
+
 ```

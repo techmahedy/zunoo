@@ -21,7 +21,7 @@ class CsrfTokenMiddleware implements Middleware
             $request->isPost() &&
             !$request->has('csrf_token')
         ) {
-            throw new \Exception("csrf token not found while form submission");
+            throw new \Exception("CSRF token not found");
         }
 
         return $next($request);

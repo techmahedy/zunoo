@@ -10,11 +10,11 @@ class Session
      *
      * @param	mixed	$key  	
      * @param	mixed	$value	
-     * @return	mixed
+     * @return	void
      */
-    public function flash($key, $value): mixed
+    public function flash($key, $value): void
     {
-        return $_SESSION[$key] = $value;
+        $_SESSION[$key] = $value;
     }
 
     /**
@@ -25,7 +25,9 @@ class Session
      */
     public function get($key): mixed
     {
-        return $_SESSION[$key];
+        $message = $_SESSION[$key];
+        unset($_SESSION[$key]);
+        return $message;
     }
 
     /**

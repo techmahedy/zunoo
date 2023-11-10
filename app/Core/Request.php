@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use stdClass;
+
 class Request extends Rule
 {
     /**
@@ -66,7 +68,7 @@ class Request extends Rule
      * @access	public
      * @return	mixed
      */
-    public function getBody(): array
+    public function all()
     {
         $body = [];
         if ($this->getMethod() === 'get') {
@@ -81,7 +83,7 @@ class Request extends Rule
             }
         }
 
-        return $body;
+        return $body ?? [];
     }
 
     /**

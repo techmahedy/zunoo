@@ -15,7 +15,7 @@ class Rule
     public function validate($rules): mixed
     {
         $errors = [];
-        $input = request()->getBody();
+        $input = request()->all();
 
         if (is_array($input)) :
             foreach ($rules as $fieldName => $value) :
@@ -52,6 +52,9 @@ class Rule
 
         if ($errors) {
             session()->flash('errors', $errors);
+            foreach ($errors as $key => $error) {
+                session()->flash($key, $error);
+            }
             return redirect()->back();
         }
         return $errors;
