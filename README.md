@@ -7,6 +7,7 @@
 - [Route Parameter](#section-8)
 - [Multiple Route Parameters](#section-9)
 - [Request](#section-15)
+- [Database and Migration](#section-21)
 - [Binding Interface to Service Class](#section-3)
 - [Controller Method Dependency Injection](#section-4)
 - [Constructor Dependency Injection](#section-13)
@@ -620,3 +621,74 @@ We can easily print important messages in a log file which is located inside `st
 logger()->info('Hello');
 
 ```
+
+<a name="section-21"></a>
+
+## Database and Migration
+MII allow you to create migration. To create migration, MII uses `CakePHP`'s `phinx`. So to create a migration file first you need to update the configuration file `environments` array like:
+`config.php` 
+```php
+<?php
+
+return [
+    'environments' => [
+        'default_migration_table' => 'phinxlog',
+        'your_database_name' => [
+            'adapter' => 'mysql',
+            'host' => 'localhost',
+            'name' => 'your_database_name',
+            'user' => 'your_database_username',
+            'pass' => 'your_database_password',
+            'port' => '3306'
+        ]
+    ]
+];
+```
+Now run the below command in your project terminal like:
+`php vendor/bin/phinx create Post -c config.php`
+
+Here `Post` is the model name.
+
+Now this command will generate a migration file in the following path with the empty `change()` method.
+`app\database\migration\20231111144423_post.php`
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use App\Core\Migration\Migration;
+
+final class Post extends Migration
+{
+    /**
+     * Change Method.
+     *
+     * Write your reversible migrations using this method.
+     *
+     * More information on writing migrations is available here:
+     * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
+     *
+     * Remember to call "create()" or "update()" and NOT "save()" when working
+     * with the Table class.
+     */
+    public function change(): void
+    {
+        $table = $this->table('posts');
+
+        $table->addColumn('title', 'string', ['limit' => 20])
+            ->addColumn('body', 'text')
+            ->addColumn('cover_image', 'string')
+            ->addTimestamps()
+            ->addIndex(['title'], ['unique' => true]);
+
+        $table->create();
+    }
+}
+```
+
+Now run the migration command:
+
+`php vendor/bin/phinx migrate -c config.php`.
+
+Now see the documentation of `phinx` [Documentation](https://book.cakephp.org/phinx/0/en/migrations.html) to learn more.
