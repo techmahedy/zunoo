@@ -626,7 +626,8 @@ logger()->info('Hello');
 
 ## Database and Migration
 MII allow you to create migration. To create migration, MII uses `CakePHP`'s `phinx`. So to create a migration file first you need to update the configuration file `environments` array like:
-`config.php` 
+### `config.php` 
+
 ```php
 <?php
 
@@ -650,7 +651,7 @@ Now run the below command in your project terminal like:
 Here `Post` is the model name.
 
 Now this command will generate a migration file in the following path with the empty `change()` method.
-`app\database\migration\20231111144423_post.php`
+### `app\database\migration\20231111144423_post.php`
 
 ```php
 <?php

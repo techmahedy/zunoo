@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Core\Migration\Migration;
 
-final class ExampleTable extends Migration
+final class Post extends Migration
 {
     /**
      * Change Method.
@@ -19,6 +19,6 @@ final class ExampleTable extends Migration
      */
     public function change(): void
     {
-       //code
+        //code
     }
 }
