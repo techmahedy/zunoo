@@ -715,7 +715,7 @@ declare(strict_types=1);
 
 use Phinx\Seed\AbstractSeed;
 
-class UserSeeder extends AbstractSeed
+class PostSeeder extends AbstractSeed
 {
     /**
      * Run Method.
