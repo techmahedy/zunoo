@@ -695,6 +695,8 @@ Now run the migration command:
 
 Now see the documentation of `phinx` [Documentation](https://book.cakephp.org/phinx/0/en/migrations.html) to learn more.
 
+<a name="section-22"></a>
+
 ## Database Seeder
 MII allow you to create database seeder file to generate fake date. To create seeder, MII uses `CakePHP`'s `phinx`. So to create a seeder file first you need run below command. Assume we are going to create `PostSeeder`:
 
