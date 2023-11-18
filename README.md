@@ -8,6 +8,7 @@
 - [Multiple Route Parameters](#section-9)
 - [Request](#section-15)
 - [Database and Migration](#section-21)
+- [Database Seeder](#section-22)
 - [Binding Interface to Service Class](#section-3)
 - [Controller Method Dependency Injection](#section-4)
 - [Constructor Dependency Injection](#section-13)
@@ -693,3 +694,64 @@ Now run the migration command:
 `php vendor/bin/phinx migrate -c config.php`.
 
 Now see the documentation of `phinx` [Documentation](https://book.cakephp.org/phinx/0/en/migrations.html) to learn more.
+
+## Database Seeder
+MII allow you to create database seeder file to generate fake date. To create seeder, MII uses `CakePHP`'s `phinx`. So to create a seeder file first you need run below command. Assume we are going to create `PostSeeder`:
+
+Now run the below command in your project terminal like:
+`php vendor/bin/phinx seed:create PostSeeder -c config.php`
+
+Here `PostSeeder` is the seeder class name.
+
+Now this command will generate a seeder file in the following path with the empty `run()` method.
+### `app\database\seeds\PostSeeder.php`
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Phinx\Seed\AbstractSeed;
+
+class UserSeeder extends AbstractSeed
+{
+    /**
+     * Run Method.
+     *
+     * Write your database seeder using this method.
+     *
+     * More information on writing seeders is available here:
+     * https://book.cakephp.org/phinx/0/en/seeding.html
+     */
+    public function run(): void
+    {   
+        //you can use fake() helper here as well as your entire application 
+
+        $data = [
+            [
+                'title'   => fake()->title(),
+                'body'    => fake()->title(),
+                'created_at' => date('Y-m-d H:i:s'),
+            ]
+        ];
+
+        $posts = $this->table('posts');
+        $posts->insert($data)
+            ->saveData();
+
+        // empty the table
+        // $posts->truncate();
+    }
+}
+
+```
+
+Now run the seeder command:
+
+`php vendor/bin/phinx seed:run -c config.php`. 
+
+Or you can run specific seeder class file lie
+
+`php vendor/bin/phinx seed:run -s PostSeeder -c config.php`
+
+Now see the documentation from `phinx` [Documentation](https://book.cakephp.org/phinx/0/en/seeding.html) to learn more.

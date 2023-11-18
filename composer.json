@@ -32,6 +32,7 @@
         "spatie/ignition": "^1.11",
         "illuminate/collections": "^11.0@dev",
         "monolog/monolog": "^3.0@dev",
-        "robmorgan/phinx": "0.x-dev"
+        "robmorgan/phinx": "0.x-dev",
+        "fakerphp/faker": "2.0.x-dev"
     }
 }

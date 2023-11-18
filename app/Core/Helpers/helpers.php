@@ -66,3 +66,16 @@ function logger(): \Monolog\Logger
 {
     return (new Reader())->logReader();
 }
+
+/**
+ * fake.
+ *
+ * @global
+ * @return	mixed
+ */
+function fake(): \Faker\Generator
+{
+    $faker = Faker\Factory::create();
+
+    return $faker;
+}
