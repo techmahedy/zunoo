@@ -14,17 +14,17 @@ use App\Core\Exceptions\CouldNotResolveAbstractionException;
 class Container extends Controller implements ContainerInterface
 {
     /**
-     * @var		array	$services
+     * @var	array $services
      */
     public array $services = [];
 
     /**
-     * @var		array	$instances
+     * @var	array $instances
      */
     protected array $instances = [];
 
     /**
-     * @var		static	$instance
+     * @var	static $instance
      */
     protected static $instance;
 
@@ -50,11 +50,11 @@ class Container extends Controller implements ContainerInterface
      * @param	string 	$key      	
      * @param	mixed  	$value    	
      * @param	boolean	$singleton	Default: false
-     * @return	mixed
+     * @return	$this
      */
     public function bind(string $key, mixed $value, bool $singleton = false): self
     {
-        if (is_string($key) && class_exists($key)) {
+        if (class_exists($key)) {
             $value = fn () => new $value;
         }
 

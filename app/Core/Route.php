@@ -69,9 +69,10 @@ class Route extends Kernel
     /**
      * middleware.
      *
-     * @access	public
-     * @param	string	$key middleware	
-     * @return	Route
+     * @access public
+     * @param string $key middleware
+     * @return Route
+     * @throws \Exception
      */
     public function middleware(string $key): Route
     {
@@ -136,12 +137,14 @@ class Route extends Kernel
     /**
      * resolve.
      *
-     * @access	public
-     * @param	\App\Core\Middleware\Middleware $middleware	
-     * @param	contracts $serviceClass   	
-     * @return	mixed
+     * @access public
+     * @param Middleware $middleware
+     * @param $service
+     * @return mixed
+     * @throws \ReflectionException
+     * @throws \Exception
      */
-    public function resolve($middleware, $service): mixed
+    public function resolve(Middleware $middleware, $service): mixed
     {
         $middleware->handle($this->request);
 
@@ -150,10 +153,10 @@ class Route extends Kernel
         if (!$callback) {
             throw new \Exception("Route path " . '[' . $this->request->getPath() . ']' . " is not defined");
         }
-        $resolveDependencies = [];
 
+        $resolveDependencies = [];
         if (!empty($this->request->getRouteParams())) {
-            foreach ($this->request->getRouteParams() ?? [] as $key => $value) {
+            foreach ($this->request->getRouteParams() as $key => $value) {
                 $this->urlParams[] = $value;
             }
         }
@@ -163,14 +166,12 @@ class Route extends Kernel
             $parameters = $reflector->getConstructor()?->getParameters() ?? [];
             if (isset($parameters)) {
                 $resolveDependencies = array_map(function (ReflectionParameter $parameter) use ($service) {
-                    $class = $parameter->getType()->getName();
-                    if (class_exists($class)) {
-                        return new $class();
+                    $resolvedClass = $parameter->getType()->getName();
+                    $serviceClass = $service->resolveDependency->services[$resolvedClass] ?? $resolvedClass;
+                    if ($serviceClass instanceof $resolvedClass) {
+                        return new $resolvedClass();
                     }
-                    if (interface_exists($class)) {
-                        $serviceClass = $service->resolveDependency->services[$class];
-                        return new $serviceClass();
-                    }
+                    return new $serviceClass();
                 }, $parameters);
             }
 
@@ -181,17 +182,20 @@ class Route extends Kernel
             $resolveDependencies = array_map(function (
                 ReflectionParameter $parameter
             ) use ($service) {
-                $class = $parameter->getType()?->getName();
-                if (!is_null($class)) {
-                    if (interface_exists($class)) {
-                        $serviceClass = $service->resolveDependency->services[$class];
-                        return new $serviceClass();
+                $resolvedClass = $parameter->getType()?->getName();
+                if (!is_null($resolvedClass)) {
+                    $serviceClass = $service->resolveDependency->services[$resolvedClass] ?? $resolvedClass;
+                    if ($resolvedClass instanceof $serviceClass) {
+                        return new $resolvedClass();
                     }
-                    return new $class();
+                    return new $serviceClass();
                 }
             }, $parameters);
         }
 
-        return call_user_func($callback, ...array_merge(array_filter($this->urlParams), array_filter($resolveDependencies)));
+        return call_user_func($callback, ...array_merge(
+            array_filter($this->urlParams),
+            array_filter($resolveDependencies))
+        );
     }
 }

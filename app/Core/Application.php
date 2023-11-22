@@ -9,22 +9,22 @@ use App\Providers\AppServiceProvider;
 class Application extends AppServiceProvider
 {
     /**
-     * @var		public	cons
+     * @var	public cons
      */
     public const VERSION = '1.0';
 
     /**
-     * @var		public	$resolveDependency
+     * @var	public $resolveDependency
      */
     public $resolveDependency;
 
     /**
-     * @var		route	$route
+     * @var	route $route
      */
     public Route $route;
 
     /**
-     * @var		mixed	$middleware
+     * @var	mixed $middleware
      */
     protected $middleware;
 
@@ -32,8 +32,8 @@ class Application extends AppServiceProvider
      * __construct.
      *
      * @access	public
-     * @param	route     	$route     	
-     * @param	middleware	$middleware	
+     * @param	route     	$route
+     * @param	middleware	$middleware
      * @return	void
      */
     public function __construct(Route $route, Middleware $middleware)
@@ -44,9 +44,10 @@ class Application extends AppServiceProvider
     }
 
     /**
-     * applyMiddleware.
-     * @param  \App\Core\Middleware\Contracts\Middleware $middleware	
-     * @return	mixed
+     * Applying all the global middleware.
+     *
+     * @param \App\Core\Middleware\Contracts\Middleware $middleware
+     * @return mixed
      */
     public function applyMiddleware($middleware): mixed
     {
@@ -56,14 +57,15 @@ class Application extends AppServiceProvider
     /**
      * Run the application.
      *
-     * @access	public
-     * @return	void
+     * @access    public
+     * @return    void
+     * @throws \ReflectionException
      */
     public function run(): void
     {
         /**
-         * @param  \App\Core\Middleware\Middleware $middleware	
-         * @param	$this->resolveDependency
+         * @param Middleware $middleware
+         * @param $resolveDependency
          */
         echo $this->route->resolve(
             $this->middleware,

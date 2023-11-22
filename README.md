@@ -33,8 +33,9 @@ MII, A basic PHP MVC framework design in a way that you feel like you are workin
 ## How to Install
 We can easily setup and install this application with some few steps. Before using this application, minimum `PHP 8.1` version is needed.
 - Step 1: `git clone https://github.com/techmahedy/mini-laravel.git` or download this application
-- Step 2: go to project directory with this command `cd mini-laravel` and run `composer update`
-- Step 3: Start the development server by running this command `php -S localhost:8000`
+- Step 2: Go to project directory with this command `cd mini-laravel` and run `composer update`
+- Step 3: Copy `.env.example` to `.env`
+- Step 4: Start the development server by running this command `php -S localhost:8000`
 
 <a name="section-2"></a>
 
