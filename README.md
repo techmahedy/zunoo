@@ -1,4 +1,5 @@
-<a name="section-1"></a>
+`<a name="section-1"></a>`
+
 # How to use
 
 - [About](#section-1)
@@ -20,28 +21,34 @@
 - [Custom Blade Directivee](#section-11)
 - [From Validation](#section-12)
 - [CSRF Token](#section-16)
-- [Collection & Macro](#section-18)
+- [Collection &amp; Macro](#section-18)
 - [Session Flash Message](#section-19)
 - [Log](#section-20)
 
-<a name="section-1"></a>
+`<a name="section-1"></a>`
 
 ## About
+
 MII, A basic PHP MVC framework design in a way that you feel like you are working in a Laravel application. In this framework you will get all the basic features of a web application needs like routing, middleware, dependency injection, eloquent relationship, model, blade template engine and interface injection and many mores. Test it and if you like, please give a star to it.
-<a name="section-14"></a>
+`<a name="section-14"></a>`
 
 ## How to Install
+
 We can easily setup and install this application with some few steps. Before using this application, minimum `PHP 8.1` version is needed.
-- Step 1: `git clone https://github.com/techmahedy/mini-laravel.git` or download this application
+
+- Step 1: `git clone https://github.com/techmahedy/mii.git` or download this application
 - Step 2: Go to project directory with this command `cd mini-laravel` and run `composer update`
 - Step 3: Copy `.env.example` to `.env`
 - Step 4: Start the development server by running this command `php -S localhost:8000`
 
-<a name="section-2"></a>
+`<a name="section-2"></a>`
 
 ## Define Route
+
 To define route, navigate to this file and update
+
 ### `routes/web.php`
+
 ```php
 
 <?php
@@ -53,9 +60,10 @@ Route::get('/', [ExampleController::class, 'index']);
 Route::get('/about', [ExampleController::class, 'about']);
 ```
 
-<a name="section-3"></a>
+`<a name="section-3"></a>`
 
 ## Binding Interface to Service Class
+
 To bind interface with your service class, just update `App\Providers\AppServiceProvider.php`.
 
 ```php
@@ -80,10 +88,12 @@ class AppServiceProvider extends Container
 }
 ```
 
-<a name="section-4"></a>
+`<a name="section-4"></a>`
 
 ## Dependency Injection
+
 Now look at that, how you can use dependency injection.
+
 ```php
 
 <?php
@@ -106,7 +116,7 @@ class ExampleController extends Controller
         Post $post, //class dependency injection
         PaymentServiceContract $payment //interface dependency injection
     ) {
-        
+      
        //Use any eloquent query of Laravel
     }
 
@@ -116,10 +126,13 @@ class ExampleController extends Controller
     }
 }
 ```
-<a name="section-13"></a>
+
+`<a name="section-13"></a>`
 
 ## Constructor Dependency Injection
+
 Now look at that, how you can use dependency injection using constructor.
+
 ```php
 
 <?php
@@ -144,10 +157,12 @@ class ExampleController extends Controller
 }
 ```
 
-<a name="section-5"></a>
+`<a name="section-5"></a>`
 
 ## Model
+
 Now look at Model, how you can use it
+
 ```php
 
 use App\Core\Model;
@@ -160,10 +175,12 @@ class User extends Model
 }
 ```
 
-<a name="section-6"></a>
+`<a name="section-6"></a>`
 
 ## Database Connection
+
 Connect your database like that, just pass your credentials to `.env`
+
 ```
 DB_CONNECTION=mysql
 DB_HOST=localhost
@@ -176,10 +193,12 @@ DB_PASSWORD=
 
 And you can print configuration value like `$_ENV['DB_CONNECTION']` or you can use `env('DB_CONNECTION')`
 
-<a name="section-7"></a>
+`<a name="section-7"></a>`
 
 ## Views
+
 To work with views, default view file path inside `resources/views`. Now passing data with views like
+
 ```php
 <?php
 
@@ -197,7 +216,9 @@ This will load `welcome.blade.php` file. We can print this value like
 ```HTML
 <h1>{{ $version }}</h1>
 ```
+
 ### Avaiable blade systex
+
 ```BLADE
 @section('looping-test')
   <p>Let's print odd numbers under 50:</p>
@@ -210,27 +231,32 @@ This will load `welcome.blade.php` file. We can print this value like
   </p>
 @endsection
 ```
+
 For mastering template
+
 ```BLADE
 @include('shared.header')
 <body>
   <div id="container">
     <h3>Welcome to <span class="reddish">{{ $title }}</span></h3>
     <p>{{ $content }}</p>
-    
+  
     <p>Master file</p>
-    
+  
     @yield('looping-test')
   </div>
   @include('shared.footer')
 </body>
 ```
+
 `You can use any blade systex as you want like laravel framework`
 
-<a name="section-8"></a>
+`<a name="section-8"></a>`
 
 ## Route Parameters
+
 You can pass single or multiple parameter with route as like below
+
 ```php
 <?php
 
@@ -256,10 +282,12 @@ class ProfileController extends Controller
 }
 ```
 
-<a name="section-9"></a>
+`<a name="section-9"></a>`
 
 ## Multiple Route Parameters
+
 You can pass multiple parameter with route as like below
+
 ```php
 <?php
 
@@ -285,10 +313,13 @@ class ProfileController extends Controller
     }
 }
 ```
-<a name="section-15"></a>
+
+`<a name="section-15"></a>`
 
 ## Request
+
 Request is most important thing when we work in a web application. We can use Request in this application like
+
 ```php
 <?php
 
@@ -302,12 +333,12 @@ class ExampleController extends Controller
     {   
         //asume we have a url like http://www.example.com/?name=mahedi. Now we can check.
         if($request->has('name')){
-            
+          
         }
 
         //We can also check form request data like
         if($request->has('name') && $request->has('email')){
-            
+          
         }
 
         //Now get the value from request like:
@@ -319,7 +350,7 @@ class ExampleController extends Controller
 
         //or
         if(request()->has('name')){
-            
+          
         }
 
         //get all the input as an array
@@ -330,10 +361,12 @@ class ExampleController extends Controller
 
 ```
 
-<a name="section-10"></a>
+`<a name="section-10"></a>`
 
 ## Global Middleware
-We can define multiple global middleware. To define global middleware, just update the `App\Http\Kernel.php` file's `$middleware` array as like below 
+
+We can define multiple global middleware. To define global middleware, just update the `App\Http\Kernel.php` file's `$middleware` array as like below
+
 ```php
 <?php
 
@@ -368,10 +401,11 @@ class ExampleMiddleware implements Middleware
 }
 ```
 
-<a name="section-17"></a>
+`<a name="section-17"></a>`
 
 ## Route Middleware
-We can define multiple route middleware. To define route middleware, just update the `App\Http\Kernel.php` file's `$routeMiddleware` array as like below 
+
+We can define multiple route middleware. To define route middleware, just update the `App\Http\Kernel.php` file's `$routeMiddleware` array as like below
 
 ```php
 <?php
@@ -415,8 +449,8 @@ class Authenticate implements Middleware
     /**
      * handle.
      *
-     * @param	Request	$request	
-     * @param	Closure	$next   	
+     * @param	Request	$request
+     * @param	Closure	$next   
      * @return	mixed
      */
     public function handle(Request $request, Closure $next)
@@ -429,10 +463,12 @@ class Authenticate implements Middleware
 }
 ```
 
-<a name="section-11"></a>
+`<a name="section-11"></a>`
 
 ## Custom Blade Directive
-We can define custom blade directive. To define it, update `App\Providers\AppServiceProvider.php` as like below 
+
+We can define custom blade directive. To define it, update `App\Providers\AppServiceProvider.php` as like below
+
 ```php
 
 <?php
@@ -453,14 +489,17 @@ class AppServiceProvider extends Container
 ```
 
 And now we can call it in a blade file like
+
 ```HTML
 {{ capitalize('hello') }}
 ```
 
-<a name="section-12"></a>
+`<a name="section-12"></a>`
 
 ## From Validation
+
 We can validate from and can show error message in blade file very easily. To validate from , just assume we have two routes
+
 ```php
 <?php
 
@@ -472,6 +511,7 @@ Route::post('/register', [ExampleController::class, 'store']);
 ```
 
 And now we can update `App\Http\Controllers\ExampleController.php` like
+
 ```php
 <?php
 
@@ -503,6 +543,7 @@ class ExampleController extends Controller
 ```
 
 Now update the `resources/user/index.blade.php` like
+
 ```HTML
 
 <!-- Showing All Error Messages -->
@@ -536,9 +577,10 @@ Now update the `resources/user/index.blade.php` like
 </form>
 ```
 
-<a name="section-16"></a>
+`<a name="section-16"></a>`
 
 ## CSRF Token
+
 If you submit a post request form, then you must be provide `csrf_token` with your request like below, otherwise it will throw an exception error.
 
 ```HTML
@@ -548,10 +590,12 @@ If you submit a post request form, then you must be provide `csrf_token` with yo
 </form>
 ```
 
-<a name="section-18"></a>
+`<a name="section-18"></a>`
 
 ## Collection & Macro
-Like Laravel framework, in this MII framework, you can also work with Laravel collection and you can create your own custom macro. To create a custom macro, just update service provider `App\Providers\AppServiceProvider.php` like: 
+
+Like Laravel framework, in this MII framework, you can also work with Laravel collection and you can create your own custom macro. To create a custom macro, just update service provider `App\Providers\AppServiceProvider.php` like:
+
 ```php
 <?php
 
@@ -595,10 +639,12 @@ Route::get('/', function () {
 });
 ```
 
-<a name="section-19"></a>
+`<a name="section-19"></a>`
 
 ## Session Flash Message
+
 When we work with form submit then we need to show validation error message or success message. We can show session flash message very easily like
+
 ```php
 <?php
 
@@ -612,10 +658,12 @@ if(session()->has('key')){
 
 ```
 
-<a name="section-20"></a>
+`<a name="section-20"></a>`
 
 ## Log
+
 We can easily print important messages in a log file which is located inside `storage\logs\mii.log`. To print a message, mii provide `logger()` helper function, you just need to follow this
+
 ```php
 <?php
 
@@ -624,11 +672,13 @@ logger()->info('Hello');
 
 ```
 
-<a name="section-21"></a>
+`<a name="section-21"></a>`
 
 ## Database and Migration
+
 MII allow you to create migration. To create migration, MII uses `CakePHP`'s `phinx`. So to create a migration file first you need to update the configuration file `environments` array like:
-### `config.php` 
+
+### `config.php`
 
 ```php
 <?php
@@ -647,12 +697,14 @@ return [
     ]
 ];
 ```
+
 Now run the below command in your project terminal like:
 `php vendor/bin/phinx create Post -c config.php`
 
 Here `Post` is the model name.
 
 Now this command will generate a migration file in the following path with the empty `change()` method.
+
 ### `app\database\migration\20231111144423_post.php`
 
 ```php
@@ -696,9 +748,10 @@ Now run the migration command:
 
 Now see the documentation of `phinx` [Documentation](https://book.cakephp.org/phinx/0/en/migrations.html) to learn more.
 
-<a name="section-22"></a>
+`<a name="section-22"></a>`
 
 ## Database Seeder
+
 MII allow you to create database seeder file to generate fake date. To create seeder, MII uses `CakePHP`'s `phinx`. So to create a seeder file first you need run below command. Assume we are going to create `PostSeeder`:
 
 Now run the below command in your project terminal like:
@@ -707,6 +760,7 @@ Now run the below command in your project terminal like:
 Here `PostSeeder` is the seeder class name.
 
 Now this command will generate a seeder file in the following path with the empty `run()` method.
+
 ### `app\database\seeds\PostSeeder.php`
 
 ```php
@@ -751,7 +805,7 @@ class PostSeeder extends AbstractSeed
 
 Now run the seeder command:
 
-`php vendor/bin/phinx seed:run -c config.php`. 
+`php vendor/bin/phinx seed:run -c config.php`.
 
 Or you can run specific seeder class file lie
 

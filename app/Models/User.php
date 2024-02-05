@@ -6,7 +6,5 @@ use App\Core\Model;
 
 class User extends Model
 {
-    /**
-     * Use any features of Laravel.
-     */
+    //use any features of Laravel model.
 }
