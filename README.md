@@ -27,20 +27,20 @@
 <a name="section-1"></a>
 
 ## About
-MII, A basic PHP MVC framework design in a way that you feel like you are working in a Laravel application. In this framework you will get all the basic features of a web application needs like routing, middleware, dependency injection, eloquent relationship, model, blade template engine and interface injection and many mores. Test it and if you like, please give a star to it.
+MII, A basic PHP MVC framework designed in a way that you feel like you are working in a Laravel application. In this framework, you will get all the basic features of a web application like routing, middleware, dependency injection, eloquent relationship, model, blade template engine interface injection, and many more. Test it and if you like, please give it a star.
 <a name="section-14"></a>
 
 ## How to Install
-We can easily setup and install this application with some few steps. Before using this application, minimum `PHP 8.1` version is needed.
+We can easily set up and install this application with a few steps. Before using this application, a minimum `PHP 8.1` version is needed.
 - Step 1: `git clone https://github.com/techmahedy/mi.git` or download this application
-- Step 2: Go to project directory with this command `cd mi` and run `composer update`
+- Step 2: Go to the project directory with this command `cd mi` and run `composer update`
 - Step 3: Copy `.env.example` to `.env`
 - Step 4: Start the development server by running this command `php -S localhost:8000`
 
 <a name="section-2"></a>
 
 ## Define Route
-To define route, navigate to this file and update
+To define the route, navigate to this file and update
 ### `routes/web.php`
 ```php
 
@@ -56,7 +56,7 @@ Route::get('/about', [ExampleController::class, 'about']);
 <a name="section-3"></a>
 
 ## Binding Interface to Service Class
-To bind interface with your service class, just update `App\Providers\AppServiceProvider.php`.
+To bind the interface with your service class, just update `App\Providers\AppServiceProvider.php`.
 
 ```php
 <?php
@@ -73,9 +73,9 @@ class AppServiceProvider extends Container
     {  
        //Remember, the global request() helper is available here. You can get input value here like
        //request()->input('payment_type')
-       return $this->bind(PaymentServiceContract::class, StripePaymentService::class);
+       $this->bind(PaymentServiceContract::class, StripePaymentService::class);
        //or
-       return $this->singleton(PaymentServiceContract::class, StripePaymentService::class);
+       $this->singleton(PaymentServiceContract::class, StripePaymentService::class);
     }
 }
 ```
