@@ -29,15 +29,15 @@
 
 ## About
 
-MII, A basic PHP MVC framework design in a way that you feel like you are working in a Laravel application. In this framework you will get all the basic features of a web application needs like routing, middleware, dependency injection, eloquent relationship, model, blade template engine and interface injection and many mores. Test it and if you like, please give a star to it.
+MII, A basic PHP MVC framework designed in a way that you feel like you are working in a Laravel application. In this framework, you will get all the basic features of a web application like routing, middleware, dependency injection, eloquent relationship, model, blade template engine interface injection, and many more. Test it and if you like, please give it a star to it.
 `<a name="section-14"></a>`
 
 ## How to Install
 
-We can easily setup and install this application with some few steps. Before using this application, minimum `PHP 8.1` version is needed.
+We can easily set up and install this application with a few steps. Before using this application, a minimum `PHP 8.1` version is needed.
 
 - Step 1: `git clone https://github.com/techmahedy/mii.git` or download this application
-- Step 2: Go to project directory with this command `cd mini-laravel` and run `composer update`
+- Step 2: Go to the project directory with this command `cd mini-laravel` and run `composer update`
 - Step 3: Copy `.env.example` to `.env`
 - Step 4: Start the development server by running this command `php -S localhost:8000`
 
@@ -45,7 +45,7 @@ We can easily setup and install this application with some few steps. Before usi
 
 ## Define Route
 
-To define route, navigate to this file and update
+To define the route, navigate to this file and update
 
 ### `routes/web.php`
 
@@ -64,7 +64,7 @@ Route::get('/about', [ExampleController::class, 'about']);
 
 ## Binding Interface to Service Class
 
-To bind interface with your service class, just update `App\Providers\AppServiceProvider.php`.
+To bind the interface with your service class, just update `App\Providers\AppServiceProvider.php`.
 
 ```php
 <?php
@@ -217,7 +217,7 @@ This will load `welcome.blade.php` file. We can print this value like
 <h1>{{ $version }}</h1>
 ```
 
-### Avaiable blade systex
+### Available blade system
 
 ```BLADE
 @section('looping-test')
@@ -249,13 +249,13 @@ For mastering template
 </body>
 ```
 
-`You can use any blade systex as you want like laravel framework`
+`You can use any blade syntex as you want like laravel framework`
 
 `<a name="section-8"></a>`
 
 ## Route Parameters
 
-You can pass single or multiple parameter with route as like below
+You can pass single or multiple parameters with route below
 
 ```php
 <?php
@@ -286,7 +286,7 @@ class ProfileController extends Controller
 
 ## Multiple Route Parameters
 
-You can pass multiple parameter with route as like below
+You can pass multiple parameters with route as below
 
 ```php
 <?php
@@ -296,7 +296,7 @@ use App\Http\Controllers\ProfileController;
 Route::get('/user/{id}/{username}', [ProfileController::class, 'index']);
 ```
 
-Now accept this multiple param in your controller like:
+Now accept this multiple params in your controller like:
 
 ```php
 <?php
@@ -318,7 +318,7 @@ class ProfileController extends Controller
 
 ## Request
 
-Request is most important thing when we work in a web application. We can use Request in this application like
+Request is a most important thing when we work on a web application. We can use Request in this application like
 
 ```php
 <?php
@@ -331,7 +331,7 @@ class ExampleController extends Controller
 {
     public function store(Request $request)
     {   
-        //asume we have a url like http://www.example.com/?name=mahedi. Now we can check.
+        //assume we have a URL like http://www.example.com/?name=mahedi. Now we can check.
         if($request->has('name')){
           
         }
@@ -341,7 +341,7 @@ class ExampleController extends Controller
           
         }
 
-        //Now get the value from request like:
+        //Now get the value from a request like:
         $name = $request->input('name');
         $email = $request->input('email');
 
@@ -405,7 +405,7 @@ class ExampleMiddleware implements Middleware
 
 ## Route Middleware
 
-We can define multiple route middleware. To define route middleware, just update the `App\Http\Kernel.php` file's `$routeMiddleware` array as like below
+We can define multiple-route middleware. To define route middleware, just update the `App\Http\Kernel.php` file's `$routeMiddleware` array as like below
 
 ```php
 <?php
@@ -581,7 +581,7 @@ Now update the `resources/user/index.blade.php` like
 
 ## CSRF Token
 
-If you submit a post request form, then you must be provide `csrf_token` with your request like below, otherwise it will throw an exception error.
+If you submit a post request form, then you must provide `csrf_token` with your request like below, otherwise, it will throw an exception error.
 
 ```HTML
 <form action="/" method="post">
@@ -594,7 +594,7 @@ If you submit a post request form, then you must be provide `csrf_token` with yo
 
 ## Collection & Macro
 
-Like Laravel framework, in this MII framework, you can also work with Laravel collection and you can create your own custom macro. To create a custom macro, just update service provider `App\Providers\AppServiceProvider.php` like:
+Like the Laravel framework, in this MII framework, you can also work with the Laravel collection and you can create your own custom macro. To create a custom macro, just update the service provider `App\Providers\AppServiceProvider.php` like:
 
 ```php
 <?php
@@ -643,7 +643,7 @@ Route::get('/', function () {
 
 ## Session Flash Message
 
-When we work with form submit then we need to show validation error message or success message. We can show session flash message very easily like
+When we work with form submit then we need to show validation error message or success message. We can show session flash messages very easily like
 
 ```php
 <?php
@@ -662,7 +662,7 @@ if(session()->has('key')){
 
 ## Log
 
-We can easily print important messages in a log file which is located inside `storage\logs\mii.log`. To print a message, mii provide `logger()` helper function, you just need to follow this
+We can easily print important messages in a log file which is located inside `storage\logs\mii.log`. To print a message, mii provides `logger()` helper function, you just need to follow this
 
 ```php
 <?php
@@ -676,7 +676,7 @@ logger()->info('Hello');
 
 ## Database and Migration
 
-MII allow you to create migration. To create migration, MII uses `CakePHP`'s `phinx`. So to create a migration file first you need to update the configuration file `environments` array like:
+MII allows you to create migration. To create a migration, MII uses `CakePHP`'s `phinx`. So to create a migration file first you need to update the configuration file `environments` array like:
 
 ### `config.php`
 
@@ -698,7 +698,7 @@ return [
 ];
 ```
 
-Now run the below command in your project terminal like:
+Now run the below command in your project terminal:
 `php vendor/bin/phinx create Post -c config.php`
 
 Here `Post` is the model name.
@@ -752,9 +752,9 @@ Now see the documentation of `phinx` [Documentation](https://book.cakephp.org/ph
 
 ## Database Seeder
 
-MII allow you to create database seeder file to generate fake date. To create seeder, MII uses `CakePHP`'s `phinx`. So to create a seeder file first you need run below command. Assume we are going to create `PostSeeder`:
+MII allows you to create a database seeder file to generate fake data. To create a seeder, MII uses `CakePHP`'s `phinx`. So to create a seeder file first you need to run the below command. Assume we are going to create `PostSeeder`:
 
-Now run the below command in your project terminal like:
+Now run the below command in your project terminal:
 `php vendor/bin/phinx seed:create PostSeeder -c config.php`
 
 Here `PostSeeder` is the seeder class name.
