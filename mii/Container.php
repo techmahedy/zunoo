@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Core;
+namespace Mii;
 
 use Closure;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionParameter;
-use App\Core\Controllers\Controller;
+use Mii\Controllers\Controller;
 use Psr\Container\ContainerInterface;
-use App\Core\Exceptions\CouldNotResolveClassException;
-use App\Core\Exceptions\CouldNotResolveAbstractionException;
+use Mii\Exceptions\CouldNotResolveClassException;
+use Mii\Exceptions\CouldNotResolveAbstractionException;
 
 class Container extends Controller implements ContainerInterface
 {

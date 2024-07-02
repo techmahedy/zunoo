@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Core;
+namespace Mii;
 
-use App\Core\Route;
-use App\Core\Middleware\Middleware;
+use Mii\Route;
+use Mii\Middleware\Middleware;
 use App\Providers\AppServiceProvider;
 
 class Application extends AppServiceProvider

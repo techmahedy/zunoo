@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Core\Middleware;
+namespace Mii\Middleware;
 
 use Closure;
-use App\Core\Request;
-use App\Core\Middleware\Contracts\Middleware as ContractsMiddleware;
+use Mii\Request;
+use Mii\Middleware\Contracts\Middleware as ContractsMiddleware;
 
 class Middleware
 {
@@ -24,7 +24,7 @@ class Middleware
      * applyMiddleware.
      *
      * @access	public
-     * @param  \App\Core\Middleware\Contracts\Middleware $middleware	
+     * @param  \Mii\Middleware\Contracts\Middleware $middleware	
      * @return	void
      */
     public function applyMiddleware(ContractsMiddleware $middleware): void

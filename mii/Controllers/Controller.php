@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Controllers;
+namespace Mii\Controllers;
 
 use Closure;
 use Countable;

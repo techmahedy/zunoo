@@ -1,10 +1,10 @@
 <?php
 
-use App\Core\Log as Reader;
-use App\Core\Request;
-use App\Core\Session;
-use App\Core\Redirect;
-use App\Core\Controllers\Controller;
+use Mii\Log as Reader;
+use Mii\Request;
+use Mii\Session;
+use Mii\Redirect;
+use Mii\Controllers\Controller;
 
 /**
  * view.

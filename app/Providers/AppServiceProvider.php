@@ -2,15 +2,15 @@
 
 namespace App\Providers;
 
-use App\Core\Container;
+use Mii\Container;
 
 class AppServiceProvider extends Container
 {
-    /**
-     * Register any application services.
-     */
-    public function register()
-    {
-      //
-    }
+  /**
+   * Register any application services.
+   */
+  public function register()
+  {
+    //
+  }
 }

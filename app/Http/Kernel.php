@@ -12,7 +12,7 @@ class Kernel
      * @var array<int, class-string|string>
      */
     public array $middleware = [
-        \App\Core\Middleware\CsrfTokenMiddleware::class,
+        \Mii\Middleware\CsrfTokenMiddleware::class,
     ];
 
     /**

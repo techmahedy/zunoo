@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Core\Migration\Migration;
+use Mii\Migration\Migration;
 
 final class Post extends Migration
 {

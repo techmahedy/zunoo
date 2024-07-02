@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Core;
+namespace Mii;
 
 use Monolog\Level;
 use Monolog\Logger;

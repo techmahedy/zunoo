@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Core\Middleware;
+namespace Mii\Middleware;
 
 use Closure;
-use App\Core\Request;
-use App\Core\Middleware\Contracts\Middleware;
+use Mii\Request;
+use Mii\Middleware\Contracts\Middleware;
 
 class CsrfTokenMiddleware implements Middleware
 {

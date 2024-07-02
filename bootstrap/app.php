@@ -1,12 +1,12 @@
 <?php
 
 use Dotenv\Dotenv;
-use App\Core\Route;
-use App\Core\Request;
-use App\Core\Application;
+use Mii\Route;
+use Mii\Request;
+use Mii\Application;
 use Spatie\Ignition\Ignition;
 use Illuminate\Events\Dispatcher;
-use App\Core\Middleware\Middleware;
+use Mii\Middleware\Middleware;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
 

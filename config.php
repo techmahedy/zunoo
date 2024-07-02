@@ -5,7 +5,7 @@ return [
         'migrations' => './database/migrations',
         'seeds' => './database/seeds',
     ],
-    'migration_base_class' => 'App\Core\Migration\Migration',
+    'migration_base_class' => 'Mii\Migration\Migration',
     'environments' => [
         'default_migration_table' => 'phinxlog',
         'laravel10' => [

@@ -4,7 +4,7 @@
  * Application web routes
  */
 
-use App\Core\Route;
+use Mii\Route;
 
 Route::get('/', function () {
     return view('welcome');

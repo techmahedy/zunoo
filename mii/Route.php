@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Core;
+namespace Mii;
 
 use App\Http\Kernel;
 use ReflectionClass;
-use App\Core\Request;
+use Mii\Request;
 use ReflectionParameter;
-use App\Core\Middleware\Middleware;
+use Mii\Middleware\Middleware;
 
 class Route extends Kernel
 {
@@ -193,9 +193,12 @@ class Route extends Kernel
             }, $parameters);
         }
 
-        return call_user_func($callback, ...array_merge(
-            array_filter($this->urlParams),
-            array_filter($resolveDependencies))
+        return call_user_func(
+            $callback,
+            ...array_merge(
+                array_filter($this->urlParams),
+                array_filter($resolveDependencies)
+            )
         );
     }
 }

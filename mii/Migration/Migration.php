@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Migration;
+namespace Mii\Migration;
 
 use Phinx\Migration\AbstractMigration;
 

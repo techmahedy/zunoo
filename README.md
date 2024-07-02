@@ -31,7 +31,7 @@ MII, A basic PHP MVC framework designed in a way that you feel like you are work
 <a name="section-14"></a>
 
 ## How to Install
-We can easily set up and install this application with a few steps. Before using this application, a minimum `PHP 8.1` version is needed.
+We can easily set up and install this application with a few steps. Before using this application, a minimum `PHP 8.3` version is needed.
 - Step 1: `git clone https://github.com/techmahedy/mi.git` or download this application
 - Step 2: Go to the project directory with this command `cd mi` and run `composer update`
 - Step 3: Copy `.env.example` to `.env`
@@ -46,7 +46,7 @@ To define the route, navigate to this file and update
 
 <?php
 
-use App\Core\Route;
+use Mii\Route;
 use App\Http\Controllers\ExampleController;
 
 Route::get('/', [ExampleController::class, 'index']);
@@ -63,7 +63,7 @@ To bind the interface with your service class, just update `App\Providers\AppSer
 
 namespace App\Providers;
 
-use App\Core\Container;
+use Mii\Container;
 use App\Services\StripePaymentService;
 use App\Contracts\PaymentServiceContract;
 
@@ -92,7 +92,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Post;
-use App\Core\Request;
+use Mii\Request;
 use App\Contracts\PaymentServiceContract;
 
 class ExampleController extends Controller
@@ -128,7 +128,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Post;
-use App\Core\Request;
+use Mii\Request;
 use App\Contracts\PaymentServiceContract;
 
 class ExampleController extends Controller
@@ -150,7 +150,7 @@ class ExampleController extends Controller
 Now look at Model, how you can use it
 ```php
 
-use App\Core\Model;
+use Mii\Model;
 
 class User extends Model
 {   
@@ -171,7 +171,6 @@ DB_PORT=3306
 DB_DATABASE=
 DB_USERNAME=
 DB_PASSWORD=
-
 ```
 
 And you can print configuration value like `$_ENV['DB_CONNECTION']` or you can use `env('DB_CONNECTION')`
@@ -183,8 +182,8 @@ To work with views, default view file path inside `resources/views`. Now passing
 ```php
 <?php
 
-use App\Core\Route;
-use App\Core\Application;
+use Mii\Route;
+use Mii\Application;
 
 Route::get('/', function () {
     $version = Application::VERSION;
@@ -234,7 +233,7 @@ You can pass single or multiple parameter with route as like below
 ```php
 <?php
 
-use App\Core\Route;
+use Mii\Route;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/user/{id}', [ProfileController::class, 'index']);
@@ -294,7 +293,7 @@ Request is most important thing when we work in a web application. We can use Re
 
 namespace App\Http\Controllers;
 
-use App\Core\Request;
+use Mii\Request;
 
 class ExampleController extends Controller
 {
@@ -353,8 +352,8 @@ Now update your middleware like
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Core\Request;
-use App\Core\Middleware\Contracts\Middleware;
+use Mii\Request;
+use Mii\Middleware\Contracts\Middleware;
 
 class ExampleMiddleware implements Middleware
 {
@@ -393,7 +392,7 @@ And update your route like:
 ```php
 <?php
 
-use App\Core\Route;
+use Mii\Route;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/', [ProfileController::class,'index'])->middleware('auth');
@@ -407,8 +406,8 @@ Now update your middleware like
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Core\Request;
-use App\Core\Middleware\Contracts\Middleware;
+use Mii\Request;
+use Mii\Middleware\Contracts\Middleware;
 
 class Authenticate implements Middleware
 {
@@ -439,7 +438,7 @@ We can define custom blade directive. To define it, update `App\Providers\AppSer
 
 namespace App\Providers;
 
-use App\Core\Container;
+use Mii\Container;
 
 class AppServiceProvider extends Container
 {
@@ -464,7 +463,7 @@ We can validate from and can show error message in blade file very easily. To va
 ```php
 <?php
 
-use App\Core\Route;
+use Mii\Route;
 use App\Http\Controllers\ExampleController;
 
 Route::get('/register', [ExampleController::class, 'index']);
@@ -477,8 +476,8 @@ And now we can update `App\Http\Controllers\ExampleController.php` like
 
 namespace App\Http\Controllers;
 
-use App\Core\Request;
-use App\Core\Controllers\Controller;
+use Mii\Request;
+use Mii\Controllers\Controller;
 
 class ExampleController extends Controller
 {
@@ -557,7 +556,7 @@ Like Laravel framework, in this MII framework, you can also work with Laravel co
 
 namespace App\Providers;
 
-use App\Core\Container;
+use Mii\Container;
 use Illuminate\Support\Collection;
 
 class AppServiceProvider extends Container
@@ -584,7 +583,7 @@ And now we can use it like:
 ```php
 <?php
 
-use App\Core\Route;
+use Mii\Route;
 
 Route::get('/', function () {
 
@@ -660,7 +659,7 @@ Now this command will generate a migration file in the following path with the e
 
 declare(strict_types=1);
 
-use App\Core\Migration\Migration;
+use Mii\Migration\Migration;
 
 final class Post extends Migration
 {

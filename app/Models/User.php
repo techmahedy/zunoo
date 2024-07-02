@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Core\Model;
+use Mii\Model;
 
 class User extends Model
 {
