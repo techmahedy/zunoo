@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Interface\ConnectionInterface;
-use App\Service\MySQLConnection;
 use Mii\Container;
 
 class AppServiceProvider extends Container
@@ -13,6 +11,6 @@ class AppServiceProvider extends Container
    */
   public function register()
   {
-    $this->bind(ConnectionInterface::class, MySQLConnection::class);
+    //
   }
 }
