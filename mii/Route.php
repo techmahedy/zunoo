@@ -149,7 +149,7 @@ class Route extends Kernel
         $middleware->handle($this->request);
 
         $callback = $this->getCallback();
-
+        
         if (!$callback) {
             throw new \Exception("Route path " . '[' . $this->request->getPath() . ']' . " is not defined");
         }
@@ -179,6 +179,7 @@ class Route extends Kernel
             $reflector = new ReflectionClass($callback[0]);
             $actionMethod = $callback[1];
             $parameters = $reflector->getMethod($actionMethod)?->getParameters() ?? [];
+
             $resolveDependencies = array_map(function (
                 ReflectionParameter $parameter
             ) use ($service) {
@@ -188,11 +189,12 @@ class Route extends Kernel
                     if ($resolvedClass instanceof $serviceClass) {
                         return new $resolvedClass();
                     }
+                    
                     return new $serviceClass();
                 }
             }, $parameters);
         }
-
+ 
         return call_user_func(
             $callback,
             ...array_merge(

@@ -6,12 +6,11 @@ use Closure;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionParameter;
-use Mii\Controllers\Controller;
 use Psr\Container\ContainerInterface;
 use Mii\Exceptions\CouldNotResolveClassException;
 use Mii\Exceptions\CouldNotResolveAbstractionException;
 
-class Container extends Controller implements ContainerInterface
+class Container implements ContainerInterface
 {
     /**
      * @var	array $services
@@ -52,14 +51,14 @@ class Container extends Controller implements ContainerInterface
      * @param	boolean	$singleton	Default: false
      * @return	$this
      */
-    public function bind(string $key, mixed $value, bool $singleton = false): self
+    public function bind(string $key, mixed $value, bool $singleton = false)
     {
         if (class_exists($key)) {
             $value = fn () => new $value;
         }
 
         $this->services[$key] = $value;
-
+        
         if ($singleton) {
             return $this->instances[$key] = null;
         }
