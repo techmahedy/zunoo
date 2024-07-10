@@ -72,10 +72,10 @@ class AppServiceProvider extends Container
     public function register()
     {  
        //Remember, the global request() helper is available here. You can get input value here like
+
        //request()->input('payment_type')
+       
        $this->bind(PaymentServiceContract::class, StripePaymentService::class);
-       //or
-       $this->singleton(PaymentServiceContract::class, StripePaymentService::class);
     }
 }
 ```
