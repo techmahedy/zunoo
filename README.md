@@ -9,6 +9,7 @@
 - [Request](#section-15)
 - [Database and Migration](#section-21)
 - [Database Seeder](#section-22)
+- [Database Query Builder](#section-23)
 - [Binding Interface to Service Class](#section-3)
 - [Controller Method Dependency Injection](#section-4)
 - [Constructor Dependency Injection](#section-13)
@@ -426,6 +427,36 @@ class Authenticate implements Middleware
         return $next($request);
     }
 }
+```
+<a name="section-23"></a>
+
+## Database Query Builder
+Mii has its own custom query builder for fetching database query. See the very simple example
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Mii\Database\DB;
+use Mii\Controllers\Controller;
+
+class ExampleController extends Controller
+{
+    public function index(Request $request)
+    {   
+        $data = DB::table('users')
+            ->select(['id', 'name', 'email'])
+            ->where('status', '=', 'active')
+            ->orderBy('name')
+            ->limit(10)
+            ->offset(0)
+            ->get();
+
+        return $data; // this is laravel collection. you can use any collection wrapper in this data.
+    }
+}
+
 ```
 
 <a name="section-11"></a>
