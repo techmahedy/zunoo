@@ -2,40 +2,38 @@
 
 namespace Mii;
 
-use stdClass;
-
 class Request extends Rule
 {
     /**
-     * @var		array	$params
+     * Stores query and post parameters.
+     *
+     * @var array<string, mixed>
      */
     public array $params = [];
 
     /**
-     * @var  array	$params
+     * Stores sanitized input parameters.
+     *
+     * @var array<string, mixed>
      */
     public array $input = [];
 
     /**
-     * getPath.
+     * Retrieves the current request URI path.
      *
-     * @access	public
-     * @return	mixed
+     * @return string The decoded URI path.
      */
-    public function getPath(): mixed
+    public function getPath(): string
     {
-        $uri = urldecode(
+        return urldecode(
             parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
         );
-
-        return $uri;
     }
 
     /**
-     * getMethod.
+     * Retrieves the HTTP method used for the request.
      *
-     * @access	public
-     * @return	mixed
+     * @return string The HTTP method in lowercase.
      */
     public function getMethod(): string
     {
@@ -43,9 +41,9 @@ class Request extends Rule
     }
 
     /**
-     * isGet.
+     * Checks if the request method is GET.
      *
-     * @return	bool
+     * @return bool True if the method is GET, false otherwise.
      */
     public function isGet(): bool
     {
@@ -53,9 +51,9 @@ class Request extends Rule
     }
 
     /**
-     * isPost.
+     * Checks if the request method is POST.
      *
-     * @return	bool
+     * @return bool True if the method is POST, false otherwise.
      */
     public function isPost(): bool
     {
@@ -63,86 +61,65 @@ class Request extends Rule
     }
 
     /**
-     * getBody.
+     * Retrieves all input data, sanitizing it based on the request method.
      *
-     * @access	public
-     * @return	mixed
+     * @return array<string, mixed> Sanitized input data.
      */
-    public function all()
+    public function all(): array
     {
         $body = [];
-        if ($this->getMethod() === 'get') {
-            foreach ($_GET as $key => $value) {
-                $body[$key] = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-            }
+        $inputSource = $this->getMethod() === 'get' ? $_GET : $_POST;
+
+        foreach ($inputSource as $key => $value) {
+            $body[$key] = filter_input(
+                $this->getMethod() === 'get' ? INPUT_GET : INPUT_POST,
+                $key,
+                FILTER_SANITIZE_SPECIAL_CHARS
+            );
         }
 
-        if ($this->getMethod() === 'post') {
-            foreach ($_POST as $key => $value) {
-                $body[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-            }
-        }
-
-        return $body ?? [];
+        return $body;
     }
 
     /**
-     * input.
+     * Retrieves a specific input parameter or all input data.
      *
-     * @param	mixed	$param	
-     * @return	mixed
+     * @param string $param The parameter to retrieve.
+     * @return mixed The input value if the parameter exists, otherwise the whole input array.
      */
-    public function input($param): mixed
+    public function input(string $param): mixed
     {
-        if ($this->getMethod() === 'get') {
-            foreach ($_GET as $key => $value) {
-                $this->input[$key] = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-            }
+        // Populate the input array if it's empty
+        if (empty($this->input)) {
+            $this->input = $this->all();
         }
 
-        if ($this->getMethod() === 'post') {
-            foreach ($_POST as $key => $value) {
-                $this->input[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-            }
-        }
-
-        if (!in_array($param, array_keys($this->input))) {
-            return $this->input;
-        }
-
-        return $this->input[$param];
+        return $this->input[$param] ?? $this->input;
     }
 
-
     /**
-     * has.
+     * Checks if a specific parameter exists in the input data.
      *
-     * @access	public
-     * @param	mixed	$param	
-     * @return	mixed
+     * @param string $param The parameter to check.
+     * @return bool True if the parameter exists, false otherwise.
      */
-    public function has($param): bool
+    public function has(string $param): bool
     {
-        if ($this->getMethod() === 'get') {
-            foreach ($_GET as $key => $value) {
-                $this->input[$key] = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-            }
-        }
-
-        if ($this->getMethod() === 'post') {
-            foreach ($_POST as $key => $value) {
-                $this->input[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-            }
+        // Populate the input array if it's empty
+        if (empty($this->input)) {
+            $this->input = $this->all();
         }
 
         return array_key_exists($param, $this->input);
     }
 
     /**
-     * @param $params
-     * @return self
+     * Sets route parameters for the request.
+     *
+     * @param array<string, mixed> $params The route parameters.
+     * @return self The current instance.
      */
-    public function setRouteParams($params): Request
+    public function setRouteParams(array $params): self
     {
         $this->params = $params;
 
@@ -150,25 +127,23 @@ class Request extends Rule
     }
 
     /**
-     * getRouteParams.
+     * Retrieves the route parameters.
      *
-     * @access	public
-     * @return	mixed
+     * @return array<string, mixed> The route parameters.
      */
-    public function getRouteParams(): mixed
+    public function getRouteParams(): array
     {
         return $this->params;
     }
 
     /**
-     * getRouteParam.
+     * Retrieves a specific route parameter with an optional default value.
      *
-     * @access	public
-     * @param	mixed	$param  	
-     * @param	mixed	$default	Default: null
-     * @return	mixed
+     * @param string $param The route parameter to retrieve.
+     * @param mixed $default The default value if the parameter does not exist.
+     * @return mixed The route parameter value or the default value.
      */
-    public function getRouteParam($param, $default = null): mixed
+    public function getRouteParam(string $param, mixed $default = null): mixed
     {
         return $this->params[$param] ?? $default;
     }

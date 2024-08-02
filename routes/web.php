@@ -1,10 +1,12 @@
 <?php
 
-/**
- * Application web routes
- */
+/*
+|--------------------------------------------------------------------------
+| Loading application web routes
+|--------------------------------------------------------------------------
+*/
+
 use Mii\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Define a route for the root URL that returns the welcome view
+Route::get('/', fn () => view('welcome'));

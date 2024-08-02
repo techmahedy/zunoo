@@ -7,13 +7,11 @@ use Mii\Redirect;
 use Mii\Controllers\Controller;
 
 /**
- * view.
+ * Renders a view with the given data.
  *
- * @author	Mahedi Hasan
- * @global
- * @param	mixed	$view	
- * @param	array	$data	Default: []
- * @return	mixed
+ * @param	string $view The name of the view file to render.
+ * @param	array  $data An associative array of data to pass to the view (default is an empty array).
+ * @return	mixed The rendered view output.
  */
 function view($view, $data = []): mixed
 {
@@ -21,24 +19,19 @@ function view($view, $data = []): mixed
 }
 
 /**
- * redirect.
+ * Creates a new redirect instance for handling HTTP redirects.
  *
- * @author	Mahedi Hasan
- * @global
- * @return	Redirect
+ * @return	Redirect A new instance of the Redirect class.
  */
 function redirect(): Redirect
 {
-    return  new Redirect();
+    return new Redirect();
 }
 
-
 /**
- * request.
+ * Creates a new request instance to handle HTTP requests.
  *
- * @author	Mahedi Hasan
- * @global
- * @return	Request
+ * @return	Request A new instance of the Request class.
  */
 function request(): Request
 {
@@ -46,10 +39,9 @@ function request(): Request
 }
 
 /**
- * session.
+ * Creates a new session instance for handling user sessions.
  *
- * @global
- * @return	Session
+ * @return	Session A new instance of the Session class.
  */
 function session(): Session
 {
@@ -57,10 +49,9 @@ function session(): Session
 }
 
 /**
- * logger.
+ * Creates and returns a logger instance for logging messages.
  *
- * @global
- * @return	\Monolog\Logger
+ * @return	\Monolog\Logger An instance of the Monolog Logger.
  */
 function logger(): \Monolog\Logger
 {
@@ -68,10 +59,9 @@ function logger(): \Monolog\Logger
 }
 
 /**
- * fake.
+ * Creates and returns a Faker generator instance for generating fake data.
  *
- * @global
- * @return	mixed
+ * @return	\Faker\Generator An instance of the Faker Generator.
  */
 function fake(): \Faker\Generator
 {

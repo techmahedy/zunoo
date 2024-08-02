@@ -10,6 +10,7 @@ use Mii\Middleware\Middleware;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
+// Load environment variables from .env file
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
@@ -19,10 +20,13 @@ $dotenv->load();
 session_start();
 
 /**
- * Loading the spatie error page handler
+ * Register the Spatie Ignition error page handler with dark mode enabled
  */
 Ignition::make()->useDarkMode()->register();
 
+/**
+ * Setup database connection using Eloquent ORM and Capsule Manager
+ */
 $capsule = new Capsule;
 
 $capsule->addConnection([
@@ -36,19 +40,23 @@ $capsule->addConnection([
     'prefix'    => '',
 ]);
 
-// Set the event dispatcher used by Eloquent models... (optional)
+// Set the event dispatcher used by Eloquent models (optional but recommended)
 $capsule->setEventDispatcher(new Dispatcher(new Container));
 
-// Make this Capsule instance available globally via static methods... (optional)
+// Make this Capsule instance available globally via static methods (optional)
 $capsule->setAsGlobal();
 
-// Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
+// Boot Eloquent ORM (required to use Eloquent features)
 $capsule->bootEloquent();
 
 /*
 |--------------------------------------------------------------------------
 | Create The Application
 |--------------------------------------------------------------------------
+|
+| Here we create the application instance, providing it with the necessary
+| components: Route, Request, and Middleware.
+|
 */
 $app = new Application(
     new Route(new Request()),
@@ -59,5 +67,9 @@ $app = new Application(
 |--------------------------------------------------------------------------
 | Return The Application
 |--------------------------------------------------------------------------
+|
+| Finally, we return the application instance. This will be used to handle
+| incoming requests and send responses back to the client.
+|
 */
 return $app;

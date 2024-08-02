@@ -7,7 +7,7 @@ use Mii\Request;
 use Mii\Middleware\Contracts\Middleware;
 
 //! Example middleware
-class Authenticate implements Middleware
+class ExampleMiddleware implements Middleware
 {
     /**
      * handle.

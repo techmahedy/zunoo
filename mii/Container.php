@@ -13,29 +13,36 @@ use Mii\Exceptions\CouldNotResolveAbstractionException;
 class Container implements ContainerInterface
 {
     /**
-     * @var	array $services
+     * Array to hold service definitions.
+     *
+     * @var array<string, mixed>
      */
     public array $services = [];
 
     /**
-     * @var	array $instances
+     * Array to hold singleton instances.
+     *
+     * @var array<string, mixed|null>
      */
     protected array $instances = [];
 
     /**
-     * @var	static $instance
+     * The single instance of the container (singleton pattern).
+     *
+     * @var ?self
      */
-    protected static $instance;
+    protected static ?self $instance = null;
 
     /**
-     * getInstance.
+     * Get the singleton instance of the container.
      *
-     * @access	public static
-     * @return	mixed
+     * If the instance does not exist, it will be created.
+     *
+     * @return self
      */
     public static function getInstance(): self
     {
-        if (is_null(self::$instance)) {
+        if (self::$instance === null) {
             self::$instance = new static;
         }
 
@@ -43,36 +50,41 @@ class Container implements ContainerInterface
     }
 
     /**
-     * bind.
+     * Bind a service to the container.
      *
-     * @access	public
-     * @param	string 	$key      	
-     * @param	mixed  	$value    	
-     * @param	boolean	$singleton	Default: false
-     * @return	$this
+     * The service can be a class name or a closure. If it's a class name,
+     * the container will create an instance of the class when needed.
+     * 
+     * If $singleton is true, the service will be resolved once and stored for future use.
+     *
+     * @param string $key The service name or class name.
+     * @param mixed $value The service definition or closure.
+     * @param bool $singleton Whether to store the service as a singleton.
+     * @return $this
      */
-    public function bind(string $key, mixed $value, bool $singleton = false)
+    public function bind(string $key, mixed $value, bool $singleton = false): self
     {
         if (class_exists($key)) {
             $value = fn () => new $value;
         }
 
         $this->services[$key] = $value;
-        
+
         if ($singleton) {
-            return $this->instances[$key] = null;
+            $this->instances[$key] = null;
         }
 
         return $this;
     }
 
     /**
-     * singleton.
+     * Bind a service as a singleton.
      *
-     * @access	public
-     * @param	string	$key     	
-     * @param	mixed 	$callback	
-     * @return	mixed
+     * The service will be resolved once and the same instance will be returned on subsequent requests.
+     *
+     * @param string $key The service name or class name.
+     * @param mixed $callback The service definition or closure.
+     * @return $this
      */
     public function singleton(string $key, mixed $callback): self
     {
@@ -80,11 +92,13 @@ class Container implements ContainerInterface
     }
 
     /**
-     * get.
+     * Retrieve a service from the container.
      *
-     * @access	public
-     * @param	string	$service	
-     * @return	mixed
+     * If the service is bound as a singleton, it will return the stored instance.
+     * Otherwise, it will build a new instance.
+     *
+     * @param string $service The service name or class name.
+     * @return mixed
      */
     public function get(string $service): mixed
     {
@@ -96,11 +110,10 @@ class Container implements ContainerInterface
     }
 
     /**
-     * has.
+     * Check if the container has a binding for the given service.
      *
-     * @access	public
-     * @param	string	$key	
-     * @return	mixed
+     * @param string $key The service name or class name.
+     * @return bool
      */
     public function has(string $key): bool
     {
@@ -108,18 +121,21 @@ class Container implements ContainerInterface
     }
 
     /**
-     * build.
+     * Build a new instance of the given service.
      *
-     * @access	protected
-     * @param	string	$service	
-     * @return	mixed
+     * This will resolve all dependencies using reflection and instantiate the service.
+     *
+     * @param string $service The service name or class name.
+     * @return mixed
+     * @throws CouldNotResolveClassException If the class cannot be resolved.
+     * @throws CouldNotResolveAbstractionException If the service is an interface or abstract class.
      */
-    protected function build(string $service)
+    protected function build(string $service): mixed
     {
         try {
             $reflector = new ReflectionClass($service);
         } catch (ReflectionException) {
-            throw new CouldNotResolveClassException();
+            throw new CouldNotResolveClassException("Could not resolve class [$service]");
         }
 
         if (!$reflector->isInstantiable()) {
@@ -127,39 +143,49 @@ class Container implements ContainerInterface
         }
 
         $parameters = $reflector->getConstructor()?->getParameters() ?? [];
-        $resolveDependencies = array_map(function (ReflectionParameter $parameter) {
-            $class = $parameter->getType()->getName();
-            if (class_exists($class)) {
-                return $this->build($class);
-            }
-        }, $parameters);
+        $resolveDependencies = array_map(
+            fn (ReflectionParameter $parameter) => $this->resolveParameter($parameter),
+            $parameters
+        );
 
         return $reflector->newInstanceArgs($resolveDependencies);
     }
 
     /**
-     * fetchBoundService.
+     * Resolve a parameter's dependency.
      *
-     * @access	protected
-     * @param	string	$service	
-     * @return	mixed
+     * This method uses reflection to determine the parameter's type and recursively resolves it.
+     *
+     * @param ReflectionParameter $parameter The reflection parameter.
+     * @return mixed
      */
-    protected function fetchBoundService(string $service)
+    protected function resolveParameter(ReflectionParameter $parameter): mixed
     {
-        if (
-            array_key_exists($service, $this->instances)
-            && !is_null($this->instances[$service])
-        ) {
+        $class = $parameter->getType()?->getName();
+        return class_exists($class) ? $this->build($class) : null;
+    }
+
+    /**
+     * Fetch a bound service from the container.
+     *
+     * If the service is a singleton, it returns the stored instance.
+     * Otherwise, it resolves the service and returns it.
+     *
+     * @param string $service The service name or class name.
+     * @return mixed
+     */
+    protected function fetchBoundService(string $service): mixed
+    {
+        if (isset($this->instances[$service]) && $this->instances[$service] !== null) {
             return $this->instances[$service];
         }
 
         $serviceResolver = $this->services[$service];
-
         $resolvedService = $serviceResolver instanceof Closure
             ? $serviceResolver($this)
             : $serviceResolver;
 
-        if (array_key_exists($service, $this->instances)) {
+        if (isset($this->instances[$service])) {
             return $this->instances[$service] = $resolvedService;
         }
 

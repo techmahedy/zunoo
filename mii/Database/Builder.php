@@ -23,7 +23,7 @@ class Builder extends DB
 
     public function __construct()
     {
-        $this->pdo = $this->setConnection();
+        $this->pdo = $this->getPdoInstance();
     }
 
     public static function __callStatic($name, $arguments)

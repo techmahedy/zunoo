@@ -5,68 +5,97 @@ namespace Mii;
 use Mii\Route;
 use Mii\Middleware\Middleware;
 use App\Providers\AppServiceProvider;
+use Mii\Middleware\Contracts\Middleware as ContractsMiddleware;
 
 class Application extends AppServiceProvider
 {
     /**
-     * @var	public cons
+     * The version of the application.
+     *
+     * @var string
      */
     public const VERSION = '1.0';
 
     /**
-     * @var	public $resolveDependency
+     * Dependency resolver instance.
+     *
+     * This property holds the result of the dependency registration.
+     *
+     * @var mixed
      */
-    public $resolveDependency;
+    public mixed $resolveDependency;
 
     /**
-     * @var	route $route
+     * The route handler instance.
+     *
+     * This property holds an instance of the Route class responsible for routing.
+     *
+     * @var Route
      */
     public Route $route;
 
     /**
-     * @var	mixed $middleware
+     * The middleware handler instance.
+     *
+     * This property holds an instance of the Middleware class responsible for handling middleware.
+     *
+     * @var Middleware
      */
-    protected $middleware;
+    protected Middleware $middleware;
 
     /**
-     * __construct.
+     * Constructs the Application instance.
      *
-     * @access	public
-     * @param	route     	$route
-     * @param	middleware	$middleware
-     * @return	void
+     * Initializes the dependency resolver, route handler, and middleware handler.
+     *
+     * @param Route $route The route handler instance.
+     * @param Middleware $middleware The middleware handler instance.
      */
     public function __construct(Route $route, Middleware $middleware)
     {
+        /**
+         * Register application dependency injection.
+         *
+         * This method should handle the registration of dependencies for the application.
+         *
+         * @return void The result of the dependency registration.
+         */
         $this->resolveDependency = $this->register();
+
+        // Assign the route handler instance.
         $this->route = $route;
+
+        // Assign the middleware handler instance.
         $this->middleware = $middleware;
     }
 
     /**
-     * Applying all the global middleware.
+     * Apply global middleware to the application.
      *
-     * @param \App\Core\Middleware\Contracts\Middleware $middleware
-     * @return mixed
+     * Delegates the application of middleware to the middleware handler.
+     *
+     * @param ContractsMiddleware $middleware The middleware to be applied.
+     * @return mixed The result of applying the middleware.
      */
-    public function applyMiddleware($middleware): mixed
+    public function applyMiddleware(ContractsMiddleware $middleware): mixed
     {
+        // Delegate the middleware application to the middleware handler.
         return $this->middleware->applyMiddleware($middleware);
     }
 
     /**
-     * Run the application.
+     * Run the application and resolve the route.
      *
-     * @access    public
-     * @return    void
-     * @throws \ReflectionException
+     * Executes the application logic by resolving the route using the provided middleware
+     * and dependency resolver.
+     *
+     * @return void
+     * @throws \ReflectionException If there is an issue with reflection during route resolution.
      */
     public function run(): void
     {
-        /**
-         * @param Middleware $middleware
-         * @param $resolveDependency
-         */
+        // Resolve and output the route result using the route handler,
+        // middleware handler, and dependency resolver.
         echo $this->route->resolve(
             $this->middleware,
             $this->resolveDependency

@@ -9,7 +9,7 @@ class Kernel
      *
      * These middleware are run during every request to your application.
      *
-     * @var array<int, class-string|string>
+     * @var array
      */
     public array $middleware = [
         \Mii\Middleware\CsrfTokenMiddleware::class,
@@ -20,9 +20,9 @@ class Kernel
      *
      * These middleware may be assigned to groups or used individually.
      *
-     * @var array<string, class-string|string>
+     * @var array
      */
     protected array $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class, //! Example middleware
+        'auth' => \App\Http\Middleware\ExampleMiddleware::class, //! Example middleware
     ];
 }

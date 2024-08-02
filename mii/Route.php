@@ -10,24 +10,46 @@ use Mii\Middleware\Middleware;
 
 class Route extends Kernel
 {
+    /**
+     * Holds the registered routes.
+     *
+     * @var array
+     */
     protected static array $routes = [];
 
+    /**
+     * Stores URL parameters extracted from routes.
+     *
+     * @var array
+     */
     protected array $urlParams = [];
 
+    /**
+     * The current request instance.
+     *
+     * @var Request
+     */
     public Request $request;
 
     /**
-     * __construct.
+     * Constructor to initialize the request property.
      *
-     * @param	Request	$request	
-     * @return	void
+     * @param Request $request The request instance.
      */
     public function __construct(Request $request)
     {
         $this->request = $request;
     }
 
-    public static function __callStatic($name, $arguments)
+    /**
+     * Magic method to handle static method calls for 'get' and 'post' route registration.
+     *
+     * @param string $name The method name.
+     * @param array $arguments The method arguments.
+     * @return Route
+     * @throws \Exception If method name is not 'get' or 'post'.
+     */
+    public static function __callStatic($name, $arguments): Route
     {
         return match ($name) {
             'get' => (new Route(new Request))->getRoute($arguments[0], $arguments[1]),
@@ -37,12 +59,11 @@ class Route extends Kernel
     }
 
     /**
-     * get.
+     * Registers a GET route with a callback.
      *
-     * @access	public
-     * @param	mixed	$path    	
-     * @param	mixed	$callback	
-     * @return	Route
+     * @param string $path The route path.
+     * @param callable $callback The callback for the route.
+     * @return Route
      */
     public function getRoute($path, $callback): Route
     {
@@ -52,12 +73,11 @@ class Route extends Kernel
     }
 
     /**
-     * post.
+     * Registers a POST route with a callback.
      *
-     * @access	public
-     * @param	mixed	$path    	
-     * @param	mixed	$callback	
-     * @return	Route
+     * @param string $path The route path.
+     * @param callable $callback The callback for the route.
+     * @return Route
      */
     public function postRoute($path, $callback): Route
     {
@@ -67,12 +87,11 @@ class Route extends Kernel
     }
 
     /**
-     * middleware.
+     * Applies middleware to the route.
      *
-     * @access public
-     * @param string $key middleware
+     * @param string $key The middleware key.
      * @return Route
-     * @throws \Exception
+     * @throws \Exception If the middleware is not defined.
      */
     public function middleware(string $key): Route
     {
@@ -89,10 +108,9 @@ class Route extends Kernel
     }
 
     /**
-     * getCallback.
+     * Retrieves the callback for the current route based on the request method and path.
      *
-     * @access	public
-     * @return	mixed
+     * @return mixed The route callback or false if not found.
      */
     public function getCallback(): mixed
     {
@@ -135,21 +153,20 @@ class Route extends Kernel
     }
 
     /**
-     * resolve.
+     * Resolves and executes the route callback with the middleware and dependencies.
      *
-     * @access public
-     * @param Middleware $middleware
-     * @param $service
-     * @return mixed
-     * @throws \ReflectionException
-     * @throws \Exception
+     * @param Middleware $middleware The middleware instance.
+     * @param $service The service container for resolving dependencies.
+     * @return mixed The result of the callback execution.
+     * @throws \ReflectionException If there is an issue with reflection.
+     * @throws \Exception If the route callback is not defined.
      */
     public function resolve(Middleware $middleware, $service): mixed
     {
         $middleware->handle($this->request);
 
         $callback = $this->getCallback();
-        
+
         if (!$callback) {
             throw new \Exception("Route path " . '[' . $this->request->getPath() . ']' . " is not defined");
         }
@@ -189,12 +206,12 @@ class Route extends Kernel
                     if ($resolvedClass instanceof $serviceClass) {
                         return new $resolvedClass();
                     }
-                    
+
                     return new $serviceClass();
                 }
             }, $parameters);
         }
- 
+
         return call_user_func(
             $callback,
             ...array_merge(

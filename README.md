@@ -10,9 +10,6 @@
 - [Database and Migration](#section-21)
 - [Database Seeder](#section-22)
 - [Database Query Builder](#section-23)
-- [Binding Interface to Service Class](#section-3)
-- [Controller Method Dependency Injection](#section-4)
-- [Constructor Dependency Injection](#section-13)
 - [Model](#section-5)
 - [Database Connection](#section-6)
 - [Views](#section-7)
@@ -21,9 +18,12 @@
 - [Custom Blade Directivee](#section-11)
 - [From Validation](#section-12)
 - [CSRF Token](#section-16)
-- [Collection & Macro](#section-18)
-- [Session Flash Message](#section-19)
+- [Collection And Macro](#section-18)
+- [Session And Flash Message](#section-19)
 - [Log](#section-20)
+- [Binding Interface to Service Class](#section-3)
+- [Controller Method Dependency Injection](#section-4)
+- [Constructor Dependency Injection](#section-13)
 
 <a name="section-1"></a>
 

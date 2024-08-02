@@ -5,169 +5,168 @@ namespace Mii;
 class Rule
 {
     /**
-     * validate.
+     * Validate the input data against the given rules.
      *
-     * @access	public
-     * @param	mixed	$input	
-     * @param	mixed	$rules	
-     * @return	mixed
+     * @access public
+     * @param array $rules Associative array of field names and their validation rules.
+     * @return array|null Validation errors or null if no errors.
      */
-    public function validate($rules): mixed
+    public function validate(array $rules): ?array
     {
         $errors = [];
         $input = request()->all();
 
-        if (is_array($input)) :
-            foreach ($rules as $fieldName => $value) :
+        if (is_array($input)) {
+            foreach ($rules as $fieldName => $value) {
                 $fieldRules = explode("|", $value);
 
-                foreach ($fieldRules as $rule) :
-
+                foreach ($fieldRules as $rule) {
                     $ruleValue = $this->_getRuleSuffix($rule);
                     $rule = $this->_removeRuleSuffix($rule);
 
-                    if ($rule == "required" && $this->isEmptyFieldRequired($input, $fieldName)) :
-                        $errors[$fieldName]['required'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field is required.";
-                    endif;
+                    switch ($rule) {
+                        case 'required':
+                            if ($this->isEmptyFieldRequired($input, $fieldName)) {
+                                $errors[$fieldName]['required'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field is required.";
+                            }
+                            break;
 
-                    if ($rule == "email" && !$this->isEmailValid($input, $fieldName)) :
-                        $errors[$fieldName]['email'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field is invalid.";
-                    endif;
+                        case 'email':
+                            if (!$this->isEmailValid($input, $fieldName)) {
+                                $errors[$fieldName]['email'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field is invalid.";
+                            }
+                            break;
 
-                    if ($rule == "min" && $this->isLessThanMin($input, $fieldName, $ruleValue)) :
-                        $errors[$fieldName]['max'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field is less than " . $ruleValue . " characters of the minimum length.";
-                    endif;
+                        case 'min':
+                            if ($this->isLessThanMin($input, $fieldName, $ruleValue)) {
+                                $errors[$fieldName]['min'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field must be at least " . $ruleValue . " characters.";
+                            }
+                            break;
 
-                    if ($rule == "max" && $this->isMoreThanMax($input, $fieldName, $ruleValue)) :
-                        $errors[$fieldName]['max'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field is more than " . $ruleValue . " characters of the maximum length.";
-                    endif;
+                        case 'max':
+                            if ($this->isMoreThanMax($input, $fieldName, $ruleValue)) {
+                                $errors[$fieldName]['max'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field must not exceed " . $ruleValue . " characters.";
+                            }
+                            break;
 
-                    if ($rule == "unique" && $this->isRecordUnique($input, $fieldName, $ruleValue)) :
-                        $errors[$fieldName]['unique'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field is already exists.";
-                    endif;
+                        case 'unique':
+                            if (!$this->isRecordUnique($input, $fieldName, $ruleValue)) {
+                                $errors[$fieldName]['unique'] = $this->_removeUnderscore(ucfirst($fieldName)) . " field already exists.";
+                            }
+                            break;
+                    }
+                }
+            }
+        }
 
-                endforeach;
-            endforeach;
-        endif;
-
-        if ($errors) {
+        if (!empty($errors)) {
             session()->flash('errors', $errors);
             foreach ($errors as $key => $error) {
                 session()->flash($key, $error);
             }
-            return redirect()->back();
+            return redirect()->back()->withInput()->withErrors($errors);
         }
-        return $errors;
+
+        return null;
     }
 
     /**
-     * isEmptyFieldRequired.
+     * Check if a required field is empty.
      *
-     * @param	mixed	$input    	
-     * @param	mixed	$fieldName	
-     * @return	mixed
+     * @param array $input The input data.
+     * @param string $fieldName The field name.
+     * @return bool
      */
-    public function isEmptyFieldRequired($input, $fieldName): mixed
+    public function isEmptyFieldRequired(array $input, string $fieldName): bool
     {
-        return $input[$fieldName] == "" || empty($input[$fieldName]);
+        return empty($input[$fieldName]);
     }
 
     /**
-     * isLessThanMin.
+     * Check if a field value is less than the minimum length.
      *
-     * @param	mixed	$input    	
-     * @param	mixed	$fieldName	
-     * @param	mixed	$value    	
-     * @return	mixed
+     * @param array $input The input data.
+     * @param string $fieldName The field name.
+     * @param int $value The minimum length.
+     * @return bool
      */
-    public function isLessThanMin($input, $fieldName, $value): mixed
+    public function isLessThanMin(array $input, string $fieldName, int $value): bool
     {
         return strlen($input[$fieldName]) < $value;
     }
 
     /**
-     * isMoreThanMax.
+     * Check if a field value exceeds the maximum length.
      *
-     * @param	mixed	$input    	
-     * @param	mixed	$fieldName	
-     * @param	mixed	$value    	
-     * @return	mixed
+     * @param array $input The input data.
+     * @param string $fieldName The field name.
+     * @param int $value The maximum length.
+     * @return bool
      */
-    public function isMoreThanMax($input, $fieldName, $value): mixed
+    public function isMoreThanMax(array $input, string $fieldName, int $value): bool
     {
         return strlen($input[$fieldName]) > $value;
     }
 
     /**
-     * isRecordUnique.
+     * Check if a record is unique.
      *
-     * @param	mixed	$input    	
-     * @param	mixed	$fieldName	
-     * @param	mixed	$value    	
-     * @return	mixed
+     * @param array $input The input data.
+     * @param string $fieldName The field name.
+     * @param string $value The model name.
+     * @return bool
      */
-    public function isRecordUnique($input, $fieldName, $value): mixed
+    public function isRecordUnique(array $input, string $fieldName, string $value): bool
     {
-        $modelPath = <<<TEXT
-        App\Models\
-        TEXT;
+        $modelPath = 'App\Models\\';
         $model = $modelPath . ucfirst($value);
-        return $model::where($fieldName, $input[$fieldName])->exists();
+        return !$model::where($fieldName, $input[$fieldName])->exists();
     }
 
     /**
-     * isEmailValid.
+     * Validate if the email is valid.
      *
-     * @param	mixed	$input    	
-     * @param	mixed	$fieldName	
-     * @return	boolean
+     * @param array $input The input data.
+     * @param string $fieldName The field name.
+     * @return bool
      */
-    public function isEmailValid($input, $fieldName): bool
+    public function isEmailValid(array $input, string $fieldName): bool
     {
-        $email = $input[$fieldName];
-
-        if (!empty($email) || $email != "") :
-            return (!preg_match("/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $email)) ? FALSE : TRUE;
-        else :
-            return TRUE;
-        endif;
+        $email = $input[$fieldName] ?? '';
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 
-
     /**
-     * _removeUnderscore.
+     * Remove underscores from a string and capitalize words.
      *
-     * @param	mixed	$string	
-     * @return	mixed
+     * @param string $string The input string.
+     * @return string
      */
-    public function _removeUnderscore($string): mixed
+    public function _removeUnderscore(string $string): string
     {
         return str_replace("_", " ", $string);
     }
 
     /**
-     * _removeRuleSuffix.
+     * Remove the suffix from a rule string.
      *
-     * @param	mixed	$string	
-     * @return	mixed
+     * @param string $string The rule string.
+     * @return string
      */
-    public function _removeRuleSuffix($string): mixed
+    public function _removeRuleSuffix(string $string): string
     {
-        $arr = explode(":", $string);
-
-        return $arr[0];
+        return explode(":", $string)[0];
     }
 
     /**
-     * _getRuleSuffix.
+     * Get the suffix from a rule string.
      *
-     * @param	mixed	$string	
-     * @return	mixed
+     * @param string $string The rule string.
+     * @return string|null
      */
-    public function _getRuleSuffix($string): mixed
+    public function _getRuleSuffix(string $string): ?string
     {
         $arr = explode(":", $string);
-
-        return isset($arr[1]) ? $arr[1] : null;
+        return $arr[1] ?? null;
     }
 }

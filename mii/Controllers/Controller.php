@@ -9,29 +9,44 @@ use InvalidArgumentException;
 
 class Controller
 {
-    protected $fileExtension;
-    protected $viewFolder;
-    protected $cacheFolder;
-    protected $echoFormat;
-    protected $extensions = [];
-    protected $templates = [];
+    // Properties to store various configuration settings and data
+    protected $fileExtension; // File extension for template files
+    protected $viewFolder; // Directory where view files are stored
+    protected $cacheFolder; // Directory where cached files are stored
+    protected $echoFormat; // Format for echoing variables in templates
+    protected $extensions = []; // Array to store custom extensions
+    protected $templates = []; // Array to store compiled templates
 
-    protected static $directives = [];
+    protected static $directives = []; // Static array to store custom directives
 
-    protected $blocks = [];
-    protected $blockStacks = [];
-    protected $loopStacks = [];
-    protected $emptyCounter = 0;
-    protected $firstCaseSwitch = true;
+    // Properties to manage blocks, block stacks, loop stacks, and other states
+    protected $blocks = []; // Array to store content blocks
+    protected $blockStacks = []; // Array to manage nested blocks
+    protected $loopStacks = []; // Array to manage nested loops
+    protected $emptyCounter = 0; // Counter to track empty loops or conditions
+    protected $firstCaseSwitch = true; // Flag to track the first case in switch statements
 
+    /**
+     * Constructor to initialize the template engine with default settings
+     */
     public function __construct()
     {
+        // Set the file extension for template files
         $this->setFileExtension('.blade.php');
+
+        // Set the directory where view files are stored
         $this->setViewFolder('resources/views' . DIRECTORY_SEPARATOR);
+
+        // Set the directory where cached files are stored
         $this->setCacheFolder('storage/cache' . DIRECTORY_SEPARATOR);
+
+        // Create the cache folder if it doesn't exist
         $this->createCacheFolder();
+
+        // Set the format for echoing variables in templates
         $this->setEchoFormat('$this->e(%s)');
 
+        // Initialize arrays for blocks, block stacks, and loop stacks
         $this->blocks = [];
         $this->blockStacks = [];
         $this->loopStacks = [];
@@ -45,12 +60,8 @@ class Controller
     public function createCacheFolder(): void
     {
         if (!is_dir($this->cacheFolder)) {
-            try {
-                mkdir($this->cacheFolder, 0755, true);
-            } catch (\Throwable $e) {
-                throw new \Exception('Unable to create view cache folder: ' . $this->cacheFolder);
-            } catch (\Exception $e) {
-                throw new \Exception('Unable to create view cache folder: ' . $this->cacheFolder);
+            if (!mkdir($this->cacheFolder, 0755, true) && !is_dir($this->cacheFolder)) {
+                throw new RuntimeException('Unable to create view cache folder: ' . $this->cacheFolder);
             }
         }
     }

@@ -9,41 +9,40 @@ use Mii\Middleware\Contracts\Middleware as ContractsMiddleware;
 class Middleware
 {
     /**
-     * @var		closure	$start
+     * Closure that handles the request processing.
+     * 
+     * @var Closure(Request): Request
      */
     public Closure $start;
 
+    /**
+     * Initialize the middleware with a default request handler.
+     */
     public function __construct()
     {
-        $this->start = function (Request $request) {
-            return $request;
-        };
+        $this->start = fn (Request $request) => $request;
     }
 
     /**
-     * applyMiddleware.
+     * Apply a given middleware to the current middleware chain.
      *
-     * @access	public
-     * @param  \Mii\Middleware\Contracts\Middleware $middleware	
-     * @return	void
+     * @param ContractsMiddleware $middleware The middleware to apply.
+     * @return void
      */
     public function applyMiddleware(ContractsMiddleware $middleware): void
     {
         $next = $this->start;
-        $this->start = function (Request $request) use ($middleware, $next) {
-            return $middleware($request, $next);
-        };
+        $this->start = fn (Request $request) => $middleware($request, $next);
     }
 
     /**
-     * handle.
+     * Handle the incoming request through the middleware chain.
      *
-     * @access	public
-     * @param	request	$request	
-     * @return	mixed
+     * @param Request $request The incoming request.
+     * @return mixed The result of the middleware processing.
      */
     public function handle(Request $request): mixed
     {
-        return call_user_func($this->start, $request);
+        return ($this->start)($request);
     }
 }
