@@ -151,12 +151,80 @@ class ExampleController extends Controller
 Now look at Model, how you can use it
 ```php
 
+<?php
+
 use Mii\Model;
 
+/**
+ * User Model
+ *
+ * This class represents the User model in the Mii framework. It extends the base Model class provided
+ * by the Mii framework, allowing you to interact with the 'users' table in the database using Eloquent-like
+ * features.
+ *
+ * You can define your model-specific methods and properties here. This model can use various features
+ * provided by the Mii framework, similar to how Laravel models work.
+ *
+ * For example, you can define relationships, accessors, mutators, and more.
+ *
+ * @package App\Models
+ */
 class User extends Model
-{   
+{
     /**
-     * Use any features of Laravel.
+     * Model Table Name
+     *
+     * The name of the database table associated with this model. By default, Mii will assume the table
+     * name is the plural form of the model name. You can override this property if your table name does
+     * not follow this convention.
+     *
+     * @var string
+     */
+    protected $table = 'users';
+
+    /**
+     * Mass Assignable Attributes
+     *
+     * Specify which attributes should be mass-assignable. This helps protect against mass assignment
+     * vulnerabilities. Define the attributes you want to be mass-assignable in this property.
+     *
+     * @var array
+     */
+    protected $fillable = ['name', 'email', 'password'];
+
+    /**
+     * Hidden Attributes
+     *
+     * Specify which attributes should be hidden from arrays. For example, you might want to hide sensitive
+     * information such as passwords from the model's array or JSON representation.
+     *
+     * @var array
+     */
+    protected $hidden = ['password', 'remember_token'];
+
+    /**
+     * Date Casting
+     *
+     * Specify attributes that should be cast to native types. For example, if you have a 'created_at'
+     * attribute in your table, you can cast it to a DateTime object for easier manipulation.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
+    /**
+     * Relationships
+     *
+     * Define any relationships this model has with other models. For example, if a user has many posts,
+     * you can define a relationship method here.
+     *
+     * Example:
+     * public function posts()
+     * {
+     *     return $this->hasMany(Post::class);
+     * }
      */
 }
 ```
