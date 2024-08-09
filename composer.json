@@ -37,6 +37,9 @@
   "scripts": {
     "post-create-project-cmd": [
       "MII\\Installer::postCreateProject"
+    ],
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
     ]
   },
   "minimum-stability": "stable",

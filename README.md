@@ -65,10 +65,12 @@ MII, A basic PHP MVC framework designed in a way that you feel like you are work
 
 ## How to Install
 We can easily set up and install this application with a few steps. Before using this application, a minimum `PHP 8.3` version is needed.
-- Step 1: To get project skeleton, run  => `composer create-project mii/mii example-app`
-- Step 2: Go to the project directory with this command `cd example-app`
-- Step 3: Run `composer update`
-- Step 4: Start the development server by running this command `php -S localhost:8000`
+# Create a new project
+`composer create-project mii/mii example-app`
+
+- Step 1: Go to the project directory with this command `cd example-app`
+- Step 2: Run `composer update`
+- Step 3: Start the development server by running this command `php -S localhost:8000`
 
 <a name="section-2"></a>
 
