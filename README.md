@@ -3,27 +3,35 @@
 
 - [About](#section-1)
 - [How to Install](#section-14)
-- [Define Route](#section-2)
-- [Route Parameter](#section-8)
-- [Multiple Route Parameters](#section-9)
-- [Request](#section-15)
-- [Database and Migration](#section-21)
-- [Database Seeder](#section-22)
-- [Database Query Builder](#section-23)
-- [Model](#section-5)
-- [Database Connection](#section-6)
-- [Views](#section-7)
-- [Global Middleware](#section-10)
-- [Route Middleware](#section-17)
-- [Custom Blade Directivee](#section-11)
-- [From Validation](#section-12)
-- [CSRF Token](#section-16)
-- [Collection And Macro](#section-18)
-- [Session And Flash Message](#section-19)
-- [Log](#section-20)
-- [Binding Interface to Service Class](#section-3)
-- [Controller Method Dependency Injection](#section-4)
-- [Constructor Dependency Injection](#section-13)
+- **Routes**
+  - [Define Route](#section-2)
+  - [Route Parameter](#section-8)
+  - [Multiple Route Parameters](#section-9)
+  - [Request](#section-15)
+- **Database**
+  - [Database and Migration](#section-21)
+  - [Database Seeder](#section-22)
+  - [Database Query Builder](#section-23)
+  - [Model](#section-5)
+  - [Database Connection](#section-6)
+- **Views**
+  - [Views](#section-7)
+  - [Custom Blade Directives](#section-11)
+- **Middleware**
+  - [Global Middleware](#section-10)
+  - [Route Middleware](#section-17)
+- **Validation**
+  - [Form Validation](#section-12)
+  - [CSRF Token](#section-16)
+- **Collections**
+  - [Collection And Macro](#section-18)
+- **Session and Logging**
+  - [Session And Flash Message](#section-19)
+  - [Log](#section-20)
+- **Dependency Injection**
+  - [Binding Interface to Service Class](#section-3)
+  - [Controller Method Dependency Injection](#section-4)
+  - [Constructor Dependency Injection](#section-13)
 
 <a name="section-1"></a>
 
