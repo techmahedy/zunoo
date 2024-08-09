@@ -21,7 +21,6 @@
       "name": "mahedi hasan"
     }
   ],
-  "minimum-stability": "stable",
   "require": {
     "php": "^8.3",
     "psr/container": "^2.0",
