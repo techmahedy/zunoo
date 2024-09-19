@@ -137,4 +137,38 @@ class Builder extends DB
 
         return collect($data);
     }
+
+    // Fetch the first result of the query
+    public function first(): ?Collection
+    {
+        $this->limit(1); // Set limit to 1 to fetch only the first record
+        $stmt = $this->pdo->prepare($this->toSql());
+
+        // Bind parameters for WHERE conditions
+        foreach ($this->conditions as $index => $condition) {
+            $stmt->bindValue($index + 1, $condition[2]);
+        }
+
+        $stmt->execute();
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return collect($data) ?: null; // Return null if no record is found
+    }
+
+    // Check if any record exists for the query
+    public function exists(): bool
+    {
+        $this->limit(1); // Set limit to 1 to check existence
+        $stmt = $this->pdo->prepare($this->toSql());
+
+        // Bind parameters for WHERE conditions
+        foreach ($this->conditions as $index => $condition) {
+            $stmt->bindValue($index + 1, $condition[2]);
+        }
+
+        $stmt->execute();
+
+        return (bool) $stmt->fetch(PDO::FETCH_ASSOC); // If a record exists, return true
+    }
 }

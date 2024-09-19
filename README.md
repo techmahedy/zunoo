@@ -556,6 +556,16 @@ class ExampleController extends Controller
             ->get();
 
         return $data; // this is laravel collection. you can use any collection wrapper in this data.
+        
+        //you can check a data exists or not like that
+        $data = DB::table('users')
+            ->where('status', '=', 'active')
+            ->exists();
+            
+        //you can also fetch first row of your table, it will return single collection
+        $data = DB::table('users')
+            ->where('id', '=', 1)
+            ->first();
     }
 }
 
@@ -622,7 +632,7 @@ class ExampleController extends Controller
     public function store(Request $request)
     {   
         $request->validate([
-            'email' => 'required|email|unique:user|min:2|max:100', //unique:user -> here [user] is model
+            'email' => 'required|email|unique:users|min:2|max:100', //unique:users -> here [users] is table name
             'password' => 'required|min:2|max:100',
         ]);
 

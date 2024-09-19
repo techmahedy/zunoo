@@ -2,6 +2,8 @@
 
 namespace Mii;
 
+use Mii\Database\DB;
+
 class Rule
 {
     /**
@@ -113,14 +115,12 @@ class Rule
      *
      * @param array $input The input data.
      * @param string $fieldName The field name.
-     * @param string $value The model name.
+     * @param string $value The table name.
      * @return bool
      */
     public function isRecordUnique(array $input, string $fieldName, string $value): bool
     {
-        $modelPath = 'App\Models\\';
-        $model = $modelPath . ucfirst($value);
-        return !$model::where($fieldName, $input[$fieldName])->exists();
+        return DB::table($value)->where($fieldName, '=', $input[$fieldName])->exists();
     }
 
     /**
