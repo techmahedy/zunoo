@@ -23,6 +23,6 @@ class Kernel
      * @var array
      */
     protected array $routeMiddleware = [
-        'auth' => \App\Http\Middleware\ExampleMiddleware::class, //! Example middleware
+        'auth' => \App\Http\Middleware\Authenticate::class, //! Example Authenticate Middleware
     ];
 }
