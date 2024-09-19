@@ -4,7 +4,6 @@ namespace Mii;
 
 use Closure;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionParameter;
 use Psr\Container\ContainerInterface;
 use Mii\Exceptions\CouldNotResolveClassException;
@@ -52,20 +51,16 @@ class Container implements ContainerInterface
     /**
      * Bind a service to the container.
      *
-     * The service can be a class name or a closure. If it's a class name,
-     * the container will create an instance of the class when needed.
-     * 
-     * If $singleton is true, the service will be resolved once and stored for future use.
-     *
-     * @param string $key The service name or class name.
+     * @param string $key The service name or class name (could be an interface).
      * @param mixed $value The service definition or closure.
      * @param bool $singleton Whether to store the service as a singleton.
      * @return $this
      */
     public function bind(string $key, mixed $value, bool $singleton = false): self
     {
-        if (class_exists($key)) {
-            $value = fn () => new $value;
+        // Wrap value into a closure if it's a class name
+        if (is_string($value) && class_exists($value)) {
+            $value = fn() => new $value();
         }
 
         $this->services[$key] = $value;
@@ -80,8 +75,6 @@ class Container implements ContainerInterface
     /**
      * Bind a service as a singleton.
      *
-     * The service will be resolved once and the same instance will be returned on subsequent requests.
-     *
      * @param string $key The service name or class name.
      * @param mixed $callback The service definition or closure.
      * @return $this
@@ -94,9 +87,6 @@ class Container implements ContainerInterface
     /**
      * Retrieve a service from the container.
      *
-     * If the service is bound as a singleton, it will return the stored instance.
-     * Otherwise, it will build a new instance.
-     *
      * @param string $service The service name or class name.
      * @return mixed
      */
@@ -105,7 +95,6 @@ class Container implements ContainerInterface
         if ($this->has($service)) {
             return $this->fetchBoundService($service);
         }
-
         return $this->build($service);
     }
 
@@ -134,7 +123,7 @@ class Container implements ContainerInterface
     {
         try {
             $reflector = new ReflectionClass($service);
-        } catch (ReflectionException) {
+        } catch (\ReflectionException $e) {
             throw new CouldNotResolveClassException("Could not resolve class [$service]");
         }
 
@@ -144,7 +133,7 @@ class Container implements ContainerInterface
 
         $parameters = $reflector->getConstructor()?->getParameters() ?? [];
         $resolveDependencies = array_map(
-            fn (ReflectionParameter $parameter) => $this->resolveParameter($parameter),
+            fn(ReflectionParameter $parameter) => $this->resolveParameter($parameter),
             $parameters
         );
 
@@ -154,22 +143,28 @@ class Container implements ContainerInterface
     /**
      * Resolve a parameter's dependency.
      *
-     * This method uses reflection to determine the parameter's type and recursively resolves it.
-     *
      * @param ReflectionParameter $parameter The reflection parameter.
      * @return mixed
      */
     protected function resolveParameter(ReflectionParameter $parameter): mixed
     {
         $class = $parameter->getType()?->getName();
-        return class_exists($class) ? $this->build($class) : null;
+
+        // If class is an interface or class, resolve it from the container
+        if ($class && $this->has($class)) {
+            return $this->get($class);
+        }
+
+        // If it's a class that exists, build it
+        if ($class && class_exists($class)) {
+            return $this->build($class);
+        }
+
+        return null;
     }
 
     /**
      * Fetch a bound service from the container.
-     *
-     * If the service is a singleton, it returns the stored instance.
-     * Otherwise, it resolves the service and returns it.
      *
      * @param string $service The service name or class name.
      * @return mixed

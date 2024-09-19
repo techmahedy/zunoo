@@ -5,7 +5,6 @@ namespace Mii;
 use App\Http\Kernel;
 use ReflectionClass;
 use Mii\Request;
-use ReflectionParameter;
 use Mii\Middleware\Middleware;
 
 class Route extends Kernel
@@ -134,7 +133,7 @@ class Route extends Kernel
             }
 
             // Convert route name into regex pattern
-            $routeRegex = "@^" . preg_replace_callback('/\{\w+(:([^}]+))?}/', fn ($m) => isset($m[2]) ? "({$m[2]})" : '(\w+)', $route) . "$@";
+            $routeRegex = "@^" . preg_replace_callback('/\{\w+(:([^}]+))?}/', fn($m) => isset($m[2]) ? "({$m[2]})" : '(\w+)', $route) . "$@";
 
             // Test and match current route against $routeRegex
             if (preg_match_all($routeRegex, $url, $valueMatches)) {
@@ -163,61 +162,108 @@ class Route extends Kernel
      */
     public function resolve(Middleware $middleware, $service): mixed
     {
+        // Process middleware
         $middleware->handle($this->request);
 
+        // Get the callback (controller and method) for the route
         $callback = $this->getCallback();
 
         if (!$callback) {
             throw new \Exception("Route path " . '[' . $this->request->getPath() . ']' . " is not defined");
         }
 
+        // Extract route parameters (e.g., from the URL)
+        $routeParams = $this->request->getRouteParams();
         $resolveDependencies = [];
-        if (!empty($this->request->getRouteParams())) {
-            foreach ($this->request->getRouteParams() as $key => $value) {
-                $this->urlParams[] = $value;
-            }
-        }
 
         if (is_array($callback)) {
-            $reflector = new ReflectionClass($callback[0]);
-            $parameters = $reflector->getConstructor()?->getParameters() ?? [];
-            if (isset($parameters)) {
-                $resolveDependencies = array_map(function (ReflectionParameter $parameter) use ($service) {
-                    $resolvedClass = $parameter->getType()->getName();
-                    $serviceClass = $service->resolveDependency->services[$resolvedClass] ?? $resolvedClass;
-                    if ($serviceClass instanceof $resolvedClass) {
-                        return new $resolvedClass();
+            $controllerClass = $callback[0];
+            $actionMethod = $callback[1];
+
+            $reflector = new \ReflectionClass($controllerClass);
+
+            // Resolve constructor dependencies
+            $constructor = $reflector->getConstructor();
+            $constructorDependencies = [];
+
+            if ($constructor) {
+                $constructorParameters = $constructor->getParameters();
+
+                foreach ($constructorParameters as $parameter) {
+                    $paramType = $parameter->getType();
+                    $isBuiltin = $paramType && $paramType->isBuiltin();
+
+                    if ($paramType && !$isBuiltin) {
+                        $resolvedClass = $paramType->getName();
+
+                        // Handle interfaces and resolve through the container
+                        if (interface_exists($resolvedClass)) {
+                            if (!$service->has($resolvedClass)) {
+                                throw new \Exception("Cannot resolve interface '$resolvedClass'");
+                            }
+                            $constructorDependencies[] = $service->get($resolvedClass);
+                        }
+                        // Handle Eloquent models or other class dependencies
+                        elseif (is_subclass_of($resolvedClass, \Illuminate\Database\Eloquent\Model::class)) {
+                            $modelId = $routeParams[$parameter->getName()] ?? null;
+                            if ($modelId) {
+                                $constructorDependencies[] = $resolvedClass::findOrFail($modelId);
+                            } else {
+                                $constructorDependencies[] = $service->get($resolvedClass);
+                            }
+                        } else {
+                            $constructorDependencies[] = $service->get($resolvedClass);
+                        }
+                    } else {
+                        throw new \Exception("Cannot resolve built-in type for constructor parameter '{$parameter->getName()}'");
                     }
-                    return new $serviceClass();
-                }, $parameters);
+                }
             }
 
-            $callback[0] = new $callback[0](...$resolveDependencies);
-            $reflector = new ReflectionClass($callback[0]);
-            $actionMethod = $callback[1];
-            $parameters = $reflector->getMethod($actionMethod)?->getParameters() ?? [];
+            // Instantiate the controller with constructor dependencies
+            $controllerInstance = new $controllerClass(...$constructorDependencies);
 
-            $resolveDependencies = array_map(function (
-                ReflectionParameter $parameter
-            ) use ($service) {
-                $resolvedClass = $parameter->getType()?->getName();
-                if (!is_null($resolvedClass)) {
-                    $serviceClass = $service->resolveDependency->services[$resolvedClass] ?? $resolvedClass;
-                    if ($resolvedClass instanceof $serviceClass) {
-                        return new $resolvedClass();
+            // Resolve method (action) parameters
+            $method = $reflector->getMethod($actionMethod);
+            $methodParameters = $method->getParameters();
+
+            foreach ($methodParameters as $parameter) {
+                $paramName = $parameter->getName();
+                $paramType = $parameter->getType();
+                $isBuiltin = $paramType && $paramType->isBuiltin();
+
+                if ($paramType && !$isBuiltin) {
+                    $resolvedClass = $paramType->getName();
+
+                    // Handle models (e.g., User)
+                    if (is_subclass_of($resolvedClass, \Illuminate\Database\Eloquent\Model::class)) {
+                        // Check if route has a parameter (like an ID for the model)
+                        $modelId = $routeParams[$paramName] ?? null;
+                        if ($modelId) {
+                            $resolveDependencies[] = $resolvedClass::findOrFail($modelId);
+                        } else {
+                            // Otherwise, resolve the model without an ID
+                            $resolveDependencies[] = $service->get($resolvedClass);
+                        }
+                    } else {
+                        // For other classes (like Request, etc.)
+                        $resolveDependencies[] = $service->get($resolvedClass);
                     }
-
-                    return new $serviceClass();
+                } else if (isset($routeParams[$paramName])) {
+                    // If the parameter is in the route parameters (like a scalar ID)
+                    $resolveDependencies[] = $routeParams[$paramName];
+                } else if ($parameter->isOptional()) {
+                    // Handle optional parameters with default values
+                    $resolveDependencies[] = $parameter->getDefaultValue();
+                } else {
+                    throw new \Exception("Cannot resolve parameter '$paramName' in route callback");
                 }
-            }, $parameters);
+            }
+
+            // Call the controller action with resolved dependencies
+            return call_user_func([$controllerInstance, $actionMethod], ...$resolveDependencies);
         }
 
-        return call_user_func(
-            $callback,
-            ...array_merge(
-                array_filter($this->urlParams),
-                array_filter($resolveDependencies)
-            )
-        );
+        return call_user_func($callback, ...array_filter($this->urlParams));
     }
 }

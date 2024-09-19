@@ -19,11 +19,8 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
  */
 abstract class Model extends BaseModel
 {
-    // No additional methods or properties are added here as this
-    // class serves as a base class for other models. Any common
-    // functionality or properties should be defined in subclasses.
-
-    // PHP 8.3 improvements:
-    // - Use readonly properties if any model properties should be immutable
-    // - Attributes can be used for automatic property definitions
+    public function __construct()
+    {
+        parent::__construct([]);
+    }
 }
