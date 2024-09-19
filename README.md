@@ -65,12 +65,11 @@ MII, A basic PHP MVC framework designed in a way that you feel like you are work
 
 ## How to Install
 We can easily set up and install this application with a few steps. Before using this application, a minimum `PHP 8.3` version is needed.
-# Create a new project
+## Create a new project
 `composer create-project mii/mii example-app`
 
 - Step 1: Go to the project directory with this command `cd example-app`
-- Step 2: Run `composer update`
-- Step 3: Start the development server by running this command `php -S localhost:8000`
+- Step 2: Start the development server by running this command `php -S localhost:8000`
 
 <a name="section-2"></a>
 
@@ -86,97 +85,6 @@ use App\Http\Controllers\ExampleController;
 
 Route::get('/', [ExampleController::class, 'index']);
 Route::get('/about', [ExampleController::class, 'about']);
-```
-
-<a name="section-3"></a>
-
-## Binding Interface to Service Class
-To bind the interface with your service class, just update `App\Providers\AppServiceProvider.php`.
-
-```php
-<?php
-
-namespace App\Providers;
-
-use Mii\Container;
-use App\Services\StripePaymentService;
-use App\Contracts\PaymentServiceContract;
-
-class AppServiceProvider extends Container
-{
-    public function register()
-    {  
-       //Remember, the global request() helper is available here. You can get input value here like
-
-       //request()->input('payment_type')
-       
-       $this->bind(PaymentServiceContract::class, StripePaymentService::class);
-    }
-}
-```
-
-<a name="section-4"></a>
-
-## Dependency Injection
-Now look at that, how you can use dependency injection.
-```php
-
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\User;
-use App\Models\Post;
-use Mii\Request;
-use App\Contracts\PaymentServiceContract;
-
-class ExampleController extends Controller
-{   
-    /**
-     * You can pass as many class as you want as parameter
-     */
-    public function index(
-        Request $request, //class dependency injection
-        User $user, //class dependency injection
-        Post $post, //class dependency injection
-        PaymentServiceContract $payment //interface dependency injection
-    ) {
-        
-       //Use any eloquent query of Laravel
-    }
-
-    public function about()
-    {
-        return view('about.index');
-    }
-}
-```
-<a name="section-13"></a>
-
-## Constructor Dependency Injection
-Now look at that, how you can use dependency injection using constructor.
-```php
-
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\User;
-use App\Models\Post;
-use Mii\Request;
-use App\Contracts\PaymentServiceContract;
-
-class ExampleController extends Controller
-{   
-    /**
-     * Look at that, we are passing interface, models. How cool it is
-     */
-    public function __construct(
-        public PaymentServiceContract $payment, 
-        public User $user, 
-        public Post $post,
-    ) {}
-}
 ```
 
 <a name="section-5"></a>
@@ -688,6 +596,97 @@ If you submit a post request form, then you must be provide `csrf_token` with yo
     @csrf
     <input type="submit" value="submit">
 </form>
+```
+
+<a name="section-3"></a>
+
+## Binding Interface to Service Class
+To bind the interface with your service class, just update `App\Providers\AppServiceProvider.php`.
+
+```php
+<?php
+
+namespace App\Providers;
+
+use Mii\Container;
+use App\Services\StripePaymentService;
+use App\Contracts\PaymentServiceContract;
+
+class AppServiceProvider extends Container
+{
+    public function register()
+    {  
+       //Remember, the global request() helper is available here. You can get input value here like
+
+       //request()->input('payment_type')
+       
+       $this->bind(PaymentServiceContract::class, StripePaymentService::class);
+    }
+}
+```
+
+<a name="section-4"></a>
+
+## Dependency Injection
+Now look at that, how you can use dependency injection.
+```php
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\Models\Post;
+use Mii\Request;
+use App\Contracts\PaymentServiceContract;
+
+class ExampleController extends Controller
+{   
+    /**
+     * You can pass as many class as you want as parameter
+     */
+    public function index(
+        Request $request, //class dependency injection
+        User $user, //class dependency injection
+        Post $post, //class dependency injection
+        PaymentServiceContract $payment //interface dependency injection
+    ) {
+        
+       //Use any eloquent query of Laravel
+    }
+
+    public function about()
+    {
+        return view('about.index');
+    }
+}
+```
+<a name="section-13"></a>
+
+## Constructor Dependency Injection
+Now look at that, how you can use dependency injection using constructor.
+```php
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\Models\Post;
+use Mii\Request;
+use App\Contracts\PaymentServiceContract;
+
+class ExampleController extends Controller
+{   
+    /**
+     * Look at that, we are passing interface, models. How cool it is
+     */
+    public function __construct(
+        public PaymentServiceContract $payment, 
+        public User $user, 
+        public Post $post,
+    ) {}
+}
 ```
 
 <a name="section-18"></a>
