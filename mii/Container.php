@@ -5,11 +5,10 @@ namespace Mii;
 use Closure;
 use ReflectionClass;
 use ReflectionParameter;
-use Psr\Container\ContainerInterface;
 use Mii\Exceptions\CouldNotResolveClassException;
 use Mii\Exceptions\CouldNotResolveAbstractionException;
 
-class Container implements ContainerInterface
+class Container
 {
     /**
      * Array to hold service definitions.

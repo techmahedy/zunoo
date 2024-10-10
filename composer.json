@@ -7,6 +7,25 @@
     "framework",
     "mii"
   ],
+  "authors": [
+    {
+      "name": "mahedi hasan"
+    }
+  ],
+  "require": {
+    "php": "^8.3",
+    "vlucas/phpdotenv": "^5.5",
+    "illuminate/database": "^11.0",
+    "illuminate/events": "^11.0",
+    "spatie/ignition": "^1.11",
+    "illuminate/collections": "^11.0",
+    "monolog/monolog": "^3.0",
+    "symfony/var-dumper": "^7.1",
+    "robmorgan/phinx": "^0.16.1"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.23"
+  },
   "autoload": {
     "psr-4": {
       "App\\": "app/",
@@ -16,24 +35,8 @@
       "mii/Helpers/helpers.php"
     ]
   },
-  "authors": [
-    {
-      "name": "mahedi hasan"
-    }
-  ],
-  "require": {
-    "php": "^8.3",
-    "psr/container": "^2.0",
-    "vlucas/phpdotenv": "^5.5",
-    "illuminate/database": "^11.0",
-    "illuminate/events": "^11.0",
-    "spatie/ignition": "^1.11",
-    "illuminate/collections": "^11.0",
-    "monolog/monolog": "^3.0",
-    "fakerphp/faker": "^1.23",
-    "symfony/var-dumper": "^7.1",
-    "robmorgan/phinx": "^0.16.1"
-  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
   "scripts": {
     "post-create-project-cmd": [
       "MII\\Installer::postCreateProject"
@@ -41,7 +44,5 @@
     "post-root-package-install": [
       "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
     ]
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true
+  }
 }

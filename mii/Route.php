@@ -3,7 +3,6 @@
 namespace Mii;
 
 use App\Http\Kernel;
-use ReflectionClass;
 use Mii\Request;
 use Mii\Middleware\Middleware;
 
@@ -160,7 +159,7 @@ class Route extends Kernel
      * @throws \ReflectionException If there is an issue with reflection.
      * @throws \Exception If the route callback is not defined.
      */
-    public function resolve(Middleware $middleware, $service): mixed
+    public function resolve(?Middleware $middleware, $service): mixed
     {
         // Process middleware
         $middleware->handle($this->request);
