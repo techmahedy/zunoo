@@ -50,18 +50,13 @@ final class Application extends AppServiceProvider
      *
      * Initializes the dependency resolver, route handler, and middleware handler.
      *
-     * @param Route $route The route handler instance.
-     * @param Middleware $middleware The middleware handler instance.
+     * @param Route $route
+     * @param Middleware $middleware
+     * @param Container $container
      */
     public function __construct(Route $route, Middleware $middleware, Container $container)
     {
-        /**
-         * Register application dependency injection.
-         *
-         * This method should handle the registration of dependencies for the application.
-         *
-         * @return void The result of the dependency registration.
-         */
+        // handle the registration of dependencies for the application.
         $this->resolveDependency = $this->register();
 
         // Assign the route handler instance.
@@ -70,6 +65,7 @@ final class Application extends AppServiceProvider
         // Assign the middleware handler instance.
         $this->middleware = $middleware;
 
+        // Assign service container
         $this->container = $container;
     }
 
@@ -81,7 +77,7 @@ final class Application extends AppServiceProvider
      * @param ContractsMiddleware $middleware The middleware to be applied.
      * @return mixed The result of applying the middleware.
      */
-    public function applyMiddleware(ContractsMiddleware $middleware): mixed
+    public function applyMiddleware(ContractsMiddleware $middleware)
     {
         // Delegate the middleware application to the middleware handler.
         return $this->middleware->applyMiddleware($middleware);

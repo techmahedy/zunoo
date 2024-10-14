@@ -4,6 +4,11 @@ namespace Mii;
 
 class Container
 {
+    /**
+     * Array to hold service definitions.
+     *
+     * @var array<string, mixed>
+     */
     private static array $bindings = [];
 
     public function bind(string $abstract, callable $concrete): void
@@ -11,8 +16,19 @@ class Container
         self::$bindings[$abstract] = $concrete;
     }
 
+    /**
+     * Bind a service to the container.
+     *
+     * @param string $key The service name or class name (could be an interface).
+     * @return mixed
+     */
     public function get(string $abstract)
     {
+        // Wrap value into a closure if it's a class name
+        if (!isset(self::$bindings[$abstract])) {
+            return new $abstract();
+        }
+
         return self::$bindings[$abstract]();
     }
 

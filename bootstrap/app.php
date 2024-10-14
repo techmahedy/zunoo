@@ -56,7 +56,7 @@ $capsule->bootEloquent();
 |--------------------------------------------------------------------------
 |
 | Here we create the application instance, providing it with the necessary
-| components: Route, Request, and Middleware.
+| components: Route, Request, Middleware and Container.
 |
 */
 $app = new Application(
