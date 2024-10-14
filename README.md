@@ -616,11 +616,22 @@ class AppServiceProvider extends Container
 {
     public function register()
     {  
-       //Remember, the global request() helper is available here. You can get input value here like
+        // Remember, the global request() helper is available here. You can get input value here like
 
-       //request()->input('payment_type')
-       
-       $this->bind(PaymentServiceContract::class, StripePaymentService::class);
+        //request()->input('payment_type')
+        
+        $this->bind(PaymentServiceContract::class, function() {
+            return new StripePaymentService();
+        });
+
+        // Register any custom blade directives, macro or your own custom builds
+        //
+        // Place service bindings or provider registrations here.
+        //
+        // Example:
+        // $this->bind(SomeService::class, function() {
+        //     return new SomeService();
+        // });
     }
 }
 ```
