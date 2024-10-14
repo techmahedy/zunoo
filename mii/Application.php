@@ -7,7 +7,7 @@ use Mii\Middleware\Middleware;
 use App\Providers\AppServiceProvider;
 use Mii\Middleware\Contracts\Middleware as ContractsMiddleware;
 
-class Application extends AppServiceProvider
+final class Application extends AppServiceProvider
 {
     /**
      * The version of the application.
@@ -43,6 +43,8 @@ class Application extends AppServiceProvider
      */
     protected Middleware $middleware;
 
+    protected Container $container;
+
     /**
      * Constructs the Application instance.
      *
@@ -51,7 +53,7 @@ class Application extends AppServiceProvider
      * @param Route $route The route handler instance.
      * @param Middleware $middleware The middleware handler instance.
      */
-    public function __construct(Route $route, Middleware $middleware)
+    public function __construct(Route $route, Middleware $middleware, Container $container)
     {
         /**
          * Register application dependency injection.
@@ -67,6 +69,8 @@ class Application extends AppServiceProvider
 
         // Assign the middleware handler instance.
         $this->middleware = $middleware;
+
+        $this->container = $container;
     }
 
     /**
@@ -98,7 +102,7 @@ class Application extends AppServiceProvider
         // middleware handler, and dependency resolver.
         echo $this->route->resolve(
             $this->middleware,
-            $this->resolveDependency
+            $this->container
         );
     }
 }

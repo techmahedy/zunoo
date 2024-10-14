@@ -9,6 +9,7 @@ use Illuminate\Events\Dispatcher;
 use Mii\Middleware\Middleware;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Mii\Container as MiiContainer;
 
 // Load environment variables from .env file
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
@@ -60,8 +61,10 @@ $capsule->bootEloquent();
 */
 $app = new Application(
     new Route(new Request()),
-    new Middleware()
+    new Middleware(),
+    new MiiContainer
 );
+
 
 /*
 |--------------------------------------------------------------------------

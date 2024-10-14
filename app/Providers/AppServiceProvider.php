@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\TestClass;
+use App\TestInterface;
 use Mii\Container;
 
 class AppServiceProvider extends Container
@@ -15,15 +17,8 @@ class AppServiceProvider extends Container
    *
    * @return void
    */
-  public function register()
+  public function register(): void
   {
-    // Register any custom blade directives, macro or your own custom builds
-    //
-    // Place service bindings or provider registrations here.
-    //
-    // Example:
-    // $this->bind(SomeService::class, function() {
-    //     return new SomeService();
-    // });
+    $this->bind(TestInterface::class, fn() => new TestClass());
   }
 }

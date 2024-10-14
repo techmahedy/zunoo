@@ -3,6 +3,7 @@
 namespace Mii;
 
 use App\Http\Kernel;
+use App\TestInterface;
 use Mii\Request;
 use Mii\Middleware\Middleware;
 
@@ -154,12 +155,12 @@ class Route extends Kernel
      * Resolves and executes the route callback with the middleware and dependencies.
      *
      * @param Middleware $middleware The middleware instance.
-     * @param $service The service container for resolving dependencies.
+     * @param Container $container The container container for resolving dependencies.
      * @return mixed The result of the callback execution.
      * @throws \ReflectionException If there is an issue with reflection.
      * @throws \Exception If the route callback is not defined.
      */
-    public function resolve(?Middleware $middleware, $service): mixed
+    public function resolve(?Middleware $middleware, $container): mixed
     {
         // Process middleware
         $middleware->handle($this->request);
@@ -197,10 +198,10 @@ class Route extends Kernel
 
                         // Handle interfaces and resolve through the container
                         if (interface_exists($resolvedClass)) {
-                            if (!$service->has($resolvedClass)) {
+                            if (!$container->has($resolvedClass)) {
                                 throw new \Exception("Cannot resolve interface '$resolvedClass'");
                             }
-                            $constructorDependencies[] = $service->get($resolvedClass);
+                            $constructorDependencies[] = $container->get($resolvedClass);
                         }
                         // Handle Eloquent models or other class dependencies
                         elseif (is_subclass_of($resolvedClass, \Illuminate\Database\Eloquent\Model::class)) {
@@ -208,10 +209,10 @@ class Route extends Kernel
                             if ($modelId) {
                                 $constructorDependencies[] = $resolvedClass::findOrFail($modelId);
                             } else {
-                                $constructorDependencies[] = $service->get($resolvedClass);
+                                $constructorDependencies[] = $container->get($resolvedClass);
                             }
                         } else {
-                            $constructorDependencies[] = $service->get($resolvedClass);
+                            $constructorDependencies[] = $container->get($resolvedClass);
                         }
                     } else {
                         throw new \Exception("Cannot resolve built-in type for constructor parameter '{$parameter->getName()}'");
@@ -242,11 +243,11 @@ class Route extends Kernel
                             $resolveDependencies[] = $resolvedClass::findOrFail($modelId);
                         } else {
                             // Otherwise, resolve the model without an ID
-                            $resolveDependencies[] = $service->get($resolvedClass);
+                            $resolveDependencies[] = $container->get($resolvedClass);
                         }
                     } else {
                         // For other classes (like Request, etc.)
-                        $resolveDependencies[] = $service->get($resolvedClass);
+                        $resolveDependencies[] = $container->get($resolvedClass);
                     }
                 } else if (isset($routeParams[$paramName])) {
                     // If the parameter is in the route parameters (like a scalar ID)
