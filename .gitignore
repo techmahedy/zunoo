@@ -4,3 +4,7 @@
 /.vscode
 .env
 !.env.example
+/.phpunit.cache
+/vendor
+composer.phar
+composer.lock
