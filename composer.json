@@ -1,7 +1,7 @@
 {
   "name": "zunoo/zunoo",
   "type": "project",
-  "description": "The skeleton application for the Zunoo framework.",
+  "description": "The skeleton application for the Zunoo framework",
   "license": "MIT",
   "keywords": [
     "framework",

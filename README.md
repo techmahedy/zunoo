@@ -66,7 +66,7 @@ Zuno, A basic PHP MVC framework designed in a way that you feel like you are wor
 ## How to Install
 We can easily set up and install this application with a few steps. Before using this application, a minimum `PHP 8.3` version is needed.
 ## Create a new project
-`composer create-project Zuno/Zuno example-app`
+`composer create-project zunoo/zunoo example-app`
 
 - Step 1: Go to the project directory with this command `cd example-app`
 - Step 2: Start the development server by running this command `php -S localhost:8000`
