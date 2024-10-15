@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Mii\Container;
+use Zuno\Container;
 
 class AppServiceProvider extends Container
 {

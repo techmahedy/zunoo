@@ -10,20 +10,20 @@ return [
     ],
 
     // Base class for migrations
-    'migration_base_class' => 'Mii\Migration\Migration',
+    'migration_base_class' => 'Zuno\Migration\Migration',
 
     'environments' => [
         // Default table to track migrations
         'default_migration_table' => 'phinxlog',
 
-        // Configuration for the 'mii' environment
-        'mii' => [
+        // Configuration for the 'Zuno' environment
+        'Zuno' => [
             // Database adapter type
             'adapter' => 'mysql',
             // Database host
             'host' => 'localhost',
             // Database name
-            'name' => 'mii',
+            'name' => 'Zuno',
             // Database user
             'user' => 'mahedi',
             // Database password

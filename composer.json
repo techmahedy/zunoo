@@ -1,45 +1,35 @@
 {
-  "name": "mii/mii",
+  "name": "zunoo/zunoo",
   "type": "project",
-  "description": "The skeleton application for the MII framework.",
+  "description": "The skeleton application for the Zunoo framework.",
   "license": "MIT",
   "keywords": [
     "framework",
-    "mii"
+    "Zunoo"
   ],
   "authors": [
     {
-      "name": "mahedi hasan"
+      "name": "mahedi hasan",
+      "email": "mahedy150101@gmail.com"
     }
   ],
   "require": {
     "php": "^8.3",
-    "vlucas/phpdotenv": "^5.5",
-    "illuminate/database": "^11.0",
-    "illuminate/events": "^11.0",
-    "spatie/ignition": "^1.11",
-    "illuminate/collections": "^11.0",
-    "monolog/monolog": "^3.0",
-    "symfony/var-dumper": "^7.1",
-    "robmorgan/phinx": "^0.16.1"
+    "zuno/zuno": "^1.0"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23"
   },
   "autoload": {
     "psr-4": {
-      "App\\": "app/",
-      "Mii\\": "mii/"
-    },
-    "files": [
-      "mii/Helpers/helpers.php"
-    ]
+      "App\\": "app/"
+    }
   },
   "minimum-stability": "stable",
   "prefer-stable": true,
   "scripts": {
     "post-create-project-cmd": [
-      "MII\\Installer::postCreateProject"
+      "Zuno\\Installer::postCreateProject"
     ],
     "post-root-package-install": [
       "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

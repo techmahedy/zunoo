@@ -1,15 +1,15 @@
 <?php
 
 use Dotenv\Dotenv;
-use Mii\Route;
-use Mii\Request;
-use Mii\Application;
+use Zuno\Route;
+use Zuno\Request;
+use Zuno\Application;
 use Spatie\Ignition\Ignition;
 use Illuminate\Events\Dispatcher;
-use Mii\Middleware\Middleware;
+use Zuno\Middleware\Middleware;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Mii\Container as MiiContainer;
+use Zuno\Container as ZunoContainer;
 
 // Load environment variables from .env file
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
@@ -62,7 +62,7 @@ $capsule->bootEloquent();
 $app = new Application(
     new Route(new Request()),
     new Middleware(),
-    new MiiContainer
+    new ZunoContainer
 );
 
 

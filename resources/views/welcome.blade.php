@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>MII-{{ \Mii\Application::VERSION }}</title>
+        <title>Zuno-{{ \Zuno\Application::VERSION }}</title>
         <style>
             @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
 
@@ -134,12 +134,15 @@
         <main class="site-main" style="margin-top: 100px;">
             <section class="main-header">
                 <article>
-                    <h1>Welcome to MII Framework</h1>
+                    <h1>Welcome to Zuno Framework</h1>
                     <p>
-                        MII is a robust and versatile web application framework designed to streamline the development process and enhance productivity. It provides a comprehensive set of tools and features that cater to modern web development needs, integrating seamlessly with Adobe technologies to offer a cohesive development experience
+                        Zuno is a robust and versatile web application framework designed to streamline the development
+                        process and enhance productivity. It provides a comprehensive set of tools and features that
+                        cater to modern web development needs, integrating seamlessly with Adobe technologies to offer a
+                        cohesive development experience
                     </p>
                     <a href="https://github.com/techmahedy/mini-laravel">Documentation</a>
-                    <h3>Version: {{ \Mii\Application::VERSION }}</h3>
+                    <h3>Version: {{ \Zuno\Application::VERSION }}</h3>
                 </article>
                 <svg xmlns="http://www.w3.org/2000/svg" height="1em"
                     viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->

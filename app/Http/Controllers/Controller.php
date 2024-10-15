@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Mii\Controllers\Controller as BaseController;
+use Zuno\Controllers\Controller as BaseController;
 
-class Controller extends BaseController
-{
-}
+class Controller extends BaseController {}

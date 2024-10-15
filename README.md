@@ -1,26 +1,26 @@
-## About MII
+## About Zuno
 
-MII is a robust and versatile web application framework designed to streamline the development process and enhance productivity. It provides a comprehensive set of tools and features that cater to modern web development needs, integrating seamlessly with Adobe technologies to offer a cohesive development experience.
+Zuno is a robust and versatile web application framework designed to streamline the development process and enhance productivity. It provides a comprehensive set of tools and features that cater to modern web development needs, integrating seamlessly with Adobe technologies to offer a cohesive development experience.
 
 ### Key Features
 
-- **Route Management**: MII simplifies route definition and management, allowing developers to easily set up routes, handle parameters, and manage requests with minimal configuration. It supports both single and multiple route parameters to cater to complex routing needs.
+- **Route Management**: Zuno simplifies route definition and management, allowing developers to easily set up routes, handle parameters, and manage requests with minimal configuration. It supports both single and multiple route parameters to cater to complex routing needs.
 
-- **Database Integration**: The framework offers powerful database tools, including support for migrations, seeding, and query building. MII’s database layer ensures efficient data management and interaction, with built-in support for models and database connections.
+- **Database Integration**: The framework offers powerful database tools, including support for migrations, seeding, and query building. Zuno’s database layer ensures efficient data management and interaction, with built-in support for models and database connections.
 
-- **View Handling**: With MII, creating and managing views is straightforward. The framework supports custom Blade directives, allowing developers to extend view functionalities as needed.
+- **View Handling**: With Zuno, creating and managing views is straightforward. The framework supports custom Blade directives, allowing developers to extend view functionalities as needed.
 
-- **Middleware Support**: MII includes support for both global and route-specific middleware, giving developers the flexibility to implement application-wide and route-specific logic easily.
+- **Middleware Support**: Zuno includes support for both global and route-specific middleware, giving developers the flexibility to implement application-wide and route-specific logic easily.
 
 - **Validation and Security**: The framework provides robust validation mechanisms and security features such as CSRF token management, ensuring that data handling and form submissions are both secure and reliable.
 
-- **Dependency Injection**: MII promotes clean and maintainable code with its dependency injection system, supporting both constructor and method injection, and allowing for easy binding of interfaces to service classes.
+- **Dependency Injection**: Zuno promotes clean and maintainable code with its dependency injection system, supporting both constructor and method injection, and allowing for easy binding of interfaces to service classes.
 
-- **Session and Logging**: MII offers comprehensive session management and logging capabilities, enabling developers to manage user sessions and track application logs effectively.
+- **Session and Logging**: Zuno offers comprehensive session management and logging capabilities, enabling developers to manage user sessions and track application logs effectively.
 
 - **Collections and Macros**: The framework includes support for collections and custom macros, providing developers with additional tools to manipulate data and extend functionality as required.
 
-MII is designed to be intuitive and developer-friendly, with a focus on providing the essential features needed for modern web applications while integrating seamlessly with Adobe technologies for enhanced capabilities.
+Zuno is designed to be intuitive and developer-friendly, with a focus on providing the essential features needed for modern web applications while integrating seamlessly with Adobe technologies for enhanced capabilities.
 
 <a name="section-1"></a>
 # How to use
@@ -60,13 +60,13 @@ MII is designed to be intuitive and developer-friendly, with a focus on providin
 <a name="section-1"></a>
 
 ## About
-MII, A basic PHP MVC framework designed in a way that you feel like you are working in a Laravel application. In this framework, you will get all the basic features of a web application like routing, middleware, dependency injection, eloquent relationship, model, blade template engine interface injection, and many more. Test it and if you like, please give it a star.
+Zuno, A basic PHP MVC framework designed in a way that you feel like you are working in a Laravel application. In this framework, you will get all the basic features of a web application like routing, middleware, dependency injection, eloquent relationship, model, blade template engine interface injection, and many more. Test it and if you like, please give it a star.
 <a name="section-14"></a>
 
 ## How to Install
 We can easily set up and install this application with a few steps. Before using this application, a minimum `PHP 8.3` version is needed.
 ## Create a new project
-`composer create-project mii/mii example-app`
+`composer create-project Zuno/Zuno example-app`
 
 - Step 1: Go to the project directory with this command `cd example-app`
 - Step 2: Start the development server by running this command `php -S localhost:8000`
@@ -80,7 +80,7 @@ To define the route, navigate to this file and update
 
 <?php
 
-use Mii\Route;
+use Zuno\Route;
 use App\Http\Controllers\ExampleController;
 
 Route::get('/', [ExampleController::class, 'index']);
@@ -95,17 +95,17 @@ Now look at Model, how you can use it
 
 <?php
 
-use Mii\Model;
+use Zuno\Model;
 
 /**
  * User Model
  *
- * This class represents the User model in the Mii framework. It extends the base Model class provided
- * by the Mii framework, allowing you to interact with the 'users' table in the database using Eloquent-like
+ * This class represents the User model in the Zuno framework. It extends the base Model class provided
+ * by the Zuno framework, allowing you to interact with the 'users' table in the database using Eloquent-like
  * features.
  *
  * You can define your model-specific methods and properties here. This model can use various features
- * provided by the Mii framework, similar to how Laravel models work.
+ * provided by the Zuno framework, similar to how Laravel models work.
  *
  * For example, you can define relationships, accessors, mutators, and more.
  *
@@ -116,7 +116,7 @@ class User extends Model
     /**
      * Model Table Name
      *
-     * The name of the database table associated with this model. By default, Mii will assume the table
+     * The name of the database table associated with this model. By default, Zuno will assume the table
      * name is the plural form of the model name. You can override this property if your table name does
      * not follow this convention.
      *
@@ -193,8 +193,8 @@ To work with views, default view file path inside `resources/views`. Now passing
 ```php
 <?php
 
-use Mii\Route;
-use Mii\Application;
+use Zuno\Route;
+use Zuno\Application;
 
 Route::get('/', function () {
     $version = Application::VERSION;
@@ -244,7 +244,7 @@ You can pass single or multiple parameter with route as like below
 ```php
 <?php
 
-use Mii\Route;
+use Zuno\Route;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/user/{id}', [ProfileController::class, 'index']);
@@ -304,7 +304,7 @@ Request is most important thing when we work in a web application. We can use Re
 
 namespace App\Http\Controllers;
 
-use Mii\Request;
+use Zuno\Request;
 
 class ExampleController extends Controller
 {
@@ -363,8 +363,8 @@ Now update your middleware like
 namespace App\Http\Middleware;
 
 use Closure;
-use Mii\Request;
-use Mii\Middleware\Contracts\Middleware;
+use Zuno\Request;
+use Zuno\Middleware\Contracts\Middleware;
 
 class ExampleMiddleware implements Middleware
 {
@@ -403,7 +403,7 @@ And update your route like:
 ```php
 <?php
 
-use Mii\Route;
+use Zuno\Route;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/', [ProfileController::class,'index'])->middleware('auth');
@@ -417,8 +417,8 @@ Now update your middleware like
 namespace App\Http\Middleware;
 
 use Closure;
-use Mii\Request;
-use Mii\Middleware\Contracts\Middleware;
+use Zuno\Request;
+use Zuno\Middleware\Contracts\Middleware;
 
 class Authenticate implements Middleware
 {
@@ -441,15 +441,15 @@ class Authenticate implements Middleware
 <a name="section-23"></a>
 
 ## Database Query Builder
-Mii has its own custom query builder for fetching database query. See the very simple example
+Zuno has its own custom query builder for fetching database query. See the very simple example
 
 ```php
 <?php
 
 namespace App\Http\Controllers;
 
-use Mii\Database\DB;
-use Mii\Controllers\Controller;
+use Zuno\Database\DB;
+use Zuno\Controllers\Controller;
 
 class ExampleController extends Controller
 {
@@ -489,7 +489,7 @@ We can define custom blade directive. To define it, update `App\Providers\AppSer
 
 namespace App\Providers;
 
-use Mii\Container;
+use Zuno\Container;
 
 class AppServiceProvider extends Container
 {
@@ -514,7 +514,7 @@ We can validate from and can show error message in blade file very easily. To va
 ```php
 <?php
 
-use Mii\Route;
+use Zuno\Route;
 use App\Http\Controllers\ExampleController;
 
 Route::get('/register', [ExampleController::class, 'index']);
@@ -527,8 +527,8 @@ And now we can update `App\Http\Controllers\ExampleController.php` like
 
 namespace App\Http\Controllers;
 
-use Mii\Request;
-use Mii\Controllers\Controller;
+use Zuno\Request;
+use Zuno\Controllers\Controller;
 
 class ExampleController extends Controller
 {
@@ -608,7 +608,7 @@ To bind the interface with your service class, just update `App\Providers\AppSer
 
 namespace App\Providers;
 
-use Mii\Container;
+use Zuno\Container;
 use App\Services\StripePaymentService;
 use App\Contracts\PaymentServiceContract;
 
@@ -648,7 +648,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Post;
-use Mii\Request;
+use Zuno\Request;
 use App\Contracts\PaymentServiceContract;
 
 class ExampleController extends Controller
@@ -684,7 +684,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Post;
-use Mii\Request;
+use Zuno\Request;
 use App\Contracts\PaymentServiceContract;
 
 class ExampleController extends Controller
@@ -703,13 +703,13 @@ class ExampleController extends Controller
 <a name="section-18"></a>
 
 ## Collection & Macro
-Like Laravel framework, in this MII framework, you can also work with Laravel collection and you can create your own custom macro. To create a custom macro, just update service provider `App\Providers\AppServiceProvider.php` like: 
+Like Laravel framework, in this Zuno framework, you can also work with Laravel collection and you can create your own custom macro. To create a custom macro, just update service provider `App\Providers\AppServiceProvider.php` like: 
 ```php
 <?php
 
 namespace App\Providers;
 
-use Mii\Container;
+use Zuno\Container;
 use Illuminate\Support\Collection;
 
 class AppServiceProvider extends Container
@@ -736,7 +736,7 @@ And now we can use it like:
 ```php
 <?php
 
-use Mii\Route;
+use Zuno\Route;
 
 Route::get('/', function () {
 
@@ -767,7 +767,7 @@ if(session()->has('key')){
 <a name="section-20"></a>
 
 ## Log
-We can easily print important messages in a log file which is located inside `storage\logs\mii.log`. To print a message, mii provide `logger()` helper function, you just need to follow this
+We can easily print important messages in a log file which is located inside `storage\logs\Zuno.log`. To print a message, Zuno provide `logger()` helper function, you just need to follow this
 ```php
 <?php
 
@@ -779,7 +779,7 @@ logger()->info('Hello');
 <a name="section-21"></a>
 
 ## Database and Migration
-MII allow you to create migration. To create migration, MII uses `CakePHP`'s `phinx`. So to create a migration file first you need to update the configuration file `environments` array like:
+Zuno allow you to create migration. To create migration, Zuno uses `CakePHP`'s `phinx`. So to create a migration file first you need to update the configuration file `environments` array like:
 ### `config.php` 
 
 ```php
@@ -812,7 +812,7 @@ Now this command will generate a migration file in the following path with the e
 
 declare(strict_types=1);
 
-use Mii\Migration\Migration;
+use Zuno\Migration\Migration;
 
 final class Post extends Migration
 {
@@ -851,7 +851,7 @@ Now see the documentation of `phinx` [Documentation](https://book.cakephp.org/ph
 <a name="section-22"></a>
 
 ## Database Seeder
-MII allow you to create database seeder file to generate fake date. To create seeder, MII uses `CakePHP`'s `phinx`. So to create a seeder file first you need run below command. Assume we are going to create `PostSeeder`:
+Zuno allow you to create database seeder file to generate fake date. To create seeder, Zuno uses `CakePHP`'s `phinx`. So to create a seeder file first you need run below command. Assume we are going to create `PostSeeder`:
 
 Now run the below command in your project terminal like:
 `php vendor/bin/phinx seed:create PostSeeder -c config.php`

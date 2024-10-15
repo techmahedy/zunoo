@@ -2,7 +2,7 @@
 
 use App\Http\Kernel;
 
-define('MII_START', microtime(true));
+define('Zuno_START', microtime(true));
 
 require_once __DIR__ . '/vendor/autoload.php';
 

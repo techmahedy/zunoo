@@ -6,6 +6,6 @@
 |--------------------------------------------------------------------------
 */
 
-use Mii\Route;
+use Zuno\Route;
 
-Route::get('/', fn () => view('welcome'));
+Route::get('/', fn() => view('welcome'));

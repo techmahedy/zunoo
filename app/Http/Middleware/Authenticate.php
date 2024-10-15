@@ -3,8 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Mii\Request;
-use Mii\Middleware\Contracts\Middleware;
+use Zuno\Request;
+use Zuno\Middleware\Contracts\Middleware;
 
 //! Example middleware
 class Authenticate implements Middleware

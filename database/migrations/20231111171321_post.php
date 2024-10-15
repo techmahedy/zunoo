@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Mii\Migration\Migration;
+use Zuno\Migration\Migration;
 
 final class Post extends Migration
 {

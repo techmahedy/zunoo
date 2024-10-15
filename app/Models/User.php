@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Mii\Model;
+use Zuno\Model;
 
 class User extends Model
 {
