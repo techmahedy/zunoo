@@ -2,7 +2,7 @@
 
 use App\Http\Kernel;
 
-define('Zuno_START', microtime(true));
+define('ZUNO_START', microtime(true));
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -12,12 +12,15 @@ require __DIR__ . '/routes/web.php';
 
 /*
 |--------------------------------------------------------------------------
-| Loading application global middleware
+| Handling the client Request
 |--------------------------------------------------------------------------
+| Once we have the application, we can handle the incoming request using
+| the application's HTTP kernel. Then, we will send the response back
+| to this client's browser, allowing them to enjoy our application.
 */
-foreach ((new Kernel)->middleware as $key => $middeware) {
-    $app->applyMiddleware(new $middeware);
-}
+
+$kernel = $app->make(Kernel::class);
+$kernel->send();
 
 /*
 |--------------------------------------------------------------------------
