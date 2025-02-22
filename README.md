@@ -418,22 +418,27 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Zuno\Request;
-use Zuno\Middleware\Contracts\Middleware;
 
-class Authenticate implements Middleware
+//! Example middleware
+class ExampleMiddleware
 {
     /**
-     * handle.
+     * Handle an incoming request
      *
-     * @param	Request	$request	
-     * @param	Closure	$next   	
-     * @return	mixed
+     * @param Request $request
+     * @param \Closure(\Zuno\Request) $next
+     * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
-        /**
-         * code
-         */
+        // Example
+        // $ip = $_SERVER['REMOTE_ADDR'] ??= '127.0.0.1';
+        // if ($ip === '127.0.0.1') {
+        //     return $next($request);
+        // }
+
+        // dd("{This $ip is bloked}");
+
         return $next($request);
     }
 }

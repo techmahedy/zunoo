@@ -1,11 +1,8 @@
 <?php
 
 return [
-    // Paths configuration for migrations and seeds
     'paths' => [
-        // Directory where migration files are stored
         'migrations' => './database/migrations',
-        // Directory where seed files are stored
         'seeds' => './database/seeds',
     ],
 
@@ -18,18 +15,12 @@ return [
 
         // Configuration for the 'Zuno' environment
         'Zuno' => [
-            // Database adapter type
-            'adapter' => 'mysql',
-            // Database host
-            'host' => 'localhost',
-            // Database name
-            'name' => 'Zuno',
-            // Database user
-            'user' => 'mahedi',
-            // Database password
-            'pass' => '123',
-            // Database port
-            'port' => '3306'
+            'adapter' => 'mysql',  // Database adapter type
+            'host' => 'localhost',  // Database host
+            'name' => 'test', // Database name
+            'user' => 'mahedi', // Database user
+            'pass' => '123456', // Database password
+            'port' => '3306' // Database port
         ]
     ]
 ];
