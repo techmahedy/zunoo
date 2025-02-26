@@ -443,6 +443,17 @@ class ExampleMiddleware
     }
 }
 ```
+
+Buf if you want to define multiple middleware in a single route, you can define middleware like that
+```php
+<?php
+
+use Zuno\Route;
+use App\Http\Controllers\ProfileController;
+
+Route::get('/', [ProfileController::class,'index'])->middleware(['auth', 'is_subscribed']);
+```
+
 <a name="section-23"></a>
 
 ## Database Query Builder
@@ -459,7 +470,7 @@ use Zuno\Controllers\Controller;
 class ExampleController extends Controller
 {
     public function index(Request $request)
-    {   
+    {
         $data = DB::table('users')
             ->select(['id', 'name', 'email'])
             ->where('status', '=', 'active')
@@ -469,12 +480,12 @@ class ExampleController extends Controller
             ->get();
 
         return $data; // this is laravel collection. you can use any collection wrapper in this data.
-        
+
         //you can check a data exists or not like that
         $data = DB::table('users')
             ->where('status', '=', 'active')
             ->exists();
-            
+
         //you can also fetch first row of your table, it will return single collection
         $data = DB::table('users')
             ->where('id', '=', 1)
@@ -538,12 +549,12 @@ use Zuno\Controllers\Controller;
 class ExampleController extends Controller
 {
     public function index()
-    {   
+    {
         return view('user.index');
     }
 
     public function store(Request $request)
-    {   
+    {
         $request->validate([
             'email' => 'required|email|unique:users|min:2|max:100', //unique:users -> here [users] is table name
             'password' => 'required|min:2|max:100',
@@ -620,11 +631,11 @@ use App\Contracts\PaymentServiceContract;
 class AppServiceProvider extends Container
 {
     public function register()
-    {  
+    {
         // Remember, the global request() helper is available here. You can get input value here like
 
         //request()->input('payment_type')
-        
+
         $this->bind(PaymentServiceContract::class, function() {
             return new StripePaymentService();
         });
@@ -916,5 +927,3 @@ Or you can run specific seeder class file lie
 
 Now see the documentation from `phinx` [Documentation](https://book.cakephp.org/phinx/0/en/seeding.html) to learn more.
 
-## Author Blog link:
-[Blog](https://www.laravelia.com)
