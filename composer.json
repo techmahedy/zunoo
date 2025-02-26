@@ -15,7 +15,7 @@
   ],
   "require": {
     "php": "^8.3",
-    "zuno/zuno": "^2.0.3"
+    "zuno/zuno": "^2.0"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23"

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Zuno\Controllers\Controller;
+use App\Http\Controllers\Controller;
 
 class ExampleController extends Controller
 {

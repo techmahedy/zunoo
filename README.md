@@ -227,9 +227,9 @@ For mastering template
   <div id="container">
     <h3>Welcome to <span class="reddish">{{ $title }}</span></h3>
     <p>{{ $content }}</p>
-    
+
     <p>Master file</p>
-    
+
     @yield('looping-test')
   </div>
   @include('shared.footer')
@@ -309,15 +309,15 @@ use Zuno\Request;
 class ExampleController extends Controller
 {
     public function store(Request $request)
-    {   
+    {
         //asume we have a url like http://www.example.com/?name=mahedi. Now we can check.
         if($request->has('name')){
-            
+
         }
 
         //We can also check form request data like
         if($request->has('name') && $request->has('email')){
-            
+
         }
 
         //Now get the value from request like:
@@ -329,7 +329,7 @@ class ExampleController extends Controller
 
         //or
         if(request()->has('name')){
-            
+
         }
 
         //get all the input as an array
@@ -369,7 +369,7 @@ use Zuno\Middleware\Contracts\Middleware;
 class ExampleMiddleware implements Middleware
 {
     public function __invoke(Request $request, Closure $next)
-    {   
+    {
         /**
          * Code goes here
          */
@@ -465,7 +465,7 @@ Zuno has its own custom query builder for fetching database query. See the very 
 namespace App\Http\Controllers;
 
 use Zuno\Database\DB;
-use Zuno\Controllers\Controller;
+use App\Http\Controllers\Controller;
 
 class ExampleController extends Controller
 {
@@ -544,7 +544,7 @@ And now we can update `App\Http\Controllers\ExampleController.php` like
 namespace App\Http\Controllers;
 
 use Zuno\Request;
-use Zuno\Controllers\Controller;
+use App\Http\Controllers\Controller;
 
 class ExampleController extends Controller
 {
@@ -668,7 +668,7 @@ use Zuno\Request;
 use App\Contracts\PaymentServiceContract;
 
 class ExampleController extends Controller
-{   
+{
     /**
      * You can pass as many class as you want as parameter
      */
@@ -678,7 +678,7 @@ class ExampleController extends Controller
         Post $post, //class dependency injection
         PaymentServiceContract $payment //interface dependency injection
     ) {
-        
+
        //Use any eloquent query of Laravel
     }
 
@@ -704,13 +704,13 @@ use Zuno\Request;
 use App\Contracts\PaymentServiceContract;
 
 class ExampleController extends Controller
-{   
+{
     /**
      * Look at that, we are passing interface, models. How cool it is
      */
     public function __construct(
-        public PaymentServiceContract $payment, 
-        public User $user, 
+        public PaymentServiceContract $payment,
+        public User $user,
         public Post $post,
     ) {}
 }
@@ -719,7 +719,7 @@ class ExampleController extends Controller
 <a name="section-18"></a>
 
 ## Collection & Macro
-Like Laravel framework, in this Zuno framework, you can also work with Laravel collection and you can create your own custom macro. To create a custom macro, just update service provider `App\Providers\AppServiceProvider.php` like: 
+Like Laravel framework, in this Zuno framework, you can also work with Laravel collection and you can create your own custom macro. To create a custom macro, just update service provider `App\Providers\AppServiceProvider.php` like:
 ```php
 <?php
 
@@ -796,7 +796,7 @@ logger()->info('Hello');
 
 ## Database and Migration
 Zuno allow you to create migration. To create migration, Zuno uses `CakePHP`'s `phinx`. So to create a migration file first you need to update the configuration file `environments` array like:
-### `config.php` 
+### `config.php`
 
 ```php
 <?php
@@ -895,7 +895,7 @@ class PostSeeder extends AbstractSeed
      * https://book.cakephp.org/phinx/0/en/seeding.html
      */
     public function run(): void
-    {   
+    {
         //you can use fake() helper here as well as your entire application 
 
         $data = [
@@ -926,4 +926,3 @@ Or you can run specific seeder class file lie
 `php vendor/bin/phinx seed:run -s PostSeeder -c config.php`
 
 Now see the documentation from `phinx` [Documentation](https://book.cakephp.org/phinx/0/en/seeding.html) to learn more.
-
