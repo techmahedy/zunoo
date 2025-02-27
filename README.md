@@ -44,6 +44,7 @@ Zuno is designed to be intuitive and developer-friendly, with a focus on providi
 - **Middleware**
   - [Global Middleware](#section-10)
   - [Route Middleware](#section-17)
+  - [Route Middleware Parameters](#section-24)
 - **Validation**
   - [Form Validation](#section-12)
   - [CSRF Token](#section-16)
@@ -453,6 +454,58 @@ use App\Http\Controllers\ProfileController;
 
 Route::get('/', [ProfileController::class,'index'])->middleware(['auth', 'is_subscribed']);
 ```
+
+<a name="section-24"></a>
+
+## Route Middleware Parameters
+We can define multiple route middleware parameters. To define route middleware, add a `:` after the middleware name. If there are multiple parameters, separate them with a `,` comma. See the example 
+
+```php
+<?php
+
+use Zuno\Route;
+use App\Http\Controllers\ExampleController;
+
+Route::get('/', [ExampleController::class, 'index'])
+    ->middleware(['auth:admin,editor,publisher', 'is_subscribed:premium']);
+```
+
+- In this example:
+  - The auth middleware receives three parameters: admin, editor, and publisher.
+  - The is_subscribed middleware receives one parameter: premium.
+
+#### How to Accept Parameters in Middleware
+In the middleware class, define the handle method and accept the parameters as function arguments:
+
+```php
+public function handle(Request $request, Closure $next, $admin, $editor, $publisher): mixed
+{
+    // Parameters received:
+    // $admin = 'admin'
+    // $editor = 'editor'
+    // $publisher = 'publisher'
+
+    // Middleware logic goes here
+
+    return $next($request);
+}
+```
+Here, Zuno automatically injects the parameters in the order they are passed in the route definition.
+
+#### Handling a Single Parameter
+For middleware that only requires one parameter (e.g., is_subscribed), the implementation remains the same:
+
+```php
+public function handle(Request $request, Closure $next, $plan): mixed
+{
+    // $plan = 'premium'
+
+    // Middleware logic goes here
+
+    return $next($request);
+}
+```
+This ensures flexibility when applying different conditions based on user roles, subscriptions, or any other parameters.
 
 <a name="section-23"></a>
 
