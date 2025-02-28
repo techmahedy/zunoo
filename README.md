@@ -61,7 +61,7 @@ Zuno is designed to be intuitive and developer-friendly, with a focus on providi
 <a name="section-1"></a>
 
 ## About
-Zuno, A basic PHP MVC framework designed in a way that you feel like you are working in a Laravel application. In this framework, you will get all the basic features of a web application like routing, middleware, dependency injection, eloquent relationship, model, blade template engine interface injection, and many more. Test it and if you like, please give it a star.
+Zuno, A basic PHP MVC framework. In this framework, you will get all the basic features of a web application like routing, middleware, dependency injection, eloquent relationship, model, blade template engine interface injection, and many more. Test it and if you like, please give it a star.
 <a name="section-14"></a>
 
 ## How to Install
