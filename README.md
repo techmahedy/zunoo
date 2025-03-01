@@ -47,6 +47,8 @@ Zuno is designed to be intuitive and developer-friendly, with a focus on providi
   - [Global Middleware](#section-10)
   - [Route Middleware](#section-17)
   - [Route Middleware Parameters](#section-24)
+- **Config**
+  - [Zuno Config File](#section-27)
 - **Validation**
   - [Form Validation](#section-12)
   - [CSRF Token](#section-16)
@@ -570,6 +572,38 @@ public function handle(Request $request, Closure $next, $plan): mixed
 ```
 This ensures flexibility when applying different conditions based on user roles, subscriptions, or any other parameters.
 
+<a name="section-27"></a>
+
+## Zuno Config File
+Zuno manages configuration files to bootstarp applications configuration. Configuration files located in `config/` folder. 
+
+#### Get config data
+if you want to fetch data from config file, then you need to follow like that,
+```php
+
+// this will print the username from config/database.php file
+$dbUsername = config('database.connections.mysql.username');
+```
+
+You can also use `Config::get()` method also like
+```php
+
+use Zuno\Config;
+
+// this will print the username from config/database.php file
+$dbUsername = Config::get('database.connections.mysql.username');
+```
+
+#### Set config data
+To set confile file data, you need to use
+```php
+
+use Zuno\Config;
+
+// this will print the username from config/database.php file
+$dbUsername = Config::set('database.connections.mysql.username','admin');
+```
+
 <a name="section-23"></a>
 
 ## Database Query Builder
@@ -899,13 +933,24 @@ if(session()->has('key')){
 <a name="section-20"></a>
 
 ## Log
-We can easily print important messages in a log file which is located inside `storage\logs\Zuno.log`. To print a message, Zuno provide `logger()` helper function, you just need to follow this
+Zuno now supports three log channel, `stack`, `daily`, `single`. Configure is from `config/log.php` file and `.env` file. We can easily print important messages in a log file which is located inside `storage\logs\zuno.log`. To print a message, Zuno provide `logger()` helper function, you just need to follow this
 ```php
 <?php
 
-//logger() is a global helper function
-logger()->info('Hello');
+// logger() is a global helper function. by default it uses stack channel.
+logger()->info('Hello'); 
 
+// You can use like that
+logger()->info('Hello');
+logger()->error('Hello');
+logger()->warning('Hello');
+logger()->debug('Hello');
+```
+
+#### Passing array as params
+If you need to log array data, follow as like below
+```php
+logger()->info('message', ['name' => 'Mahedi Hasan', 'spouse' => 'Nure Yesmin']);
 ```
 
 <a name="section-21"></a>

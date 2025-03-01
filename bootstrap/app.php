@@ -31,11 +31,11 @@ Ignition::make()->useDarkMode()->register();
 $capsule = new Capsule;
 
 $capsule->addConnection([
-    'driver'    => $_ENV['DB_CONNECTION'],
-    'host'      => $_ENV['DB_HOST'],
-    'database'  => $_ENV['DB_DATABASE'],
-    'username'  => $_ENV['DB_USERNAME'],
-    'password'  => $_ENV['DB_PASSWORD'],
+    'driver'    => env('DB_CONNECTION'),
+    'host'      => env('DB_HOST'),
+    'database'  => env('DB_DATABASE'),
+    'username'  => env('DB_USERNAME'),
+    'password'  => env('DB_PASSWORD'),
     'charset'   => 'utf8',
     'collation' => 'utf8_unicode_ci',
     'prefix'    => '',
