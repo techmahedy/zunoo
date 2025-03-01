@@ -381,7 +381,7 @@ class ExampleController extends Controller
 
 ```
 
-<a name=26"></a>
+<a name="section-26"></a>
 
 ## File Request
 To upload or handle file in Zuno, you can simply use this $request type
@@ -389,20 +389,17 @@ To upload or handle file in Zuno, you can simply use this $request type
 ```php
 public function upload(Request $request)
 {
+    // You can get the file data like
+    $image = $request->file // Here file is the html form input name
+
+    // Returns a file object to get extra information like file name, size, path type etc
     $file = $request->file('file');
 
     if ($file && $file->isValid()) {
-        // Original Name:
-        $file->getClientOriginalName();
-
-        // Temporary Path
-        $file->getClientOriginalPath();
-
-        // MIME Type
-        $file->getClientOriginalType();
-
-        // Size
-        $file->getSize();
+        $file->getClientOriginalName(); // Original Name:
+        $file->getClientOriginalPath(); // Temporary Path
+        $file->getClientOriginalType(); // MIME Type
+        $file->getSize(); // File Size
     }
 }
 ```
