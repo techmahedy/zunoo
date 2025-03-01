@@ -30,8 +30,10 @@ Zuno is designed to be intuitive and developer-friendly, with a focus on providi
 - **Routes**
   - [Define Route](#section-2)
   - [Route Parameter](#section-8)
+  - [Naming Route](#section-25)
   - [Multiple Route Parameters](#section-9)
   - [Request](#section-15)
+  - [File Request](#section-26)
 - **Database**
   - [Database and Migration](#section-21)
   - [Database Seeder](#section-22)
@@ -267,6 +269,37 @@ class ProfileController extends Controller
 }
 ```
 
+<a name="section-25"></a>
+
+## Naming Route
+Zuno support convenient naming route structure. To create a naming route, you can do
+```php
+
+use Zuno\Route;
+use App\Http\Controllers\UserController;
+
+Route::get('/user/{id}/{name}', [UserController::class, 'profile'])->name('profile');
+```
+
+Now use this naming route any where using `route()` global method. 
+```HTML
+ <form action="{{ route('profile', ['id' => 2, 'name' => 'mahedy']) }}" method="post">
+    @csrf
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+```
+If there is single param in your route, just use
+```php
+Route::get('/user/{id}', [UserController::class, 'profile'])->name('profile');
+```
+
+Now call the route
+```php
+{{ route('profile', 2) }}
+```
+
+That's it.
+
 <a name="section-9"></a>
 
 ## Multiple Route Parameters
@@ -311,24 +344,32 @@ class ExampleController extends Controller
 {
     public function store(Request $request)
     {
-        //asume we have a url like http://www.example.com/?name=mahedi. Now we can check.
+        // Asume we have a url like http://www.example.com/?name=mahedi. Now we can check.
         if($request->has('name')){
 
         }
 
-        //We can also check form request data like
+        // We can also check form request data like
         if($request->has('name') && $request->has('email')){
 
         }
 
-        //Now get the value from request like:
+        // Now get the value from request like:
         $name = $request->input('name');
         $email = $request->input('email');
 
-        //You can also use global request() helper like:
+        // Also you can get the value like
+        $name = $request->name;
+        $email = $request->email;
+
+        // You can get the file data like
+        $image = $request->file
+        $image = $request->input('file');
+
+        // You can also use global request() helper like:
         $name = request()->input('name');
 
-        //or
+        // Or using global request helper
         if(request()->has('name')){
 
         }
@@ -339,6 +380,32 @@ class ExampleController extends Controller
     }
 }
 
+```
+
+<a name=26"></a>
+
+## File Request
+To upload or handle file in Zuno, you can simply use this $request type
+
+```php
+public function upload(Request $request)
+{
+    $file = $request->file('file');
+
+    if ($file && $file->isValid()) {
+        // Original Name:
+        $file->getClientOriginalName();
+
+        // Temporary Path
+        $file->getClientOriginalPath();
+
+        // MIME Type
+        $file->getClientOriginalType();
+
+        // Size
+        $file->getSize();
+    }
+}
 ```
 
 <a name="section-10"></a>
