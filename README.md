@@ -363,8 +363,7 @@ class ExampleController extends Controller
         $email = $request->email;
 
         // You can get the file data like
-        $image = $request->file
-        $image = $request->input('file');
+        $image = $request->file // Here file is the html form input name
 
         // You can also use global request() helper like:
         $name = request()->input('name');
