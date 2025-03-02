@@ -3292,16 +3292,16 @@
         },
         {
             "name": "zuno/zuno",
-            "version": "v3.2",
+            "version": "v3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/techmahedy/zuno.git",
-                "reference": "81a1d7a68015a4f1187a9d4f8a6201b7cc9fbb8e"
+                "reference": "db4b2df42b8d864db5806ff6c84d50db7d3cb09f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/81a1d7a68015a4f1187a9d4f8a6201b7cc9fbb8e",
-                "reference": "81a1d7a68015a4f1187a9d4f8a6201b7cc9fbb8e",
+                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/db4b2df42b8d864db5806ff6c84d50db7d3cb09f",
+                "reference": "db4b2df42b8d864db5806ff6c84d50db7d3cb09f",
                 "shasum": ""
             },
             "require": {
@@ -3357,7 +3357,7 @@
                 "issues": "https://github.com/techmahedy/zuno/issues",
                 "source": "https://github.com/techmahedy/zuno"
             },
-            "time": "2025-03-02T14:08:58+00:00"
+            "time": "2025-03-02T14:13:32+00:00"
         }
     ],
     "packages-dev": [
