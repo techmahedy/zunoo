@@ -34,6 +34,10 @@ Zuno is designed to be intuitive and developer-friendly, with a focus on providi
   - [Multiple Route Parameters](#section-9)
   - [Request](#section-15)
   - [File Request](#section-26)
+- **Authentication**
+  - [Get Logged in User Data](#section-28)
+  - [Login](#section-29)
+  - [Logout](#section-30)
 - **Database**
   - [Database and Migration](#section-21)
   - [Database Seeder](#section-22)
@@ -403,6 +407,79 @@ public function upload(Request $request)
         $file->getClientOriginalType(); // MIME Type
         $file->getSize(); // File Size
     }
+}
+```
+<a name="section-28"></a>
+
+## Get Logged in User Data
+Zuno has its own authentication mechanism. if you want to get logged in user data, `Auth::user()` is the way to get the logged in user data.
+```php
+use Zuno\Auth\Security\Auth;
+
+// This $user is an object.
+$user = Auth::user();
+
+// If you want to get the logged in user ID
+$id = Auth::user()->id;
+
+// If you want to check user is logged in or not, just use
+if(Auth::check()){
+    // User is logged in
+}
+
+// Zuno has a global auth check function and that is
+if(isAuthenticated()){
+    // User is logged in
+}
+```
+
+<a name="section-29"></a>
+
+## Login
+Zune has `Auth` traits to make it easier to you so that you can create authentication very easily. just need use use this `Auth` and to create a authentication manually, you can use `attempt()` method like that
+```php
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use Zuno\Auth\Security\Auth;
+use Zuno\Request;
+use App\Http\Controllers\Controller;
+use App\Models\User;
+
+class LoginController extends Controller
+{
+    use Auth;
+
+    public function login(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            if (Auth::attempt($request->all())) {
+                // You are logged in
+                return redirect()->url('/home');
+            }
+            // Email or password is not matched
+            return redirect()->back();
+        }
+
+        // user does not exists
+    }
+}
+```
+Zuno supports `email` or `username` based authentication currently, so you can pass username also rather than email but `password` is a must needed field for authentication.
+
+<a name="section-30"></a>
+
+## Logout
+To add logout fucntionalities, just call the `logout` method like
+```php
+use Zuno\Auth\Security\Auth;
+
+public function logout()
+{
+    Auth::logout();
 }
 ```
 

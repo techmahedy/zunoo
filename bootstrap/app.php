@@ -4,12 +4,12 @@ use Dotenv\Dotenv;
 use Zuno\Route;
 use Zuno\Request;
 use Zuno\Application;
-use Spatie\Ignition\Ignition;
 use Illuminate\Events\Dispatcher;
 use Zuno\Middleware\Middleware;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Zuno\Container as ZunoContainer;
+use Zuno\Error\ErrorHandler;
 
 // Load environment variables from .env file
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
@@ -20,10 +20,8 @@ $dotenv->load();
  */
 session_start();
 
-/**
- * Register the Spatie Ignition error page handler with dark mode enabled
- */
-Ignition::make()->useDarkMode()->register();
+// Zuno error handler
+ErrorHandler::handle();
 
 /**
  * Setup database connection using Eloquent ORM and Capsule Manager

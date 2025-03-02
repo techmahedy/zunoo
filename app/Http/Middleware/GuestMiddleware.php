@@ -6,7 +6,7 @@ use Zuno\Request;
 use Zuno\Auth\Security\Auth;
 use Closure;
 
-class Authenticate
+class GuestMiddleware
 {
     /**
      * Handle an incoming request
@@ -18,9 +18,9 @@ class Authenticate
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check()) {
-            return $next($request);
+            return redirect()->url('/home');
         }
 
-        return redirect()->url('/login');
+        return $next($request);
     }
 }

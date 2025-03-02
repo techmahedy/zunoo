@@ -17,7 +17,7 @@ return [
         'Zuno' => [
             'adapter' => 'mysql',  // Database adapter type
             'host' => 'localhost',  // Database host
-            'name' => 'test', // Database name
+            'name' => 'zuno', // Database name
             'user' => 'mahedi', // Database user
             'pass' => '123456', // Database password
             'port' => '3306' // Database port
