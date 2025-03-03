@@ -61,7 +61,6 @@ $app = new Application(
     new ZunoContainer
 );
 
-
 /*
 |--------------------------------------------------------------------------
 | Return The Application

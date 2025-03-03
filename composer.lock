@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cc77d9cd5c75f27386fa7b9e30e26bb4",
+    "content-hash": "97032aab19f63a236e2060845f614a76",
     "packages": [
         {
             "name": "brick/math",
@@ -3292,16 +3292,16 @@
         },
         {
             "name": "zuno/zuno",
-            "version": "v3.3",
+            "version": "v3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/techmahedy/zuno.git",
-                "reference": "db4b2df42b8d864db5806ff6c84d50db7d3cb09f"
+                "reference": "af4f346eec46b3024d26c101f8f8fc57cd16d50c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/db4b2df42b8d864db5806ff6c84d50db7d3cb09f",
-                "reference": "db4b2df42b8d864db5806ff6c84d50db7d3cb09f",
+                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/af4f346eec46b3024d26c101f8f8fc57cd16d50c",
+                "reference": "af4f346eec46b3024d26c101f8f8fc57cd16d50c",
                 "shasum": ""
             },
             "require": {
@@ -3311,6 +3311,7 @@
                 "monolog/monolog": "^3.0",
                 "php": "^8.3",
                 "robmorgan/phinx": "^0.16.1",
+                "symfony/console": "^7.2",
                 "symfony/var-dumper": "^7.1",
                 "vlucas/phpdotenv": "^5.5"
             },
@@ -3357,7 +3358,7 @@
                 "issues": "https://github.com/techmahedy/zuno/issues",
                 "source": "https://github.com/techmahedy/zuno"
             },
-            "time": "2025-03-02T14:13:32+00:00"
+            "time": "2025-03-03T17:43:52+00:00"
         }
     ],
     "packages-dev": [
