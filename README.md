@@ -104,7 +104,7 @@ Now look at Model, how you can use it
 
 <?php
 
-use Zuno\Model;
+use Zuno\Model\Model;
 
 /**
  * User Model
@@ -344,7 +344,7 @@ Request is most important thing when we work in a web application. We can use Re
 
 namespace App\Http\Controllers;
 
-use Zuno\Request;
+use Zuno\Http\Request;
 
 class ExampleController extends Controller
 {
@@ -443,7 +443,7 @@ Zune has `Auth` traits to make it easier to you so that you can create authentic
 namespace App\Http\Controllers\Auth;
 
 use Zuno\Auth\Security\Auth;
-use Zuno\Request;
+use Zuno\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 
@@ -506,7 +506,7 @@ Now update your middleware like
 namespace App\Http\Middleware;
 
 use Closure;
-use Zuno\Request;
+use Zuno\Http\Request;
 use Zuno\Middleware\Contracts\Middleware;
 
 class ExampleMiddleware implements Middleware
@@ -560,7 +560,7 @@ Now update your middleware like
 namespace App\Http\Middleware;
 
 use Closure;
-use Zuno\Request;
+use Zuno\Http\Request;
 
 //! Example middleware
 class ExampleMiddleware
@@ -569,7 +569,7 @@ class ExampleMiddleware
      * Handle an incoming request
      *
      * @param Request $request
-     * @param \Closure(\Zuno\Request) $next
+     * @param \Closure(\Zuno\Http\Request) $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next): mixed
@@ -665,7 +665,7 @@ $dbUsername = config('database.connections.mysql.username');
 You can also use `Config::get()` method also like
 ```php
 
-use Zuno\Config;
+use Zuno\Config\Container;
 
 // this will print the username from config/database.php file
 $dbUsername = Config::get('database.connections.mysql.username');
@@ -675,7 +675,7 @@ $dbUsername = Config::get('database.connections.mysql.username');
 To set confile file data, you need to use
 ```php
 
-use Zuno\Config;
+use Zuno\Config\Container;
 
 // this will print the username from config/database.php file
 $dbUsername = Config::set('database.connections.mysql.username','admin');
@@ -732,7 +732,7 @@ We can define custom blade directive. To define it, update `App\Providers\AppSer
 
 namespace App\Providers;
 
-use Zuno\Container;
+use Zuno\DI\Container;
 
 class AppServiceProvider extends Container
 {
@@ -770,7 +770,7 @@ And now we can update `App\Http\Controllers\ExampleController.php` like
 
 namespace App\Http\Controllers;
 
-use Zuno\Request;
+use Zuno\Http\Request;
 use App\Http\Controllers\Controller;
 
 class ExampleController extends Controller
@@ -799,12 +799,8 @@ Now update the `resources/user/index.blade.php` like
 ```HTML
 
 <!-- Showing All Error Messages -->
-@if (session()->has('errors'))
-    @foreach (session()->get('errors') as $error)
-        @foreach ($error as $item)
-            <li>{{ $item }}</li>
-        @endforeach
-    @endforeach
+@if (flash()->hasMessages())
+    {!! flash()->display() !!}
 @endif
 
 <form action="/register" method="post">
@@ -813,16 +809,16 @@ Now update the `resources/user/index.blade.php` like
         <label for="exampleInputEmail1" class="form-label">Email address</label>
         <input type="email" class="form-control" name="email">
         <!-- Show Specific Error Message -->
-        @if (session()->has('email'))
-            {{ session()->get('email') }}
+        @if (flash()->has('email'))
+            {{ flash()->get('email') }}
         @endif
     </div>
     <div class="mb-3">
         <label for="exampleInputPassword1" class="form-label">Password</label>
         <input type="password" class="form-control" name="password">
         <!-- Show Specific Error Message -->
-        @if (session()->has('password'))
-            {{ session()->get('password') }}
+        @if (flash()->has('password'))
+            {{ flash()->get('password') }}
         @endif
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
@@ -851,7 +847,7 @@ To bind the interface with your service class, just update `App\Providers\AppSer
 
 namespace App\Providers;
 
-use Zuno\Container;
+use Zuno\DI\Container;
 use App\Services\StripePaymentService;
 use App\Contracts\PaymentServiceContract;
 
@@ -891,7 +887,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Post;
-use Zuno\Request;
+use Zuno\Http\Request;
 use App\Contracts\PaymentServiceContract;
 
 class ExampleController extends Controller
@@ -927,7 +923,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Post;
-use Zuno\Request;
+use Zuno\Http\Request;
 use App\Contracts\PaymentServiceContract;
 
 class ExampleController extends Controller
@@ -952,7 +948,7 @@ Like Laravel framework, in this Zuno framework, you can also work with Laravel c
 
 namespace App\Providers;
 
-use Zuno\Container;
+use Zuno\DI\Container;
 use Illuminate\Support\Collection;
 
 class AppServiceProvider extends Container

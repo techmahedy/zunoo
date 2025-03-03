@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Zuno\Request;
+use Zuno\Http\Request;
 use Zuno\Auth\Security\Auth;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 
 class ProfileController extends Controller
 {
-    public function profile()
+    public function profile(string $username)
     {
-        return view('user.profile');
+        return view('user.profile', compact('username'));
     }
 
     public function updateProfile(Request $request)
@@ -26,7 +26,7 @@ class ProfileController extends Controller
         $user->last_name = $request->last_name;
         $user->save();
 
-        session()->flash('message', 'Profile updated sucessfully');
+        flash()->message('success', 'Profile updated sucessfully');
 
         return redirect()->back();
     }

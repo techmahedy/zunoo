@@ -5,25 +5,13 @@
 @section('content')
     <div class="card shadow-lg mb-4">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">User Profile</h5>
+            <h5 class="mb-0">Your profile {{ ucfirst($username) }}</h5>
         </div>
         <div class="card-body">
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <!-- Showing All Error Messages -->
-                    @if (session()->has('errors'))
-                        @foreach (session()->get('errors') as $error)
-                            @foreach ($error as $item)
-                                <li>{{ $item }}</li>
-                            @endforeach
-                        @endforeach
-                    @endif
-                    @if (session()->has('message'))
-                        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <strong>{{ session()->get('message') }}</strong>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                    @if (flash()->hasMessages())
+                        {!! flash()->display() !!}
                     @endif
                     <form action="{{ route('profile.update') }}" method="POST">
                         @csrf

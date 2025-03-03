@@ -12,7 +12,8 @@ class Kernel
      * @var array
      */
     public array $middleware = [
-        \Zuno\Middleware\CsrfTokenMiddleware::class,
+        \Zuno\Middleware\Web\CsrfTokenMiddleware::class,
+        \Zuno\Middleware\Web\PreventCrossSiteScripting::class,
     ];
 
     /**

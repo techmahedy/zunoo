@@ -15,7 +15,7 @@ define('ZUNO_START', microtime(true));
 |
 */
 
-require_once __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +27,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 | to this client's browser, allowing them to enjoy our application.
 |
 */
-require_once __DIR__ . '/bootstrap/app.php';
+require __DIR__ . '/bootstrap/app.php';
 
 require __DIR__ . '/routes/web.php';
 

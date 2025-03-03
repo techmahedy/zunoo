@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Zuno\Request;
+use Zuno\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 
@@ -25,7 +25,7 @@ class RegisterController extends Controller
 
         $user = User::create($request->all());
         if ($user) {
-            session()->flash('message', 'User created successfully');
+            flash()->message('success', 'User created successfully');
             return redirect()->url('/login');
         }
 

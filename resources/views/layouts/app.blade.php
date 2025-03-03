@@ -41,7 +41,9 @@
                                     Mahedi
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="{{ route('profile') }}">Profile</a></li>
+                                    <li><a class="dropdown-item"
+                                            href="{{ route('profile', \Zuno\Auth\Security\Auth::user()->username) }}">Profile</a>
+                                    </li>
                                     <li>
                                         <form action="{{ route('logout') }}" method="POST">
                                             @csrf

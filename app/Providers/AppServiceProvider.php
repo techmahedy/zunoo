@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Zuno\Container;
+use Zuno\DI\Container;
 
 class AppServiceProvider extends Container
 {
@@ -18,12 +18,6 @@ class AppServiceProvider extends Container
   public function register(): void
   {
     // Register any custom blade directives, macro or your own custom builds
-    //
     // Place service bindings or provider registrations here.
-    //
-    // Example:
-    // $this->bind(SomeService::class, function() {
-    //     return new SomeService();
-    // });
   }
 }

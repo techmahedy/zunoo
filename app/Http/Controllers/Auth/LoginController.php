@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use Zuno\Auth\Security\Auth;
-use Zuno\Request;
+use Zuno\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 
@@ -28,21 +28,21 @@ class LoginController extends Controller
 
         if ($user) {
             if (Auth::attempt($request->all())) {
-                session()->flash('message', 'You are logged in');
+                flash()->message('success', 'You are logged in');
                 return redirect()->url('/home');
             }
-            session()->flash('message', 'Email or password is not matched');
+            flash()->message('error', 'Email or password is not matched');
             return redirect()->back();
         }
 
-        session()->flash('message', 'User does not exists');
+        flash()->message('error', 'User does not exists');
         return redirect()->back();
     }
 
     public function logout()
     {
         Auth::logout();
-        session()->flash('message', 'You are successfully logout');
+        flash()->message('success', 'You are successfully logout');
 
         return redirect()->url('/login');
     }

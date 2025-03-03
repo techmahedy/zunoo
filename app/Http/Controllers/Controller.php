@@ -2,6 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Zuno\Controllers\Controller as BaseController;
+use Zuno\Http\Controllers\Controller as BaseController;
 
-class Controller extends BaseController {}
+abstract class Controller extends BaseController {}

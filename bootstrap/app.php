@@ -1,24 +1,22 @@
 <?php
 
 use Dotenv\Dotenv;
-use Zuno\Route;
-use Zuno\Request;
+use Zuno\Support\Route;
+use Zuno\Http\Request;
 use Zuno\Application;
 use Illuminate\Events\Dispatcher;
 use Zuno\Middleware\Middleware;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Zuno\Container as ZunoContainer;
+use Zuno\DI\Container as ZunoContainer;
 use Zuno\Error\ErrorHandler;
+use Zuno\Session\ConfigSession;
+
+ConfigSession::configAppSession();
 
 // Load environment variables from .env file
 $dotenv = Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
-
-/**
- * Start the application session
- */
-session_start();
 
 // Zuno error handler
 ErrorHandler::handle();
