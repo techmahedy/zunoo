@@ -2255,7 +2255,7 @@ use Zuno\Support\Mail\Mailable\Subject;
 use Zuno\Support\Mail\Mailable\Content;
 use Zuno\Support\Mail\Mailable;
 
-class TestMail extends Mailable
+class InvoiceMail extends Mailable
 {
     public function __construct(protected $data) {}
 
