@@ -12,8 +12,8 @@ class Kernel
      * @var array
      */
     public array $middleware = [
+        \Zuno\Middleware\CorsMiddleware::class,
         \Zuno\Middleware\CsrfTokenMiddleware::class,
-        \Zuno\Middleware\PreventCrossSiteScripting::class,
     ];
 
     /**
@@ -25,6 +25,6 @@ class Kernel
      */
     protected array $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
-        'guest' => \App\Http\Middleware\GuestMiddleware::class
+        'guest' => \App\Http\Middleware\GuestMiddleware::class,
     ];
 }

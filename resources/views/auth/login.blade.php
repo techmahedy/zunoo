@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
-@section('title', 'Profile')
-
+@section('title', 'Login')
 @section('content')
     <div class="card shadow-lg mb-4">
         <div class="card-header bg-primary text-white">
@@ -10,26 +8,28 @@
         <div class="card-body">
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    @if (flash()->hasMessages())
+                    @hasflash
                         {!! flash()->display() !!}
-                    @endif
+                    @endhasflash
                     <form action="{{ route('login') }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label for="email" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="email" aria-describedby="email"
-                                placeholder="Enter your email" name="email" value="{{ old('email') }}">
-                            @if (flash()->has('email'))
-                                <span class="text-danger"> {{ flash()->get('email') }}</span>
-                            @endif
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
+                                aria-describedby="email" placeholder="Enter your email" name="email"
+                                value="{{ old('email') }}">
+                            @error('email')
+                                <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Enter your password"
-                                name="password" value="{{ old('password') }}">
-                            @if (flash()->has('password'))
-                                <span class="text-danger"> {{ flash()->get('password') }}</span>
-                            @endif
+                            <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                id="password" placeholder="Enter your password" name="password"
+                                value="{{ old('password') }}">
+                            @error('password')
+                                <div class="alert alert-danger mt-1 p-1">{{ $message }}</div>
+                            @enderror
                         </div>
                         <button type="submit" class="btn btn-primary btn-lg float-start">Save Changes</button>
                     </form>

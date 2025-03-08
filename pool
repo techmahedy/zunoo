@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+use Symfony\Component\Console\Application;
+use Zuno\Console\Command;
+
+require __DIR__ . '/vendor/autoload.php';
+
+$console = new Application();
+$console->setCatchExceptions(true);
+
+Command::dispatch($console);
+
+$status = $console->run();
+
+exit($status);

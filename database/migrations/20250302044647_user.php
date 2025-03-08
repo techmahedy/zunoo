@@ -20,11 +20,10 @@ final class User extends Migration
     public function change(): void
     {
         $this->table('users')
+            ->addColumn('name', 'string', ['limit' => 50])
             ->addColumn('username', 'string', ['limit' => 20])
-            ->addColumn('password', 'string', ['limit' => 60])
             ->addColumn('email', 'string', ['limit' => 100])
-            ->addColumn('first_name', 'string', ['limit' => 30])
-            ->addColumn('last_name', 'string', ['limit' => 30])
+            ->addColumn('password', 'string', ['limit' => 60])
             ->addTimestamps()
             ->addIndex(['username', 'email'], ['unique' => true])
             ->create();

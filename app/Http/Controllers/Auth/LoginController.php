@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Zuno\Auth\Security\Auth;
 use Zuno\Http\Request;
-use App\Http\Controllers\Controller;
+use Zuno\Auth\Security\Auth;
 use App\Models\User;
+use App\Http\Controllers\Controller;
 
 class LoginController extends Controller
 {
@@ -18,18 +18,17 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
+        $request->sanitize([
             'email' => 'required|email|min:2|max:100',
             'password' => 'required|min:2|max:20',
         ]);
 
-        $user = User::where('email', $request->email)
-            ->first();
+        $user = User::where('email', $request->email)->first();
 
         if ($user) {
-            if (Auth::attempt($request->all())) {
+            if (Auth::establishSession($request->passed())) {
                 flash()->message('success', 'You are logged in');
-                return redirect()->url('/home');
+                return redirect()->to('/home');
             }
             flash()->message('error', 'Email or password is not matched');
             return redirect()->back();
@@ -44,6 +43,6 @@ class LoginController extends Controller
         Auth::logout();
         flash()->message('success', 'You are successfully logout');
 
-        return redirect()->url('/login');
+        return redirect()->to('/login');
     }
 }

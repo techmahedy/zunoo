@@ -5,22 +5,16 @@ return [
         'migrations' => './database/migrations',
         'seeds' => './database/seeds',
     ],
-
-    // Base class for migrations
-    'migration_base_class' => 'Zuno\Migration\Migration',
-
+    'migration_base_class' => Zuno\Migration\Migration::class,
     'environments' => [
-        // Default table to track migrations
-        'default_migration_table' => 'phinxlog',
-
-        // Configuration for the 'Zuno' environment
-        'Zuno' => [
-            'adapter' => 'mysql',  // Database adapter type
-            'host' => 'localhost',  // Database host
-            'name' => 'zuno', // Database name
-            'user' => 'mahedi', // Database user
-            'pass' => '123456', // Database password
-            'port' => '3306' // Database port
+        'default_migration_table' => 'migrations',
+        'zuno' => [
+            'adapter' => 'mysql',
+            'host' => 'localhost',
+            'name' => 'zuno',
+            'user' => 'mahedi',
+            'pass' => '123456',
+            'port' => '3306'
         ]
     ]
 ];

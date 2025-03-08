@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
-@section('title', 'Profile')
-
+@section('title', 'Register')
 @section('content')
     <div class="card shadow-lg mb-4">
         <div class="card-header bg-primary text-white">
@@ -10,9 +8,9 @@
         <div class="card-body">
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    @if (flash()->hasMessages())
+                    @hasflash
                         {!! flash()->display() !!}
-                    @endif
+                    @endhasflash
                     <form action="{{ route('register.create') }}" method="POST">
                         @csrf
                         <div class="mb-3">
@@ -21,14 +19,9 @@
                                 name="username" value="{{ old('username') }}">
                         </div>
                         <div class="mb-3">
-                            <label for="first_name" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="first_name" aria-describedby="first_name"
-                                name="first_name" required value="{{ old('first_name') }}">
-                        </div>
-                        <div class="mb-3">
-                            <label for="last_name" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="last_name" aria-describedby="emailHelp"
-                                name="last_name" required value="{{ old('last_name') }}">
+                            <label for="first_name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" aria-describedby="name" name="name"
+                                required value="{{ old('name') }}">
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>

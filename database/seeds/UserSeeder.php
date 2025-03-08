@@ -19,16 +19,12 @@ class UserSeeder extends AbstractSeed
     {
         $data = [
             [
-                'username' => str_replace(' ', '_', fake()->name()),
-                'email' => fake()->email(),
-                'first_name' => fake()->word(),
-                'last_name' => fake()->word(),
+                'name' => fake()->name(),
+                'username' => 'zuno',
+                'email' => 'zuno@test.com',
                 'password' => Hash::make('password')
             ]
         ];
-
-        // Truncate the table
-        // $user->truncate();
 
         $user = $this->table('users');
         $user->insert($data)->saveData();

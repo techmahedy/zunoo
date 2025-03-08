@@ -15,8 +15,7 @@
   ],
   "require": {
     "php": "^8.3",
-    "zuno/zuno": "^3.4",
-    "symfony/console": "^7.2"
+    "zuno/zuno": "^3.8"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23"

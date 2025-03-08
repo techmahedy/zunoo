@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
-@section('title', 'Profile')
-
+@section('title','Dashboard')
 @section('content')
     <div class="card shadow-lg mb-4">
         <div class="card-header bg-primary text-white">

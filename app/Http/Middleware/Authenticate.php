@@ -2,25 +2,27 @@
 
 namespace App\Http\Middleware;
 
+use Zuno\Middleware\Contracts\Middleware;
+use Zuno\Http\Response;
 use Zuno\Http\Request;
 use Zuno\Auth\Security\Auth;
 use Closure;
 
-class Authenticate
+class Authenticate implements Middleware
 {
     /**
      * Handle an incoming request
      *
      * @param Request $request
      * @param \Closure(\Zuno\Http\Request) $next
-     * @return mixed
+     * @return Zuno\Http\Response
      */
-    public function handle(Request $request, Closure $next)
+    public function __invoke(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
             return $next($request);
         }
 
-        return redirect()->url('/login');
+        return redirect()->to('/login');
     }
 }

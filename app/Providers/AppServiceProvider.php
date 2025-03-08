@@ -7,17 +7,25 @@ use Zuno\DI\Container;
 class AppServiceProvider extends Container
 {
   /**
-   * Register any application services.
+   * Register application services within the dependency injection container.
    *
-   * This method is used to bind services into the container.
-   * It is typically used to register service providers or other
-   * application-specific services that are needed throughout the app.
+   * This method serves as the central point for binding services, classes,
+   * and other dependencies into the application's service container. By
+   * registering services here, they become available for dependency
+   * injection throughout the application's lifecycle.
+   *
+   * Common use cases include:
+   * - Binding interfaces to concrete implementations.
+   * - Registering service providers that offer additional functionality.
+   * - Defining singletons or shared instances of classes.
+   * - Configuring application-specific services.
+   *
+   * This method is automatically called during application bootstrapping.
    *
    * @return void
    */
   public function register(): void
   {
-    // Register any custom blade directives, macro or your own custom builds
-    // Place service bindings or provider registrations here.
+    // Place your service registration logic here.
   }
 }

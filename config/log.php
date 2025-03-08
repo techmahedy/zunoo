@@ -7,22 +7,26 @@ return [
     | Default Log Channel
     |--------------------------------------------------------------------------
     |
-    | This option defines the default log channel that is utilized to write
-    | messages to your logs. The value provided here should match one of
-    | the channels present in the list of "channels" configured below.
+    | Defines the default logging channel for recording application logs. 
+    | The selected channel should match one of the configured channels below.
+    |
+    | Options:
+    | - "single" → Logs everything to a single file.
+    | - "daily"  → Creates a new log file for each day.
+    | - "stack"  → Combines multiple log channels.
     |
     */
 
-    'default' => env('LOG_CHANNEL', 'daily'), // Or 'single', 'daily'
+    'default' => env('LOG_CHANNEL', 'daily'),
 
     /*
     |--------------------------------------------------------------------------
     | Log Channels
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the log channels for your application. Zuno
-    | utilizes the Monolog PHP logging library, which includes a variety
-    | of powerful log handlers and formatters that you're free to use.
+    | Configures various log channels used for storing logs. Zuno uses 
+    | the Monolog PHP logging library, which provides flexible handlers 
+    | and formatters to manage log storage and levels.
     |
     | Available drivers: "single", "daily", "stack"
     |
@@ -37,14 +41,14 @@ return [
 
         'single' => [
             'driver' => 'single',
-            'path' => getcwd() . '/storage/logs/zuno.log',
+            'path' => storage_path('logs/zuno.log'),
             'level' => \Monolog\Level::Debug,
         ],
 
         'daily' => [
             'driver' => 'daily',
-            'path' => getcwd() . '/storage/logs/zuno.log',
-            'level' => \Monolog\Level::Info
+            'path' => storage_path('logs/zuno.log'),
+            'level' => \Monolog\Level::Info,
         ],
     ],
 ];
