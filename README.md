@@ -52,6 +52,11 @@ In a world where speed, security, and scalability are paramount, Zuno stands as 
 - **Authentication**
   - [Hashing](#section-35)
   - [Authentication](#section-36)
+- **Mail**
+  - [Configuration](#section-37)
+  - [Sending Mail](#section-38)
+    - [Sending Mail with Attachment](#section-39)
+    - [Mail Sending with CC and BCC](#section-40)
 
 <a name="section-1"></a>
 
@@ -2122,4 +2127,217 @@ class LoginController extends Controller
 }
 
 ```
+<a name="section-37"></a>
 
+## Mail Configuration
+Zuno provides a convenient way to setup your mail configuration. Zuno currently support only `smtp` driver for mail configuration. Need to update `.env`'s mail configuration before starting with mail features. Zuno usage `PHPMailer` tp send mail.
+```
+MAIL_MAILER=smtp
+MAIL_HOST=
+MAIL_PORT=2525
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+Now you can check also mail related configuration from `config/mail.php` file. Remember, if you update, `config/mail.php` file, don't forget to clear your system cache.
+```bash
+php pool cache:clear // to clear the cache
+php pool config:cache // to cache again
+```
+
+Now if you setup with your `smtp` mail credentials, now you are ready to go.
+
+<a name="section-38"></a>
+
+## Sending Mail
+When building Zuno applications, each type of email sent by your application is represented as a "mailable" class. These classes are stored in the `app/Mail` directory. Don't worry if you don't see this directory in your application, since it will be generated for you when you create your first mailable class using the `make:mail` Pool command:
+```bash
+php pool make:mail InvoicMail
+```
+
+### Configuring the Sender
+You specify a global "`from`" address in your `config/mail.php` configuration file. This address will be used to send mail.
+```
+'from' => [
+    'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+    'name' => env('MAIL_FROM_NAME', 'Example'),
+],
+```
+
+### Configuring the Subject
+By time to time, every Mail has a subject. Zuno allows you to define a Mail subject in a very convenient way. To define Mail subject, just need to update the subject method from your mailable class.
+```php
+/**
+ * Define mail subject
+ * @return Zuno\Support\Mail\Mailable\Subject
+ */
+public function subject(): Subject
+{
+    return new Subject(
+        subject: 'New Mail'
+    );
+}
+```
+
+### Configuring the View
+Within a mailable class's content method, you may define the view, or which template should be used when rendering the email's contents. Since each email typically uses a Blade template to render its contents, you have the full power and convenience of the Blade templating engine when building your email's HTML:
+```php
+/**
+ * Set the message body and data
+ * @return Zuno\Support\Mail\Mailable\Content
+ */
+public function content(): Content
+{
+    return new Content(
+        view: 'Optional view.name'
+    );
+}
+```
+
+If you want to pass the data without views, you can pass string or array data.
+```php
+public function content(): Content
+{
+    return new Content(
+        data: [
+           'order_status' => true
+        ]
+    );
+}
+```
+
+Even you can send mail without passing any data to Content. Suppose you just want to pass attachment only. you can do in this case, just make content empty.
+```php
+public function content(): Content
+{
+    return new Content();
+}
+```
+
+### Complete Example of Sending Mail
+Zuno provides `to` and `send` method primaritly to send a basic mail.
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Zuno\Support\Mail\Mail;
+use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Mail\InvoiceMail;
+
+class OrderController extends Controller
+{
+    public function index()
+    {
+        $user = User::find(1);
+
+        $data = [
+            'order_status' => 'success',
+            'invoice_no' => '123-123'
+        ];
+
+        Mail::to($user)->send(new InvoiceMail($data));
+    }
+}
+```
+
+Now update your `InvoiceMail` mailable class like
+```php
+<?php
+
+namespace App\Mail;
+
+use Zuno\Support\Mail\Mailable\Subject;
+use Zuno\Support\Mail\Mailable\Content;
+use Zuno\Support\Mail\Mailable;
+
+class TestMail extends Mailable
+{
+    public function __construct(protected $data) {}
+
+    public function subject(): Subject
+    {
+        return new Subject(
+            subject: "Order Shipped Confirmation"
+        );
+    }
+
+    public function content(): Content
+    {
+        return new Content(
+            view: 'emails.order.invoice', // 'resources/views/emails/order/invoice.blade.php'
+            data: $this->data // Passing data will be available in invoice.blade.php, access it via {{ $data }}
+        );
+    }
+
+    public function attachment(): array
+    {
+        return [];
+    }
+}
+```
+
+<a name="section-39"></a>
+
+## Sending Mail with Attachment
+To send mail with attachment, you have to pass data attachment path using `attachment` method.
+```php
+public function attachment(): array
+{
+    return [
+        storage_path('invoice.pdf') => [
+            'as' => 'rename_invoice.pdf', // The file will be sent using this name
+            'mime' => 'application/pdf',  // file mime types
+        ]
+    ];
+}
+```
+
+### Multiple Attachments with Mime Types
+You can also send mail with multiple attachment. Just pass your file arrays in the attachment method like
+```php
+public function attachment(): array
+{
+    return [
+        storage_path('invoice_1.pdf') => [
+            'as' => 'invoice_3.pdf',
+            'mime' => 'application/pdf',
+        ],
+        storage_path('invoice_2.pdf') => [
+            'as' => 'invoice_3.pdf',
+            'mime' => 'application/pdf',
+        ],
+        storage_path('invoice_3.pdf') => [
+            'as' => 'invoice_3.pdf',
+            'mime' => 'application/pdf',
+        ],
+    ];
+}
+```
+
+Here both `as` and `mime` is optional, you can simply send email attachment like
+```php
+public function attachment(): array
+{
+    return [
+        storage_path('invoice_1.pdf'),
+        storage_path('invoice_2.pdf'),
+        storage_path('invoice_3.pdf')
+    ];
+}
+```
+<a name="section-40"></a>
+## Sending Mail with CC and BCC
+You are not limited to just specifying the "to" recipients when sending a message. You are free to set "to", "cc", and "bcc" recipients by chaining their respective methods together:
+```php
+use Zuno\Support\Mail\Mail;
+
+Mail::to($request->user())
+    ->cc($moreUsers)
+    ->bcc($evenMoreUsers)
+    ->send(new OrderShipped($order));
+```

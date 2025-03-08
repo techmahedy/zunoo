@@ -20,7 +20,7 @@ class LoginController extends Controller
     {
         $request->sanitize([
             'email' => 'required|email|min:2|max:100',
-            'password' => 'required|min:2|max:20',
+            'password' => 'required|min:2|max:20'
         ]);
 
         $user = User::where('email', $request->email)->first();
