@@ -8,6 +8,18 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 use Zuno\Error\ErrorHandler;
 use Zuno\Session\ConfigSession;
 
+/*
+|--------------------------------------------------------------------------
+| Create The Application
+|--------------------------------------------------------------------------
+|
+| Here we create the application instance, providing it with the necessary
+| components: Route, Request, Middleware and Container.
+|
+*/
+
+$app = new Application();
+
 ConfigSession::configAppSession();
 
 // Zuno error handler
@@ -38,17 +50,6 @@ $capsule->setAsGlobal();
 
 // Boot Eloquent ORM (required to use Eloquent features)
 $capsule->bootEloquent();
-
-/*
-|--------------------------------------------------------------------------
-| Create The Application
-|--------------------------------------------------------------------------
-|
-| Here we create the application instance, providing it with the necessary
-| components: Route, Request, Middleware and Container.
-|
-*/
-$app = new Application();
 
 /*
 |--------------------------------------------------------------------------

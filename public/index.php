@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Kernel;
-
 define('ZUNO_START', microtime(true));
 
 /*
@@ -19,22 +17,21 @@ require __DIR__ . '/../vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
-| Run The Application
+| Bootstrap application services
 |--------------------------------------------------------------------------
-|
-| Once we have the application, we can handle the incoming request using
-| the application's HTTP kernel. Then, we will send the response back
-| to this client's browser, allowing them to enjoy our application.
-|
 */
 require __DIR__ . '/../bootstrap/app.php';
 
-$app->make(Kernel::class);
-$app->send();
+/*
+|--------------------------------------------------------------------------
+| Send the request
+|--------------------------------------------------------------------------
+*/
+$app->handle()->send();
 
 /*
 |--------------------------------------------------------------------------
-| Run the application
+| Get the response for client
 |--------------------------------------------------------------------------
 */
 $app->run();

@@ -1,15 +1,7 @@
-# Zuno
+# Zuno The PHP Framework
 
-Zuno is a cutting-edge web application framework built to revolutionize the way developers create robust, scalable, and efficient web applications. Designed with both simplicity and power in mind, Zuno streamlines the development process, enabling developers to focus on innovation rather than boilerplate code.
-
-At its core, Zuno is a developer's best friend, offering a rich suite of tools and features that cater to the demands of modern web development. From seamless configuration management to advanced encryption and caching mechanisms, Zuno ensures that your applications are not only secure but also performant. Its modular architecture allows for effortless integration with third-party libraries and technologies, making it a versatile choice for projects of any scale.
-
-What sets Zuno apart is its commitment to productivity. With built-in support for configuration caching, encrypted data storage, and intuitive dot-notation access, Zuno eliminates common pain points, allowing developers to work smarter and faster. Whether you're building a small-scale application or a large enterprise solution, Zuno provides the flexibility and reliability you need to succeed.
-
-Zuno also shines in its ability to integrate seamlessly with Adobe technologies, offering a cohesive development experience for teams working in creative and technical environments. This unique synergy empowers developers to build visually stunning and functionally rich applications that stand out in today's competitive digital landscape.
-
-In a world where speed, security, and scalability are paramount, Zuno stands as a beacon of innovation. It’s more than just a framework—it’s a partner in your development journey, helping you turn ideas into reality with ease and confidence.
-
+Zuno is a cutting-edge web application framework built to revolutionize the way developers create robust, scalable, and efficient web applications for developing a small features based PHP web application.
+(https://www.dailycomputerscience.com/storage/zuno-starter-page.png)
 - **Getting started**
   - [Installation](#section-1)
   - [Configuration](#section-2)
@@ -160,6 +152,15 @@ DB_PORT=3306
 DB_DATABASE=zuno
 DB_USERNAME=mahedi
 DB_PASSWORD=123456
+
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
 ```
 
 #### Accessing Environment Variable
@@ -179,6 +180,7 @@ env('APP_KEY', 'default value');
             └── Kernel.php  // Register Application global and route specific middleware
             └── 📁Middleware // Middleware located here
         └── 📁Models // Application model directory
+        └── 📁Mail // Application mail directory
         └── 📁Providers // Application Service Provider
     └── 📁bootstrap // Bootstrap application dependency from here
     └── 📁config // Config files located here
@@ -1063,8 +1065,19 @@ use App\Http\Controllers\UserController;
 
 Route::get('/user/{id}', [UserController::class, 'show']);
 ```
+### Invokable Controllers
+Zuno also support invokable controllers. You can call it single action controller also. To create a single action controller, need to pass the `--invok` option before create a controller.
+```
+php pool make:controller ProductController --invok
+```
 
-
+Now this command will create a invokable controller for you. For invokable controller, route defination will be like
+```php
+Route::get('/invoke_me', ProductController::class);
+```
+Now `ProductController` __invoke method automatically will be injected by Zuno container. But remember
+> **⚠️ Warning:** Constructor dependency injection won't work for __invokable controllers
+>
 <a name="section-20"></a>
 
 ## Request
@@ -2074,8 +2087,8 @@ Zuno's authentication system allows you to easily verify user credentials and es
 
 2.  **Login Method:**
     * Utilize the `sanitize` method to validate and sanitize user input (e.g., email and password).
-    * Call the `Auth::establishSession()` method, passing the validated credentials (`$request->passed()`).
-    * If `Auth::establishSession()` returns `true`, the user is successfully logged in.
+    * Call the `Auth::try()` method, passing the validated credentials (`$request->passed()`).
+    * If `Auth::try()` returns `true`, the user is successfully logged in.
 y you will get login and logout features. To do login
 ```php
 <?php
@@ -2097,12 +2110,31 @@ class LoginController extends Controller
             'password' => 'required|min:2|max:20',
         ]);
 
-        if (Auth::establishSession($request->passed())) {
+        if (Auth::try($request->passed())) {
             // User is logged in
         }
     }
 }
 
+```
+### Get Authenticated User Data
+To get the current authenticated user data, Zuno has `Auth::user()` method. Simply call
+```php
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use Zuno\Http\Request;
+use Zuno\Auth\Security\Auth;
+use App\Http\Controllers\Controller;
+
+class LoginController extends Controller
+{
+    public function index()
+    {
+        Auth::user(); // Current authenticated user dataUser data
+    }
+}
 ```
 
 ### Logout
