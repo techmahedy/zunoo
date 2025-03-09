@@ -1,7 +1,8 @@
 # Zuno The PHP Framework
 
-Zuno is a cutting-edge web application framework built to revolutionize the way developers create robust, scalable, and efficient web applications for developing a small features based PHP web application.
-(https://www.dailycomputerscience.com/storage/zuno-starter-page.png)
+Zuno is a PHP framework built to revolutionize the way developers create robust, scalable, and efficient web applications, specifically for developing small, feature-based PHP web applications.
+
+![imge](https://www.dailycomputerscience.com/storage/zuno-starter-page.png "Title")
 - **Getting started**
   - [Installation](#section-1)
   - [Configuration](#section-2)
@@ -2074,7 +2075,13 @@ if (Hash::needsRehash($hashed)) {
 <a name="section-36"></a>
 
 ## Authentication
-Zuno provides built-in authentication features, simplifying user login and logout processes. This section details how to use these features within your application.
+Zuno provides built-in authentication features, simplifying user login and logout processes. This section details how to use these features within your application. To generate authentication, Zuno provides a `make:auth` command. 
+```bash
+php pool make:auth
+```
+
+This command will generate authentication for you. Let's look up the authentication features code.
+
 
 ### Login Functionality
 
