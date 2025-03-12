@@ -203,7 +203,7 @@
                     <p>Session and cookie based secured authentication</p>
                 </div>
                 <div class="feature">
-                    <h2>Powerful Dependency Injection</h2>
+                    <h2>Service Container</h2>
                     <p>Powerful service container to resolve class based dependency</p>
                 </div>
                 <div class="feature">

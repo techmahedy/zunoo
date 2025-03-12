@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Phinx\Seed\AbstractSeed;
-use Zuno\Auth\Security\Hash;
 
 class UserSeeder extends AbstractSeed
 {
@@ -22,7 +21,7 @@ class UserSeeder extends AbstractSeed
                 'name' => fake()->name(),
                 'username' => 'zuno',
                 'email' => 'zuno@test.com',
-                'password' => Hash::make('password')
+                'password' => '$argon2id$v=19$m=65536,t=4,p=1$YUhEMzAycmJ3QnkyWFpVbQ$22mqZRiUoSDBehig20+GLjRpYQmQBIqQ41Y/Mhtde7k' // password
             ]
         ];
 

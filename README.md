@@ -14,6 +14,7 @@ Zuno is a PHP framework built to revolutionize the way developers create robust,
   - [Request Lifecycle](#section-7)
   - [Service Container](#section-8)
   - [Service Providers](#section-9)
+  - [Facades](#section-41)
 - **The Basics**
   - [Routing](#section-10)
     - [Route Parameter](#section-11)
@@ -101,7 +102,7 @@ All of the configuration files for the Zuno framework are located in the `config
 > **⚠️ Warning:** If you create a new config file, Zuno do not know about it, to let it know to Zuno, need to run
 > 
 > ```bash
-> php pool cache:clear
+> php pool config:clear
 > 
 > ```
 > 
@@ -118,11 +119,11 @@ You may easily access your configuration values using the Config facade or globa
 ```php
 <?php
 
-use Zuno\Config\Config;
+use Zuno\Support\Facades\Config;
 
 $value = Config::get('app.name');
 
-$value = config('app.timezone');
+$value = config('app.name');
 
 // Retrieve a default value if the configuration value does not exist...
 $value = config('app.name', 'Zuno');
@@ -194,7 +195,7 @@ env('APP_KEY', 'default value');
     └── 📁routes // Application routes directory
     └── 📁storage
         └── 📁app
-            └── 📁public // Public directory symlinked to /public/storage directory to storage/app/public directory
+            └── 📁public // Public symlinked to /public/storage directory to storage/app/public directory
         └── 📁cache // All the views cache and config files cache located here
         └── 📁logs // System error log and user defined log will be printed here
         └── 📁sessions // file session driver will be cache here
@@ -236,7 +237,7 @@ Checks an additional condition if the previous `@if` or `@elseif` condition is f
 Executes code if all previous `@if` and `@elseif` conditions are false.
 
 #### Syntax:
-```
+```blade
 @if ($condition)
     // Code for condition
 @else
@@ -254,7 +255,7 @@ Executes code if the condition is false.
 Checks if a variable is set and not null.
 
 #### Syntax:
-```
+```blade
 @isset ($variable)
     // Code to execute if the variable is set
 @endisset
@@ -264,7 +265,7 @@ Checks if a variable is set and not null.
 Unsets a variable.
 
 #### Syntax:
-```
+```blade
 @unset ($variable)
 ```
 
@@ -272,7 +273,7 @@ Unsets a variable.
 Executes a loop for a specified number of iterations.
 
 #### Syntax:
-```
+```blade
 @for ($i = 0; $i < 10; $i++)
     // Code to execute in each iteration
 @endfor
@@ -281,7 +282,7 @@ Executes a loop for a specified number of iterations.
 Iterates over an array or collection.
 
 #### Syntax:
-```
+```blade
 @foreach ($items as $item)
     // Code to execute for each item
 @endforeach
@@ -291,7 +292,7 @@ Iterates over an array or collection.
 Iterates over an array or collection, with a fallback if the array is empty.
 
 #### Syntax:
-```
+```blade
 @forelse ($items as $item)
     // Code to execute for each item
 @empty
@@ -303,7 +304,7 @@ Iterates over an array or collection, with a fallback if the array is empty.
 Executes a loop while a condition is true.
 
 #### Syntax:
-```
+```blade
 @while ($condition)
     // Code to execute while the condition is true
 @endwhile
@@ -313,7 +314,7 @@ Executes a loop while a condition is true.
 Executes a switch-case block.
 
 #### Syntax:
-```
+```blade
 @switch ($variable)
     @case ($value1)
         // Code for value1
@@ -331,11 +332,11 @@ Executes a switch-case block.
 Breaks out of a loop or switch-case block.
 
 #### Syntax:
-```
+```blade
 @break
 ```
 Example
-```
+```blade
 @foreach ($users as $user)
     @if ($user->isBanned)
         @break
@@ -347,11 +348,11 @@ Example
 Skips the current iteration of a loop.
 
 #### Syntax:
-```
+```blade
 @continue
 ```
 Example:
-```
+```blade
 @foreach ($users as $user)
     @if ($user->isBanned)
         @continue
@@ -363,7 +364,7 @@ Example:
 Executes raw PHP code.
 
 #### Syntax:
-```
+```blade
 @php
     // PHP code
 @endphp
@@ -373,11 +374,11 @@ Executes raw PHP code.
 Encodes data as JSON.
 
 #### Syntax:
-```
+```blade
 @json ($data)
 ```
 Example
-```
+```blade
 <script>
     var users = @json($users);
 </script>
@@ -387,11 +388,11 @@ Example
 Generates a CSRF token for forms.
 
 #### Syntax:
-```
+```blade
 @csrf
 ```
 Example
-```
+```blade
 <form method="POST">
     @csrf
     <button type="submit">Submit</button>
@@ -399,7 +400,7 @@ Example
 ```
 ### @exit
 Usage
-```
+```blade
 @foreach ($users as $user)
     @if ($user->isAdmin())
         @exit
@@ -408,46 +409,46 @@ Usage
 ```
 ### @empty
 Usage
-```
+```blade
 @empty ($users)
     //  User is empty
 @endempty
 ```
 ## Section Directives
 ### @extends
-```
+```blade
 @extends('layouts.app')
 ```
 Extends a Blade layout.
 
 ### @include
-```
+```blade
 @include('partials.header')
 ```
 Includes another Blade view
 ### @yield
-```
+```blade
 @yield('content')
 ```
 Outputs the content of a section.
 
 ### @section
 Example:
-```
+```blade
 @section('content')
     <p>This is the content section</p>
 @endsection
 ```
 Defines a section to be yielded later
- 
+
 ### @stop
-```
+```blade
 @stop
 ```
 Stops the current section output.
 
 ### @overwrite
-```
+```blade
 @overwrite
 ```
 Overwrites the current section content.
@@ -458,7 +459,7 @@ Overwrites the current section content.
 Checks if a user is authenticated.
 
 #### Syntax:
-```
+```blade
 @auth
     // Code to execute if the user is authenticated
 @endauth
@@ -467,7 +468,7 @@ Checks if a user is authenticated.
 Checks if a user is not authenticated (guest).
 
 #### Syntax:
-```
+```blade
 @guest
     // Code to execute if the user is not authenticated
 @endguest
@@ -477,13 +478,13 @@ Checks if a user is not authenticated (guest).
 Checks if there are any flash messages.
 
 #### Syntax:
-```
+```blade
 @hasflash
     // Code to execute if flash messages exist
 @endhasflash
 ```
 Example
-```
+```blade
 @hasflash
     <div class="alert">
         {!! flash()->getMessages() ||}
@@ -495,13 +496,13 @@ Example
 Checks if a specific error message exists in the flash messages.
 
 #### Syntax:
-```
+```blade
 @error('key')
     // Code to execute if the error message exists
 @enderror
 ```
 Example
-```
+```blade
 @error('email')
     <p class="error">{{ $message }}</p>
 @enderror
@@ -511,18 +512,19 @@ Example
 
 ## Starter kits
 To give you a head start building your new Zuno application, we are happy to offer application starter kits. These starter kits give you a head start on building your next Zuno application, and include the routes, controllers, and views you need to register and authenticate your application's users.
-```
+```html
 layout/app.blade.php
-html
-    <!DOCTYPE html>
-    <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>@yield('title')</title>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        </head>
-        <body>
+<!DOCTYPE html>
+<html lang="en">
+    <head
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>@yield('title')</title>
+        @section('style')
+          // This for loading ondemand page css
+        @show
+    </head>
+    <body>
         <div class="container mt-4">
             <div class="row justify-content-center">
                 <div class="col-md-8">
@@ -530,17 +532,34 @@ html
                 </div>
             </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        @section('script')
+          // This for loading ondemand page script
+        @show
     </body>
 </html>
 ```
-Extented main file 
+Extented content file
 ```html
 @extends('layouts.app')
-@section('title','Home')
+@section('title') Home Page
+@section('style')
+ // Load css
+@append
 @section('content')
-    // Content goes here
+    <div class="card shadow-lg mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Dashboard</h5>
+        </div>
+        <div class="card-body">
+            <p class="fw-bold fs-5">
+                Howdy
+            </p>
+        </div>
+    </div>
 @endsection
+@section('script')
+ // Load script
+@append
 ```
 
 <a name="section-7"></a>
@@ -569,17 +588,22 @@ class UserController extends Controller
 
     public function index(UserService $userService, Request $request)
     {
-        $userServiceData = $userInterface->getUser();
+        $userServiceData = $userService->getUser();
         $users = $this->user->all();
 
-        return view('welcome',compact('userServiceData','users'));
+        return view('welcome', compact('userServiceData','users'));
     }
 }
 ```
 
 In this example, the UserInterface from controller `index` method and User class from constructor will automatically injected in Zuno's request life cycle and will be automatically instantiated. 
 
-
+### Create Instance Using Container
+Zuno allows you to create object of a class using global `app()` function. If you want to create object that works like a singleton object, you can use the `app()` function
+```php
+    $singletonObject = app(Yourclass::class);
+    $singletonObject->your_define_method;
+```
 ## Binding
 ### bind()
 Binds a service to the container. You can bind a class name or a callable (closure) that returns an instance of the service.
@@ -587,9 +611,9 @@ Binds a service to the container. You can bind a class name or a callable (closu
 bind(string $abstract, callable|string $concrete, bool $singleton = false): void
 ```
 Parameters:
-1. $abstract: The service name or interface.
-2. $concrete: The class name or a callable that returns an instance.
-3. $singleton: Whether the binding should be a singleton (optional, default: false
+1. `$abstract:` The service name or interface.
+2. `$concrete:` The class name or a callable that returns an instance.
+3. `$singleton:` Whether the binding should be a singleton (optional, default: false)
 
 Example
 ```php
@@ -597,27 +621,23 @@ Example
 
 namespace App\Providers;
 
-use Zuno\DI\Container;
+use Zuno\Providers\ServiceProvider;
 use App\Service\ProductInterface;
 use App\Service\ProductClass;
 
-class AppServiceProvider extends Container
+class AppServiceProvider extends ServiceProvider
 {
-  /**
-   * Register any application services.
-   *
-   * This method is used to bind services into the container.
-   * It is typically used to register service providers or other
-   * application-specific services that are needed throughout the app.
-   *
-   * @return void
-   */
   public function register(): void
-  { 
+  {
     // You can choose any of the below declaration
-    $this->bind(ProductInterface::class, fn() => new ProductClass );
+    $this->app->bind(ProductInterface::class, fn() => new ProductClass );
 
-    $this->bind(ProductInterface::class, ProductClass::class);
+    $this->app->bind(ProductInterface::class, ProductClass::class);
+  }
+
+  public function boot(): void
+  {
+    //
   }
 }
 ```
@@ -627,7 +647,7 @@ class AppServiceProvider extends Container
 Binds a service as a singleton. The container will always return the same instance when resolving the service.
 Example
 ```php
-$this->singleton(ProductInterface::class,fn() => new ProductClass);
+$this->app->singleton(ProductInterface::class,fn() => new ProductClass);
 ```
 
 ## Conditional Bindings
@@ -640,7 +660,7 @@ when(callable|bool $condition): ?self
 ```
 Example
 ```php
- $this->when(fn() => rand(0, 1) === 1)?->singleton(ProductInterface::class,fn() => new ProductClass);
+$this->app->when(fn() => rand(0, 1) === 1)?->singleton(ProductInterface::class,fn() => new ProductClass);
 ```
 
 The Zuno Service Container simplifies dependency management by providing a clean and intuitive API for binding and resolving services. Whether you're working with regular bindings, singletons, or conditional logic, the container ensures your application remains modular, testable, and scalable.
@@ -651,57 +671,174 @@ The Zuno Service Container simplifies dependency management by providing a clean
 <a name="section-9"></a>
 
 ## Service Providers
-Zuno supports a single service provider that loads the application custom service like
+Service providers are the central place of all Zuno application bootstrapping. Your own application, as well as all of Zuno's core services, are bootstrapped via service providers.
+
+But, what do we mean by "bootstrapped"? In general, we mean registering things, including registering service container bindings, configuration initialization, middleware, and even routes and all the facades. Service providers are the central place to configure your application.
+
+Zuno uses service providers internally to bootstrap its core services, such as the mailer, cache, facades and others.
+
+All user-defined service providers are registered in the `config/app.php` file. In the following documentation, you will learn how to write your own service providers and register them with your Zuno application.
+
+### Creating Service Providers
+Zuno provides `make:provider` pool command to create a new service provider.
+```bash
+php pool make:provider MyOwnServiceProvider
+```
+
+### The Register Method
+As mentioned previously, within the register method, you should only bind things into the service container. You should never attempt to register other services. Otherwise, you may accidentally use a service that is provided by a service provider which has not loaded yet.
+
+Let's take a look at a basic service provider. Within any of your service provider methods, you always have access to the $app property which provides access to the service container:
 ```php
 <?php
 
 namespace App\Providers;
 
-use Zuno\DI\Container;
-use Illuminate\Support\Collection;
+use Zuno\Application;
+use Zuno\Providers\ServiceProvider;
 
-class AppServiceProvider extends Container
+class MyOwnServiceProvider extends ServiceProvider
 {
     /**
-     * register.
-     *
      * Register any application services.
-     * @return	void
      */
-    public function register()
+    public function register(): void
     {
-        Collection::macro('toUpper', function () {
-            return $this->map(function ($value) {
-                return strtoupper($value);
-            });
+        $this->app->singleton(Connection::class, function (Application $app) {
+            return new Connection('test');
         });
     }
 }
 ```
-Now use this macro like
+### The Boot Method
+This `boot` method is called after all other service providers have been registered, meaning you have access to all other services that have been registered by the framework:
 ```php
 <?php
 
-use Zuno\Route;
+namespace App\Providers;
 
-Route::get('/', function () {
+use Zuno\Providers\ServiceProvider;
 
-    $collection = collect(['first', 'second']);
-    $upper = $collection->toUpper();
+class AnotherServiceProvider extends ServiceProvider
+{
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        // Register services
+    }
+}
+```
+<a name="section-41"></a>
 
-    return $upper; //output ["FIRST","SECOND"]
+## Facades
+Throughout the Zuno documentation, you will see examples of code that interacts with Zuno's features via "facades". Facades provide a "static" interface to classes that are available in the application's service container. Zuno ships with many facades which provide access to almost all of Zuno's features.
+
+Zuno facades serve as "static proxies" to underlying classes in the service container, providing the benefit of a terse, expressive syntax while maintaining more testability and flexibility than traditional static methods. It's perfectly fine if you don't totally understand how facades work - just go with the flow and continue learning about Zuno.
+
+All of Zuno's facades are defined in the `Zuno\Support\Facades` namespace. So, we can easily access a facade like so:
+```php
+use Zuno\Support\Facades\Cache;
+use Zuno\Support\Facades\Route;
+
+Route::get('/cache', function () {
+    return Cache::get('key');
 });
 ```
+Throughout the Zuno documentation, many of the examples will use facades to demonstrate various features of the framework.
+
+To complement facades, Zuno offers a variety of global "helper functions" that make it even easier to interact with common Zuno features. Some of the common helper functions you may interact with are view, response, url, config, and more. Each helper function offered by Zuno.
+
+For example, instead of using the `Zuno\Support\Facades\Response` facade to generate a JSON response, we may simply use the response function. Because helper functions are globally available, you do not need to import any classes in order to use them:
+```php
+use Illuminate\Support\Facades\Response;
+
+Route::get('/users', function () {
+    return Response::json([
+        // ...
+    ]);
+});
+
+Route::get('/users', function () {
+    return response()->json([
+        // ...
+    ]);
+});
+```
+
+### When to Utilize Facades
+Facades have many benefits. They provide a terse, memorable syntax that allows you to use Zuno's features without remembering long class names that must be injected or configured manually. Furthermore, because of their unique usage of PHP's dynamic methods, they are easy to test.
+
+### Facades vs. Helper Functions
+In addition to facades, Zuno includes a variety of "helper" functions which can perform common tasks like generating views, firing events, dispatching jobs, or sending HTTP responses. Many of these helper functions perform the same function as a corresponding facade. For example, this facade call and helper call are equivalent:
+```php
+return Illuminate\Support\Facades\Response::view('profile');
+
+return view('profile');
+```
+### How Facades Work
+In a Zuno application, a facade is a class that provides access to an object from the container. The machinery that makes this work is in the Facade class. Zuno's facades, and any custom facades you create, will extend the base `Zuno\Support\Facades\BaseFacade` class.
+
+The Facade base class makes use of the __callStatic() magic-method to defer calls from your facade to an object resolved from the container. In the example below, a call is made to the Zuno cache system. By glancing at this code, one might assume that the static get method is being called on the Cache class:
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Zuno\Support\Facades\Config;
+
+class UserController extends Controller
+{
+    public function getAppName()
+    {
+        return Config::get('app.name');
+    }
+}
+```
+If we look at that `Zuno\Support\Facades\Config` class, you'll see that there is no static method get:
+```php
+<?php
+
+namespace Zuno\Support\Facades;
+
+use Zuno\Facade\BaseFacade;
+
+class Config extends BaseFacade
+{
+    protected static function getFacadeAccessor()
+    {
+        return 'config';
+    }
+}
+```
+
+### Facade Class Reference
+Below you will find every facade and its underlying class. This is a useful tool for quickly digging into the API documentation for a given facade root. The service container binding key is also included where applicable.
+| Facade   | Class   |  Service Container Binding |
+| -------- | ------- | -------- |
+| Auth  | Zuno\Auth\Security\Auth    | auth |
+| Abort  | Zuno\Http\Support\Abort   | abort |
+| Config  | Zuno\Config\Config    | config |
+| Crypt  | Zuno\Support\Encryption    | crypt |
+| Hash  | Zuno\Auth\Security\Hash    | hash |
+| Mail  | Zuno\Support\Mail\MailService    | mail |
+| Redirect  | Zuno\Http\RedirectResponse    | redirect |
+| Response  | Zuno\Http\Response    | response |
+| Route  | Zuno\Support\Router    | route |
+| Session  | Zuno\Support\Session    | session |
+| URL  | Zuno\Support\UrlGenerator    | url |
 
 <a name="section-10"></a>
 
 ## Routing
-Zuno now supports only GET and POST request route. All the routes will be initialized from `route/web.php`. To define a route
+Zuno now supports only GET and POST request route. All the routes will be initialized from `route/web.php`. To define a route you have a `facade` class `Route`. Using this you can define your route.
 ```php
 
 <?php
 
-use Zuno\Route;
+use Zuno\Support\Facades\Route;
 use App\Http\Controllers\ExampleController;
 
 Route::get('/', [ExampleController::class, 'index']);
@@ -714,7 +851,7 @@ You can pass single or multiple parameter with route as like below
 ```php
 <?php
 
-use Zuno\Route;
+use Zuno\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/user/{id}', [ProfileController::class, 'index']);
@@ -794,7 +931,7 @@ Zuno support convenient naming route structure. To create a naming route, you ca
 
 ```php
 
-use Zuno\Route;
+use Zuno\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
 Route::get('/user/{id}/{name}', [UserController::class, 'profile'])->name('profile');
@@ -814,7 +951,6 @@ Now call the route
 ```php
 {{ route('profile', 2) }}
 ```
-
 
 <a name="section-14"></a>
 
@@ -861,7 +997,7 @@ And update your route like:
 ```php
 <?php
 
-use Zuno\Route;
+use Zuno\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 
 Route::get('/', [ProfileController::class,'index'])->middleware('auth');
@@ -877,7 +1013,7 @@ namespace App\Http\Middleware;
 use Zuno\Middleware\Contracts\Middleware;
 use Zuno\Http\Response;
 use Zuno\Http\Request;
-use Zuno\Auth\Security\Auth;
+use Zuno\Support\Facades\Auth;
 use Closure;
 
 class Authenticate implements Middleware
@@ -934,7 +1070,7 @@ use Zuno\Http\Response;
 use Zuno\Middleware\Contracts\Middleware;
 
 class CorsMiddleware implements Middleware
-{   
+{
    /**
      * Handle an incoming request
      *
@@ -968,7 +1104,7 @@ Route::get('/', [ExampleController::class, 'index'])->middleware(['auth:admin,ed
 
 * In this example:
   * The auth middleware receives three parameters: `admin`, `editor`, and `publisher`.
-  * The is_subscribed middleware receives one parameter: `premium`.
+  * The `is_subscribed` middleware receives one parameter: `premium`.
 
 #### Accept Parameters in Middleware
 In the middleware class, define the handle method and accept the parameters as function arguments:
@@ -1062,6 +1198,7 @@ class UserController extends Controller
 ```
 Once you have written a controller class and method, you may define a route to the controller method like so:
 ```php
+use Zuno\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
 Route::get('/user/{id}', [UserController::class, 'show']);
@@ -1107,6 +1244,11 @@ These methods are used to access data submitted through HTML forms (e.g., POST, 
 * **Accessing Validation Results:**
     * `$request->passed()`: Retrieves data that passed validation (if applied).
     * `$request->failed()`: Retrieves data that failed validation (if applied).
+* **Accessing Session Results:**
+    * `$request->session()->token()`: Retrieves csrf token data.
+    * `$request->session()->get('key')`: Get the session data that is stored in `key`
+    * `$request->session()->put('key','value')`: Set the session data that is will be stored in `key`
+    * `$request->session()->flush()`: To delete session data
 
 #### Server Request Information
 
@@ -1153,7 +1295,17 @@ These methods handle file uploads from HTML forms.
             * `$file->getClientOriginalName()`: Retrieves the original file name.
             * `$file->getClientOriginalPath()`: Retrieves the temporary file path.
             * `$file->getClientOriginalType()`: Retrieves the MIME type.
-            * `$file->getSize()`: Retrieves the file size in bytes.
+            * `$file->getClientOriginalSize()`: Retrieves the file size in bytes.
+            * `$file->getClientOriginalExtension()`: Retrieves the file extension (e.g., "jpg", "png").
+            * `$file->generateUniqueName()`: Generate a unique name for the uploaded file
+            * `$file->isMimeType(string|array $mimeType)`: Checks if the uploaded file is of a specific MIME type
+            * `$file->isImage()`: Check if the uploaded file is an image.
+            * `$file->isVideo()`: Check if the uploaded file is a video.
+            * `$file->isDocument()`: Check if the uploaded file is a document.
+            * `$file->move(string $destination, ?string $fileName = null)`: Moves the uploaded file to a new location.
+            * `$file->getMimeTypeByFileInfo()`: Get the file's mime type by using the fileinfo extension.
+        * `$file->getError()`: Gets the error code of the uploaded file.
+
 ##### Example
 ```php
 // Accessing the uploaded file object
@@ -1165,7 +1317,8 @@ if ($file = $request->file('file')) {
         $file->getClientOriginalName(); // Retrieves the original file name
         $file->getClientOriginalPath(); // Retrieves the temporary file path
         $file->getClientOriginalType(); // Retrieves the MIME type
-        $file->getSize(); // Retrieves the file size in bytes
+        $file->getClientOriginalExtension(); // Retrieves the file extension like jpg, png
+        $file->getClientOriginalSize(); // Retrieves the file size in bytes
     }
 }
 ```
@@ -1243,7 +1396,6 @@ use App\Http\Controllers\Controller;
 
 class UserController extends Controller
 {
-
     public function index(Response $response)
     {
         return $response->text("Hello World", 200)
@@ -1252,23 +1404,45 @@ class UserController extends Controller
                 'X-Header-One' => 'Header Value',
                 'X-Header-Two' => 'Header Value',
             ]);
-            
     }
 }
 ```
-### Redirects
-
-Redirect responses are instances of the `Zuno\Http\Redirect` class, and contain the proper headers needed to redirect the user to another URL. There are several ways to generate a Redirect instance. The simplest method is to use the global `redirect` helper:
+### Attaching Headers to Responses using Response Facades
+You can also use `Facades` to get the response. You can use `Response` facades like
 ```php
+namespace App\Http\Controllers;
+
+use Zuno\Support\Facades\Response;
+
+class UserController extends Controller
+{
+    public function index()
+    {
+        return Response::text("Hello World", 200)
+            ->withHeaders([
+                'Content-Type' => 'text/plain',
+                'X-Header-One' => 'Header Value',
+                'X-Header-Two' => 'Header Value',
+            ]);
+    }
+}
+```
+
+### Redirects
+Redirect responses are instances of the `Zuno\Http\Redirect` class, and contain the proper headers needed to redirect the user to another URL. There are several ways to generate a Redirect instance. The simplest method is to use the global `redirect` helper or even you can use `Redirect` facades
+```php
+use Zuno\Support\Facades\Redirect;
+
 Route::get('/dashboard', function () {
+    // Both will give you the same output
     return redirect()->to('/home/dashboard');
+    return Redirect::to('/home/dashboard');
 });
 ```
 Sometimes you may wish to redirect the user to their previous location, such as when a submitted form is invalid. You may do so by using the global back helper function.
 ```php
 Route::post('/user/profile', function () {
     // Validate the request...
- 
     return redirect()->back()->withInput();
     return redirect()->back()->withInput()->withErrors($errors);
 });
@@ -1289,7 +1463,6 @@ Sometimes you may need to redirect to a domain outside of your application. You 
 return redirect()->away('https://www.google.com');
 ```
 ### Redirecting With Flashed Session Data
-
 Redirecting to a new URL and flashing data to the session are usually done at the same time. Typically, this is done after successfully performing an action when you flash a success message to the session. For convenience, you may create a `RedirectResponse` instance and flash data to the session in a single, fluent method chain:
 ```php
 <?php
@@ -1305,7 +1478,6 @@ class LoginController extends Controller
     {
        flash()->message('success', 'You are logged in');
        return redirect()->to('/home');
-
     }
 }
 
@@ -1333,12 +1505,23 @@ return response()->view('welcome')->setHeader('Content-Type', 'text/html');
 The json method will automatically set the `Content-Type header to application/json`, as well as convert the given array to JSON using the `json_encode` PHP function:
 ```php
  return response()->json([
-            'name' => 'Mahedi Hasan',
-            'age' => 33
-        ], 200);
+        'name' => 'Mahedi Hasan',
+        'age' => 33
+    ], 200);
 ```
 ### File Downloads
 Coming
+
+### Responses Facades
+You can using `Response` facades to get the response like above. As example get the json response using Response facades
+```php
+use Zuno\Support\Facades\Response;
+
+return Response::json([
+        'name' => 'Mahedi Hasan',
+        'age' => 33
+    ], 200);
+```
 
 <a name="section-22"></a>
 
@@ -1402,46 +1585,54 @@ php pool session:clear --force
 ```
 
 ### Put and Get Session Data
-To store data in the session and retrieve it later, use the put and get methods.
+To store data in the session and retrieve it later, use the `put` and `get` methods.
 #### Syntax
 ```php
-session()->put($key, $value);
+$rquest->session()->put($key, $value);
 ```
 Example
 ```php
-session()->put('name', 'Mahedi Hasan');
-return session()->get('name');
+$rquest->session()->put('name', 'Mahedi Hasan');
+return $rquest->session()->get('name');
 ```
 You can check a key exists or not in a session data by doing this
 ```php
-if(session()->has('name')){
+if($rquest->session()->has('name')){
     // Session key data exists
 }
 ```
 
 You can destroy specific key session data by doing this
 ```php
-session()->forget('key')
+$rquest->session()->forget('key')
 ```
 You can clear all session data by calling `flush()` function
 ```php
-session()->flush();
+$rquest->session()->flush();
 ```
 
 Even you can destroy session using `destroy` function
 ```php
-session()->destroy()
+$rquest->session()->destroy()
 ```
 ### Set and Get Session ID
 You can set seesion id and get is also. 
 ```php
-session()->setId($id);
-session()->getId()
+$rquest->session()->setId($id);
+$rquest->session()->getId()
 ```
 
 If you want to show all the session data from your application, call `all()` method like
 ```php
-session()->all()
+$rquest->session()->all()
+```
+### Session Facades
+You can also handle session data using `Session` facades.
+```php
+use Zuno\Support\Facades\Session;
+
+Session::put('name','mahedi');
+Session::get('name');
 ```
 
 <a name="section-25"></a>
@@ -1451,7 +1642,7 @@ Zuno provides a very simple approaches to validate your application's incoming d
 ```php
 <?php
 
-use Zuno\Route;
+use Zuno\Support\Facades\Route;
 use App\Http\Controllers\ExampleController;
 
 Route::get('/register', [ExampleController::class, 'index']);
@@ -1463,7 +1654,7 @@ And now we can update `App\Http\Controllers\ExampleController.php` like
 
 namespace App\Http\Controllers;
 
-use Zuno\Request;
+use Zuno\Http\Request;
 use App\Http\Controllers\Controller;
 
 class ExampleController extends Controller
@@ -1475,15 +1666,13 @@ class ExampleController extends Controller
             'password' => 'required|min:2|max:20',
             'username' => 'required|unique:users|min:2|max:100',
             'name' => 'required|min:2|max:20'
-        
+        ]);
 
         // If validation passes, proceed to store the user data.
     }
 }
 ```
-## User Creation: `store()` Method
-
-The `store()` method in the `UserController` is designed to handle user registration form submissions. It ensures that user input is validated and sanitized before being stored in the database.
+Here the `store()` method in the `UserController` is designed to handle user registration form submissions. It ensures that user input is validated and sanitized before being stored in the database.
 
 **Functionality:**
 
@@ -1531,7 +1720,7 @@ public function register(Request $request)
     } else {
         dd($request->passed());
     }
-    
+
     // Safely create the user now
     User::create($request->passed());
 }
@@ -1619,7 +1808,19 @@ class UserController extends Controller
 }
 
 ```
+### Abort Facades
+To handle error showing in browser is important. Now assume you want to redirect user a 404 page or showing any HTTP status page error. You can use `Zuno\Support\Facades\Abort` class or `abort` global helper function.
+```php
+use Zuno\Support\Facades\Auth;
 
+Abort::abort(404);
+abort(404);
+```
+This will show the user 404 error page. You can also use `abortIf` to add extra condition.
+
+```php
+abortIf(Auth::user()->id === 1, 404);
+```
 <a name="section-27"></a>
 
 ## Error Logging and System Monitoring
@@ -1704,6 +1905,7 @@ It will shows all the application commands
 **Cache Management Commands:**
 
 * `cache:clear`: Clear all cache files from the `storage/framework` folder.
+* `config:clear`: Clear all config cache data.
 * `config:cache`: Cache the configuration files into a single file for faster access.
 * `view:cache`: Precompile all views and store them in the `storage/framework/views` folder.
 * `view:clear`: Clear all compiled view files from the `storage/framework/views` folder.
@@ -1711,6 +1913,10 @@ It will shows all the application commands
 **Database Seeding Commands:**
 
 * `db:seed`: Run database seeds.
+
+**Auth Commands:**
+
+* `make:auth`: Generates Zuno's builtin authentication scaffolding
 
 **Key Generation Commands:**
 
@@ -1720,6 +1926,7 @@ It will shows all the application commands
 
 * `make:controller`: Creates a new controller class.
 * `make:middleware`: Creates a new middleware class.
+* `make:provider`: Creates a new service provider class.
 * `make:model`: Creates a new model class.
 * `create:migration`: Creates a new Phinx migration class.
 * `create:seed`: Creates a new Phinx seed class.
@@ -1739,7 +1946,7 @@ It will shows all the application commands
 <a name="section-29"></a>
 
 ## Model
-Zuno's Model class extented [Laravel Model](https://laravel.com/docs/12.x/eloquent#generating-model-classes). So you can use most the eloquent features in Zuno's model class. Zuno's model located in `App\Models` directory and you can create as many model as you using `create:model` command.
+Zuno's Model class extented [Laravel Model](https://laravel.com/docs/12.x/eloquent#generating-model-classes). So you can use most the eloquent features in Zuno's model class. Zuno's model located in `App\Models` directory.
 
 ### Create New Model
 To create a new model, run this command
@@ -1769,42 +1976,42 @@ Zuno's encryption services provide a simple, convenient interface for encrypting
 Before using Zuno's encrypter, you must set the key configuration option in your `config/app.php` configuration file. This configuration value is driven by the `APP_KEY` environment variable. You should use the `php pool key:generate` command to generate this variable's value since the `key:generate` command will use PHP's secure random bytes generator to build a cryptographically secure key for your application. Typically, the value of the `APP_KEY` environment variable will be generated for you during Zuno's installation.
 
 #### Encrypting a Value
-You may `encrypt` a value using the encryptString method provided `Zuno\Support\Encryption` class. 
+You can use `Zuno\Support\Facades\Crypt` facades to `encrypt` a string.
 ```php
 <?php
 
 namespace App\Http\Controllers;
 
 use Zuno\Http\Request;
-use Zuno\Support\Encryption;
+use Zuno\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
     public function store(Request $request)
     {
-        $encrypted = Encryption::encrypt("Hello World");
-        
+        $encrypted = Crypt::encrypt("Hello World");
+
         $encrypted // This is now encrypted
     }
 }
 ```
 
 #### Decrypting a Value
-You may `decrypt` a value using the encryptString method provided `Zuno\Support\Encryption` class. 
+You can use `Zuno\Support\Facades\Crypt` facades to `decrypt` a string.
 ```php
 <?php
 
 namespace App\Http\Controllers;
 
 use Zuno\Http\Request;
-use Zuno\Support\Encryption;
+use Zuno\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
     public function store(Request $request)
     {
-        $decrypted = Encryption::decrypt($encrypted);
-        
+        $decrypted = Crypt::decrypt($encrypted);
+
         $encrypted // This is now decrypted
     }
 }
@@ -1820,17 +2027,11 @@ To create a custom macro, just update service provider `App\Providers\AppService
 
 namespace App\Providers;
 
-use Zuno\DI\Container;
+use Zuno\Providers\ServiceProvider;
 use Illuminate\Support\Collection;
 
-class AppServiceProvider extends Container
+class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * register.
-     *
-     * Register any application services.
-     * @return	void
-     */
     public function register(): void
     {
         Collection::macro('toUpper', function () {
@@ -1845,7 +2046,7 @@ And now we can use it like:
 ```php
 <?php
 
-use Zuno\Route;
+use Zuno\Support\Facades\Route;
 
 Route::get('/', function () {
 
@@ -2040,9 +2241,11 @@ Now we you create hash password using `bcrypt()` or direct calling `Hash::make()
 $hashedValue = bcrypt('bcrypt');
 $hashedValue // "$2y$10$gtr.qSIRWTDh7uh9ubj5duC0/KwQJcwZ0.KpFPOPzeRClpwo2FRSa"
 ```
-Or you can use 
+### Hash Facades
+We can create hash password using `Hash::make()` method.
+
 ```php
-use Zuno\Auth\Security\Hash;
+use Zuno\Support\Facades\Hash;
 
 $hashedValue = Hash::make('password');
 $hashedValue // "$2y$10$qcxCuljWvI7e1A5ah6axl.qgNsVoNw3ad8HSDFRmnVxyzIoj5/x8m"
@@ -2051,7 +2254,7 @@ $hashedValue // "$2y$10$qcxCuljWvI7e1A5ah6axl.qgNsVoNw3ad8HSDFRmnVxyzIoj5/x8m"
 ### Checking Hash
 If you want to check hash data, you need to use `check` method
 ```php
-use Zuno\Auth\Security\Hash;
+use Zuno\Support\Facades\Hash;
 
 if (Hash::check('plainText', 'hashedValue')) {
     // Password matched
@@ -2059,13 +2262,7 @@ if (Hash::check('plainText', 'hashedValue')) {
 ```
 
 ### Determining if a Password Needs to be Rehashed
-Check if a password hash needs rehashing (security upgrade).
-```php
-use Zuno\Auth\Security\Hash;
-
-$rehashed = Hash::needsRehash('hashedValue');
-```
-The needsRehash method provided by the Hash class allows you to determine if the work factor used by the hasher has changed since the password was hashed. Some applications choose to perform this check during the application's authentication process:
+Check if a password hash needs rehashing (security upgrade). The needsRehash method provided by the Hash class allows you to determine if the work factor used by the hasher has changed since the password was hashed. Some applications choose to perform this check during the application's authentication process:
 ```php
 if (Hash::needsRehash($hashed)) {
     $hashed = Hash::make('plain-text');
@@ -2085,12 +2282,12 @@ This command will generate authentication for you. Let's look up the authenticat
 
 ### Login Functionality
 
-Zuno's authentication system allows you to easily verify user credentials and establish a login session.
+Zuno's authentication system allows you to easily verify user credentials and establish a login session. Zuno provides `Zuno\Support\Facades\Auth` to create authentication functionalitis
 
 **Implementation:**
 
 1.  **Controller Setup:**
-    * Use the `Zuno\Auth\Security\Auth` trait within your controller to access authentication methods.
+    * Use the `Zuno\Support\Facades\Auth` to access authentication methods.
 
 2.  **Login Method:**
     * Utilize the `sanitize` method to validate and sanitize user input (e.g., email and password).
@@ -2103,13 +2300,11 @@ y you will get login and logout features. To do login
 namespace App\Http\Controllers\Auth;
 
 use Zuno\Http\Request;
-use Zuno\Auth\Security\Auth;
+use Zuno\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
 class LoginController extends Controller
 {
-    use Auth;
-
     public function login(Request $request)
     {
         $request->sanitize([
@@ -2132,14 +2327,14 @@ To get the current authenticated user data, Zuno has `Auth::user()` method. Simp
 namespace App\Http\Controllers\Auth;
 
 use Zuno\Http\Request;
-use Zuno\Auth\Security\Auth;
+use Zuno\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
 class LoginController extends Controller
 {
     public function index()
     {
-        Auth::user(); // Current authenticated user dataUser data
+        Auth::user(); // Current authenticated user data
     }
 }
 ```
@@ -2152,13 +2347,11 @@ To destroy user session, simply call `logout` function.
 namespace App\Http\Controllers\Auth;
 
 use Zuno\Http\Request;
-use Zuno\Auth\Security\Auth;
+use Zuno\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
 class LoginController extends Controller
 {
-    use Auth;
-
     public function logout()
     {
         Auth::logout(); // User login session is now destroyed
@@ -2257,13 +2450,13 @@ public function content(): Content
 ```
 
 ### Complete Example of Sending Mail
-Zuno provides `to` and `send` method primaritly to send a basic mail.
+Zuno provides `to` and `send` method primaritly to send a basic mail. You can use `Zuno\Support\Facades\Mail` call to handle mail functionalities.
 ```php
 <?php
 
 namespace App\Http\Controllers;
 
-use Zuno\Support\Mail\Mail;
+use Zuno\Support\Facades\Mail;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Mail\InvoiceMail;

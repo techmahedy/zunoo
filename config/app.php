@@ -80,4 +80,10 @@ return [
     'cipher' => 'AES-256-CBC',
 
     'key' => env('APP_KEY'),
+
+    'providers' => [
+        Zuno\Providers\RouteServiceProvider::class,
+        Zuno\Providers\FacadeServiceProvider::class,
+        App\Providers\AppServiceProvider::class,
+    ],
 ];

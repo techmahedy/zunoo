@@ -2,7 +2,9 @@
 
 namespace App\Http;
 
-class Kernel
+use Zuno\Middleware\Middleware;
+
+class Kernel extends Middleware
 {
     /**
      * The application's global HTTP middleware stack.

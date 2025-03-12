@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Zuno\Model\Model;
-use Zuno\Auth\Security\Hash;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Zuno\Support\Facades\Hash;
 
 class User extends Model
 {

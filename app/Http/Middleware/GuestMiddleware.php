@@ -5,8 +5,8 @@ namespace App\Http\Middleware;
 use Zuno\Middleware\Contracts\Middleware;
 use Zuno\Http\Response;
 use Zuno\Http\Request;
-use Zuno\Auth\Security\Auth;
 use Closure;
+use Zuno\Support\Facades\Auth;
 
 class GuestMiddleware implements Middleware
 {

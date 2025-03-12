@@ -1,12 +1,6 @@
 <?php
 
-use Dotenv\Dotenv;
 use Zuno\Application;
-use Illuminate\Events\Dispatcher;
-use Illuminate\Container\Container;
-use Illuminate\Database\Capsule\Manager as Capsule;
-use Zuno\Error\ErrorHandler;
-use Zuno\Session\ConfigSession;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,38 +12,11 @@ use Zuno\Session\ConfigSession;
 |
 */
 
-$app = new Application();
+$basePath = env('APP_BASE_PATH') ?? dirname(__DIR__);
 
-ConfigSession::configAppSession();
+define('BASE_PATH', $basePath);
 
-// Zuno error handler
-ErrorHandler::handle();
-
-// Load environment variables from .env file
-$dotenv = Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
-
-// Setup database connection using Eloquent ORM and Capsule Manager
-$capsule = new Capsule;
-$capsule->addConnection([
-    'driver'    => env('DB_CONNECTION'),
-    'host'      => env('DB_HOST'),
-    'database'  => env('DB_DATABASE'),
-    'username'  => env('DB_USERNAME'),
-    'password'  => env('DB_PASSWORD'),
-    'charset'   => 'utf8',
-    'collation' => 'utf8_unicode_ci',
-    'prefix'    => '',
-]);
-
-// Set the event dispatcher used by Eloquent models (optional but recommended)
-$capsule->setEventDispatcher(new Dispatcher(new Container));
-
-// Make this Capsule instance available globally via static methods (optional)
-$capsule->setAsGlobal();
-
-// Boot Eloquent ORM (required to use Eloquent features)
-$capsule->bootEloquent();
+$app = Application::configure($basePath)->build();
 
 /*
 |--------------------------------------------------------------------------

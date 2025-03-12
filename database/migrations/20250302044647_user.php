@@ -23,7 +23,7 @@ final class User extends Migration
             ->addColumn('name', 'string', ['limit' => 50])
             ->addColumn('username', 'string', ['limit' => 20])
             ->addColumn('email', 'string', ['limit' => 100])
-            ->addColumn('password', 'string', ['limit' => 60])
+            ->addColumn('password', 'string', ['limit' => 260])
             ->addTimestamps()
             ->addIndex(['username', 'email'], ['unique' => true])
             ->create();
