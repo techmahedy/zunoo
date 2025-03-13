@@ -6,6 +6,8 @@ use Zuno\Console\Command;
 
 require __DIR__ . '/vendor/autoload.php';
 
+$app = require_once __DIR__ . '/bootstrap/app.php';
+
 $console = new Application();
 $console->setCatchExceptions(true);
 

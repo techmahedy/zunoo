@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "328a285ed625137b22ba807e00301d0b",
+    "content-hash": "2991a3e9eba7bffb611fd84e3ba5c478",
     "packages": [
         {
             "name": "brick/math",
@@ -3434,7 +3434,7 @@
         },
         {
             "name": "zuno/zuno",
-            "version": "v4.2",
+            "version": "v4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/techmahedy/zuno.git",
