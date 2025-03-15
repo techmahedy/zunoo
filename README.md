@@ -49,7 +49,7 @@ Zuno is a PHP framework built to revolutionize the way developers create robust,
   - [Sending Mail](#section-38)
     - [Sending Mail with Attachment](#section-39)
     - [Mail Sending with CC and BCC](#section-40)
-    - 
+    -
 - **File Uploads**
   - [File Storage](#section-42)
   - [Uploads](#section-43)
@@ -763,11 +763,11 @@ Zuno facades serve as "static proxies" to underlying classes in the service cont
 
 All of Zuno's facades are defined in the `Zuno\Support\Facades` namespace. So, we can easily access a facade like so:
 ```php
-use Zuno\Support\Facades\Cache;
+use Zuno\Support\Facades\Config;
 use Zuno\Support\Facades\Route;
 
-Route::get('/cache', function () {
-    return Cache::get('key');
+Route::get('/config', function () {
+    return Config::get('key');
 });
 ```
 Throughout the Zuno documentation, many of the examples will use facades to demonstrate various features of the framework.
@@ -776,7 +776,7 @@ To complement facades, Zuno offers a variety of global "helper functions" that m
 
 For example, instead of using the `Zuno\Support\Facades\Response` facade to generate a JSON response, we may simply use the response function. Because helper functions are globally available, you do not need to import any classes in order to use them:
 ```php
-use Illuminate\Support\Facades\Response;
+use Zuno\Support\Facades\Response;
 
 Route::get('/users', function () {
     return Response::json([
@@ -797,7 +797,7 @@ Facades have many benefits. They provide a terse, memorable syntax that allows y
 ### Facades vs. Helper Functions
 In addition to facades, Zuno includes a variety of "helper" functions which can perform common tasks like generating views, firing events, dispatching jobs, or sending HTTP responses. Many of these helper functions perform the same function as a corresponding facade. For example, this facade call and helper call are equivalent:
 ```php
-return Illuminate\Support\Facades\Response::view('profile');
+return Zuno\Support\Facades\Response::view('profile');
 
 return view('profile');
 ```
