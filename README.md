@@ -625,9 +625,11 @@ In this example, the UserInterface from controller `index` method and User class
 ### Create Instance Using Container
 Zuno allows you to create object of a class using global `app()` function. If you want to create object that works like a singleton object, you can use the `app()` function
 ```php
-    $singletonObject = app(Yourclass::class);
-    $singletonObject->your_define_method;
+$singletonObject = app(SMSService:class); // this is the object of SMSService class
+$singletonObject->your_define_method;
 ```
+But if you call just `app()`, it will return the Application instance.
+
 ## Binding
 ### bind()
 Binds a service to the container. You can bind a class name or a callable (closure) that returns an instance of the service.
@@ -840,7 +842,7 @@ class Config extends BaseFacade
 
 ### Facade Class Reference
 Below you will find every facade and its underlying class. This is a useful tool for quickly digging into the API documentation for a given facade root. The service container binding key is also included where applicable.
-| Facade   | Class   |  Service Container Binding |
+| Facade   | Class   |  Container Binding |
 | -------- | ------- | -------- |
 | Auth  | Zuno\Auth\Security\Auth    | auth |
 | Abort  | Zuno\Http\Support\Abort   | abort |
@@ -853,6 +855,7 @@ Below you will find every facade and its underlying class. This is a useful tool
 | Route  | Zuno\Support\Router    | route |
 | Session  | Zuno\Support\Session    | session |
 | URL  | Zuno\Support\UrlGenerator    | url |
+| Storage  | Zuno\Support\Storage\StorageFileService    | storage |
 
 <a name="section-10"></a>
 
