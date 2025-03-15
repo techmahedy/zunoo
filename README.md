@@ -1,8 +1,6 @@
 # Zuno The PHP Framework
 
 Zuno is a PHP framework built to revolutionize the way developers create robust, scalable, and efficient web applications, specifically for developing small, feature-based PHP web applications.
-
-![imge](https://www.dailycomputerscience.com/storage/zuno-starter-page.png "Title")
 - **Getting started**
   - [Installation](#section-1)
   - [Configuration](#section-2)
@@ -51,6 +49,10 @@ Zuno is a PHP framework built to revolutionize the way developers create robust,
   - [Sending Mail](#section-38)
     - [Sending Mail with Attachment](#section-39)
     - [Mail Sending with CC and BCC](#section-40)
+    - 
+- **File Uploads**
+  - [File Storage](#section-42)
+  - [Uploads](#section-36)
 
 <a name="section-1"></a>
 
@@ -565,7 +567,29 @@ Extented content file
 <a name="section-7"></a>
 
 ## Request Lifecycle
-Coming within next week
+Understanding how a tool operates makes using it much easier and more intuitive. This principle applies just as much to application development as it does to any other tool in the real world. When you comprehend the inner workings of your development tools, you gain confidence and efficiency in using them.
+
+This document aims to provide a high-level overview of how the Laravel framework functions. By familiarizing yourself with its core concepts, you’ll reduce the sense of mystery surrounding it and feel more empowered when building applications. Don’t worry if some of the terminology seems unfamiliar at first—focus on grasping the big picture. As you continue exploring the documentation, your understanding will naturally deepen over time.
+### Lifecycle Overview
+#### First Steps
+The entry point for all requests to a Zuno application is the `public/index.php` file. All requests are directed to this file by your web server (Apache / Nginx) configuration. The index.php file doesn't contain much code. Rather, it is a starting point for loading the rest of the framework.
+
+The `index.php` file loads the Composer generated autoloader definition, and then retrieves an instance of the Zuno application from `bootstrap/app.php`. The first action taken by Zuno itself is to create an instance of the application service container.
+
+### Second Steps
+At this stage, Zuno initializes its core configuration and loads the service providers along with their registered methods. Once the core setup is complete, Zuno proceeds to load and execute the boot methods of the registered service providers, ensuring that all necessary services are properly initialized and ready for use.
+
+### Thirds Steps
+At this stage, Zuno generate global middleware stack. The method signature for the middleware's `__invoke()` method is quite simple: it receives a Request and Closer $next and send the Request and Response to the next Request. Feed it HTTP requests and it will return HTTP responses.
+
+### Final Steps
+Once the application has been fully bootstrapped and all service providers have been registered, the request is passed to the router for processing. The router is responsible for directing the request to the appropriate route or controller while also executing any route-specific middleware.
+
+Middleware acts as a powerful filtering mechanism for incoming HTTP requests, allowing the application to inspect, modify, or restrict access before reaching the intended destination. For instance, Zuno includes authentication middleware that verifies whether a user is logged in. If the user is not authenticated, they are redirected to the login screen; otherwise, the request proceeds as expected.
+
+After the designated route or controller method processes the request and generates a response, the response begins its journey back through the middleware stack. This allows the application to inspect or modify the outgoing response before it reaches the user.
+
+Finally, as the response completes its trip through the middleware, the __invoke method returns the response object, which then calls the send method. The send method delivers the response content to the user's web browser, marking the completion of Zuno’s request lifecycle.
 
 <a name="section-8"></a>
 
@@ -833,7 +857,7 @@ Below you will find every facade and its underlying class. This is a useful tool
 <a name="section-10"></a>
 
 ## Routing
-Zuno now supports only GET and POST request route. All the routes will be initialized from `route/web.php`. To define a route you have a `facade` class `Route`. Using this you can define your route.
+Zuno now supports GET, POST, PUT, PATCH, and DELETE request route. All the routes will be initialized from `route/web.php`. To define a route you have a `facade` class `Route`. Using this you can define your route.
 ```php
 
 <?php
@@ -950,6 +974,28 @@ Route::get('/user/{id}', [UserController::class, 'profile'])->name('profile');
 Now call the route
 ```php
 {{ route('profile', 2) }}
+```
+
+### Define PUT, PATCH, DELETE Request Route
+If you want to define route as a PUT, PATCH or DELETE, need to follow some rules. Assume, we are going to send a PUT request to the server, then you have to use @method('PUT') blade directive inside your HTML form.
+```html
+<form method="POST">
+    @csrf
+    @method('PUT')    // For PUT Request
+    @method('PATCH')  // For PATCH Request
+    @method('DELETE') // For DELETE Request
+    <button type="submit">Submit</button>
+</form>
+```
+
+Now you are ready to define `PUT` route in `web.php` file
+```php
+Route::put('/update-profile', [ProfileController::class, 'updateProfile']);
+
+
+// For DELETE and PATCH
+Route::delete('/user/{id}', [ProfileController::class, 'delete']);
+Route::patch('/update-profile', [ProfileController::class, 'updateProfile']);
 ```
 
 <a name="section-14"></a>
@@ -2573,3 +2619,74 @@ Mail::to($request->user())
     ->bcc($evenMoreUsers)
     ->send(new OrderShipped($order));
 ```
+
+<a name="section-42"></a>
+## Configuration
+Zuno's filesystem configuration file is located at `config/filesystems.php`. Within this file, you may configure all of your filesystem "`disks`". Each disk represents a particular storage driver and storage location. Example configurations for each supported driver are included in the configuration file so you can modify the configuration to reflect your storage preferences and credentials.
+
+You may configure as many disks as you like and may even have multiple disks that use the same driver. But if you change any of your configuration, and that is not wokring, please clean the application configuration by running the command `config:clear`.
+
+## The Local Driver
+When using the local driver, all file operations are relative to the root directory defined in your filesystems configuration file. By default, this value is set to the `storage/app/` directory. Therefore, the following method would write to `storage/app/example.txt`:
+
+```php
+use Zuno\Support\Facades\Storage;
+
+Storage::disk('local')->store($request->file('file'));
+```
+## The Public Disk
+The public disk included in your application's filesystems configuration file is intended for files that are going to be publicly accessible. By default, the public disk uses the local driver and stores its files in `storage/app/public`.
+
+If your public disk uses the local driver and you want to make these files accessible from the web, you should create a `symbolic link` from source directory `storage/app/public` to target directory `public/storage`:
+
+To create the symbolic link, you may use the `storage:link` Pool command:
+```bash
+php pool storage:link
+```
+
+Once a file has been stored and the symbolic link has been created, you can create a URL to the files using the `enqueue` helper:
+```php
+echo enqueue('storage/file.txt');
+```
+
+<a name="section-43"></a>
+## File Upload
+To upload file, you can use `Zuno\Support\Facades\Storage` facades or you can use direct file object. To upload a image using Storage facades
+```php
+use Zuno\Support\Facades\Storage;
+Storage::disk('public')->store('profile', $request->file('file'));
+```
+
+This will store file into `storage/app/public/profile` directory. here `profile` is the directory name that is optional. If you do not pass `profile`, it will storage file to its default path like `storage/app/public`. You can also uploads file into `local` disk that is a private directory.
+```php
+use Zuno\Support\Facades\Storage;
+
+Storage::disk('local')->store('profile', $request->file('file'));
+```
+This will store file into `storage/app/profile` directory. here `profile` is the directory name that is optional. If you do not pass `profile`, it will storage file to its default path like `storage/app`. You can also uploads file into `local` disk that is a private directory.
+
+### Upload File Except Storage
+You can upload file any of your application folder. Zuno allows it also. To upload file without `Storage` facades, 
+```php
+$request->file('file')->store('product');
+```
+
+Now your file will be stored in profuct directory inside storage folder. You can also use the `storeAs` method by passing your custom file name. 
+```php
+$request->file('file')->storeAs('product-cart', 'my_customize_file_name');
+```
+Now your file will be stored in `product-cart` directory with the name of `my_customize_file_name`. You can also pass callback with `storeAs` method like
+```php
+$admin = 0;
+$request->file('file')->storeAs(function ($file) use ($admin) {
+    if (! $admin) {
+        return true;
+    }
+}, 'product-cart', 'file_name');
+```
+You can also use `move` method to upload your file.
+```php
+$file = $request->file('invoice');
+$file->move($destinationPath, $fileName)
+```
+
