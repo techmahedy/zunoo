@@ -1,5 +1,7 @@
 <?php
 
+use Zuno\Http\Request;
+
 define('ZUNO_START', microtime(true));
 
 /*
@@ -27,4 +29,4 @@ require __DIR__ . '/../bootstrap/app.php';
 | Dispatch the Request and get the Response
 |--------------------------------------------------------------------------
 */
-$app->dispatch();
+$app->dispatch(Request::capture());

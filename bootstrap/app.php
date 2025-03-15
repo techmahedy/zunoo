@@ -16,7 +16,7 @@ $basePath = env('APP_BASE_PATH') ?? dirname(__DIR__);
 
 define('BASE_PATH', $basePath);
 
-$app = Application::configure()->build();
+$app = Application::configure($basePath)->build();
 
 /*
 |--------------------------------------------------------------------------

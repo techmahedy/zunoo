@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2991a3e9eba7bffb611fd84e3ba5c478",
+    "content-hash": "40ea554457b98f4641604397d1ee694a",
     "packages": [
         {
             "name": "brick/math",
@@ -3434,16 +3434,16 @@
         },
         {
             "name": "zuno/zuno",
-            "version": "v4.3",
+            "version": "v4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/techmahedy/zuno.git",
-                "reference": "c400736c2ba5e96a141b06f2711287cd2de07390"
+                "reference": "d4a4ca9aa365651c6e2f682ff476443c91700497"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/c400736c2ba5e96a141b06f2711287cd2de07390",
-                "reference": "c400736c2ba5e96a141b06f2711287cd2de07390",
+                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/d4a4ca9aa365651c6e2f682ff476443c91700497",
+                "reference": "d4a4ca9aa365651c6e2f682ff476443c91700497",
                 "shasum": ""
             },
             "require": {
@@ -3470,7 +3470,7 @@
             "type": "package",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.x-dev"
+                    "dev-master": "4.x-dev"
                 }
             },
             "autoload": {
@@ -3502,7 +3502,7 @@
                 "issues": "https://github.com/techmahedy/zuno/issues",
                 "source": "https://github.com/techmahedy/zuno"
             },
-            "time": "2025-03-12T16:55:51+00:00"
+            "time": "2025-03-15T12:26:32+00:00"
         }
     ],
     "packages-dev": [

@@ -43,6 +43,6 @@ class AppServiceProvider extends ServiceProvider
    */
   public function boot(): void
   {
-    // Add custom bootstrapping logic here.
+    // Add custom bootstrapping logic here
   }
 }
