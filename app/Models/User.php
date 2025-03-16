@@ -2,35 +2,60 @@
 
 namespace App\Models;
 
-use Zuno\Model\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Zuno\Support\Facades\Hash;
+use Zuno\Database\Eloquent\Model;
 
 class User extends Model
 {
     /**
-     * Mass Assignable Attributes
+     * Page Size
      *
-     * Specify which attributes should be mass-assignable. This helps protect against mass assignment
-     * vulnerabilities. Define the attributes you want to be mass-assignable in this property.
+     * Defines the number of records to be displayed per page when paginating results.
+     * This property is useful for controlling the size of data chunks returned by queries.
      *
-     * @var array
+     * @var int
      */
-    protected $fillable = ['name', 'username', 'email', 'password'];
+    protected $pageSize = 10;
 
     /**
-     * Hidden Attributes
+     * Primary Key
      *
-     * Specify which attributes should be hidden from arrays. For example, you might want to hide sensitive
-     * information such as passwords from the model's array or JSON representation.
+     * Specifies the column name that serves as the unique identifier for the table.
+     * By default, this is set to 'id', but it can be customized if your table uses a different primary key.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * Table Name
+     *
+     * Specifies the database table associated with this model.
+     * By default, Eloquent assumes the table name is the plural form of the model name,
+     * but you can explicitly define it here if it differs.
+     *
+     * @var string
+     */
+    protected $table = 'users';
+
+    /**
+     * Creatable Attributes
+     *
+     * Specifies which attributes can be mass-assigned when creating or updating records.
+     * This helps prevent mass assignment vulnerabilities by explicitly defining safe fields.
+     * Only the attributes listed here can be set in bulk operations.
      *
      * @var array
      */
-    protected $hidden = ['password'];
+    protected $creatable = ['name', 'username', 'email', 'password'];
 
-    // Set to user password attribute hashed when create a new user using password
-    protected function password(): Attribute
-    {
-        return Attribute::make(set: fn($value) => Hash::make($value));
-    }
+    /**
+     * Unexposable Attributes
+     *
+     * Specifies which attributes should be hidden when the model is converted to an array or JSON.
+     * This is particularly useful for hiding sensitive information, such as passwords,
+     * from being exposed in API responses or other outputs.
+     *
+     * @var array
+     */
+    protected $unexposable = ['password'];
 }

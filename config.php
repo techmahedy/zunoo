@@ -11,7 +11,7 @@ return [
         'zuno' => [
             'adapter' => 'mysql',
             'host' => 'localhost',
-            'name' => 'zuno',
+            'name' => 'test',
             'user' => 'mahedi',
             'pass' => '123456',
             'port' => '3306'

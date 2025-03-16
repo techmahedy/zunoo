@@ -3,7 +3,7 @@
 /.idea
 /.vscode
 .env
-.config
+config.php
 !.env.example
 /.phpunit.cache
 /vendor
