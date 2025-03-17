@@ -2560,10 +2560,10 @@ class LoginController extends Controller
         Auth::user(); // Current authenticated user data
 
         // or you can use
-        $request->user()
+        $request->user();
 
         // or you can use also request() helper
-        request()->helper()
+        request()->user();
     }
 }
 ```
