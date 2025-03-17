@@ -7,16 +7,6 @@ use Zuno\Database\Eloquent\Model;
 class User extends Model
 {
     /**
-     * Page Size
-     *
-     * Defines the number of records to be displayed per page when paginating results.
-     * This property is useful for controlling the size of data chunks returned by queries.
-     *
-     * @var int
-     */
-    protected $pageSize = 10;
-
-    /**
      * Primary Key
      *
      * Specifies the column name that serves as the unique identifier for the table.
@@ -58,4 +48,14 @@ class User extends Model
      * @var array
      */
     protected $unexposable = ['password'];
+
+    /**
+     * Page Size
+     *
+     * Defines the number of records to be displayed per page when paginating results.
+     * This property is useful for controlling the size of data chunks returned by queries.
+     *
+     * @var int
+     */
+    protected $pageSize = 10;
 }

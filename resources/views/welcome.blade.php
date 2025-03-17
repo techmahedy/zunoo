@@ -187,7 +187,7 @@
         <div class="container">
             <div class="navbar">
                 <div class="logo">Zuno</div>
-                <a href="https://github.com/zuno-framework" target="_blank" class="github-button">View on GitHub</a>
+                <a href="https://github.com/techmahedy/zunoo" target="_blank" class="github-button">View on GitHub</a>
             </div>
             <section class="features">
                 <div class="feature">

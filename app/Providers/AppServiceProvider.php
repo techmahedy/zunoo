@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
    */
   public function register(): void
   {
-    // Add custom service bindings or registrations here.
+    //
   }
 
   /**
@@ -43,6 +43,6 @@ class AppServiceProvider extends ServiceProvider
    */
   public function boot(): void
   {
-    // Add custom bootstrapping logic here
+    //
   }
 }

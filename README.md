@@ -491,7 +491,7 @@ Example
 ```blade
 @hasflash
     <div class="alert">
-        {!! flash()->getMessages() ||}
+        {!! flash()->get($key) ||}
     </div>
 @endhasflash
 ```
