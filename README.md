@@ -2555,9 +2555,15 @@ use App\Http\Controllers\Controller;
 
 class LoginController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         Auth::user(); // Current authenticated user data
+
+        // or you can use
+        $request->user()
+
+        // or you can use also request() helper
+        request()->helper()
     }
 }
 ```
