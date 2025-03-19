@@ -859,6 +859,7 @@ Below you will find every facade and its underlying class. This is a useful tool
 | Session  | Zuno\Support\Session    | session |
 | URL  | Zuno\Support\UrlGenerator    | url |
 | Storage  | Zuno\Support\Storage\StorageFileService    | storage |
+| Log  | Zuno\Support\LoggerService    | log |
 
 <a name="section-10"></a>
 
