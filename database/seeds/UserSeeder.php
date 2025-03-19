@@ -19,8 +19,7 @@ class UserSeeder extends AbstractSeed
         $data = [
             [
                 'name' => fake()->name(),
-                'username' => 'zuno',
-                'email' => 'zuno@test.com',
+                'email' => 'hello@zuno.com',
                 'password' => '$argon2id$v=19$m=65536,t=4,p=1$YUhEMzAycmJ3QnkyWFpVbQ$22mqZRiUoSDBehig20+GLjRpYQmQBIqQ41Y/Mhtde7k' // password
             ]
         ];

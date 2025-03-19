@@ -21,11 +21,12 @@ final class User extends Migration
     {
         $this->table('users')
             ->addColumn('name', 'string', ['limit' => 50])
-            ->addColumn('username', 'string', ['limit' => 20])
             ->addColumn('email', 'string', ['limit' => 100])
             ->addColumn('password', 'string', ['limit' => 260])
-            ->addTimestamps()
-            ->addIndex(['username', 'email'], ['unique' => true])
+            ->addColumn('remember_token', 'string', ['limit' => 100, 'null' => true])
+            ->addColumn('created_at', 'timestamp', ['null' => true])
+            ->addColumn('updated_at', 'timestamp', ['null' => true])
+            ->addIndex(['email'], ['unique' => true])
             ->create();
     }
 }

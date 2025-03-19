@@ -14,7 +14,7 @@ return [
     | - "single" → Logs everything to a single file.
     | - "daily"  → Creates a new log file for each day.
     | - "stack"  → Combines multiple log channels.
-    |
+    | - "slack"  → Slack channel
     */
 
     'default' => env('LOG_CHANNEL', 'daily'),
@@ -49,6 +49,15 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/zuno.log'),
             'level' => \Monolog\Level::Info,
+        ],
+
+        'slack' => [
+            'driver' => 'slack',
+            'url' => env('SLACK_WEBHOOK_URL'),
+            'username' => 'Zuno Log',
+            'emoji' => ':boom:',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'replace_placeholders' => true,
         ],
     ],
 ];

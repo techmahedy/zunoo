@@ -36,7 +36,7 @@ class User extends Model
      *
      * @var array
      */
-    protected $creatable = ['name', 'username', 'email', 'password'];
+    protected $creatable = ['name', 'email', 'password', 'remember_token'];
 
     /**
      * Unexposable Attributes
@@ -58,4 +58,11 @@ class User extends Model
      * @var int
      */
     protected $pageSize = 10;
+
+    /**
+     * Indicates whether the model should maintain timestamps (`created_at` and `updated_at` fields.).
+     *
+     * @var bool
+     */
+    protected $timeStamps = true;
 }

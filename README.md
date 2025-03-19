@@ -37,6 +37,7 @@ Zuno is a PHP framework built to revolutionize the way developers create robust,
   - [Validation](#section-25)
   - [Error Handling](#section-26)
     - [Error Log and Logging](#section-27)
+  - [URL Generation](#section-48)
 - **Digging Deeper**
   - [Pool Console](#section-28)
   - [Encryption & Decryption](#section-30)
@@ -862,7 +863,7 @@ Below you will find every facade and its underlying class. This is a useful tool
 <a name="section-10"></a>
 
 ## Routing
-Zuno now supports GET, POST, PUT, PATCH, and DELETE request route. All the routes will be initialized from `route/web.php`. To define a route you have a `facade` class `Route`. Using this you can define your route.
+Zuno now supports GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS and ANY request route. All the routes will be initialized from `route/web.php`. To define a route you have a `facade` class `Route`. Using this you can define your route.
 ```php
 
 <?php
@@ -873,6 +874,20 @@ use App\Http\Controllers\ExampleController;
 Route::get('/', [ExampleController::class, 'index']);
 Route::get('/about', [ExampleController::class, 'about']);
 ```
+
+### Available Router Methods
+The router allows you to register routes that respond to any HTTP verb:
+```php
+Route::get($uri, $callback);
+Route::post($uri, $callback);
+Route::put($uri, $callback);
+Route::patch($uri, $callback);
+Route::delete($uri, $callback);
+Route::options($uri, $callback);
+Route::any($uri, $callback);
+Route::head($uri, $callback);
+```
+
 <a name="section-11"></a>
 
 ## Route Parameter
@@ -1187,6 +1202,48 @@ User::find(1)
 To check whether a specific row exists in your database, you can use the `exists()` function. This method returns a boolean value (`true` or `false`) based on whether the specified condition matches any records. Here's an example:
 ```php
 User::query()->where('id', '=', 1)->exists(); // Returns `true` if a matching row exists, otherwise `false`.
+```
+
+### Create Data
+To create data, Zuno uses the `create` method. It retrieves the attributes defined in your model's `$creatable` property and inserts them into the database. For example:
+
+```php
+use App\Models\User;
+
+User::create([
+    'name' => 'Zuno'
+]);
+```
+
+Or you also create data using object
+```php
+$user = new User;
+$user->name = $request->name;
+$user->Save();
+```
+
+### Update Data
+To update data, you can use `fill` function like
+```php
+$user = User::find(1);
+$user->fill(['name' => 'Updated Name']);
+$user->save();
+```
+
+Or you can use `update` function like
+```php
+
+User::query()
+    ->where('id', '=', 1)
+    ->update([
+        'email' =>  'hi@zuno.com'
+    ]);
+```
+
+### Delete Data
+To delete data, zuno provides `delete` method
+```php
+User::find(1)->delete();
 ```
 
 <a name="section-47"></a>
@@ -2070,6 +2127,65 @@ These validation rules are crucial for maintaining data integrity and ensuring t
 * Images with inappropriate dimensions that may distort layouts.
 * Security Risks.
 
+### Validation Using Form Request Class
+We can also validate requested data using a class to make our code more clean and maintable. Zuno provides a pool command to create a new form request class.
+```bash
+php pool make:request LoginRequest
+```
+
+This command will create a new Request class to handle login request form data inside the `App\Http\Validations` folder. In this class, you will find two methods: `authorize()` and `rules()`. If you want to perform validation, ensure that the `authorize()` method returns `true`. See the example
+```php
+<?php
+
+namespace App\Http\Validations;
+
+use Zuno\Http\Validation\FormRequest;
+
+class LoginRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules(): array
+    {
+        return [
+            'email' => 'required|email|min:2|max:100',
+            'password' => 'required|min:2|max:20'
+        ];
+    }
+}
+```
+
+Now you this Request validation class in your controller like
+```php
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Validations\LoginRequest;
+use App\Http\Controllers\Controller;
+
+class LoginController extends Controller
+{
+    public function login(LoginRequest $request)
+    {
+        $data = $request->passed() // validated data
+    }
+}
+```
+
 <a name="section-26"></a>
 
 ## Error Handling
@@ -2109,6 +2225,10 @@ This will show the user 404 error page. You can also use `abortIf` to add extra 
 ```php
 abortIf(Auth::user()->id === 1, 404);
 ```
+
+### User Define Custom Error Page
+If you want to use a custom error page, you need to create your error view file inside the `resources/views/errors` directory. For example, to create a custom 404 error page, you would name the file `404.blade.php`, where `404` represents the HTTP status code. Once created, Zuno will automatically use your custom error page for the corresponding status code.
+
 <a name="section-27"></a>
 
 ## Error Logging and System Monitoring
@@ -2122,25 +2242,53 @@ Zuno supports three primary logging channels, configurable via the `config/log.p
 * **`stack`**: Allows you to group multiple log handlers into a single channel.
 * **`daily`**: Creates a new log file each day, useful for managing large log volumes.
 * **`single`**: Writes all log messages to a single file (`storage/logs/zuno.log`).
+* **`slack`**: Creates log each day in slack channel
 
 **Configuration:**
 
 You can customize the logging behavior by modifying the `config/log.php` file and the `.env` file. This allows you to select your preferred logging channel, adjust log levels, and configure other logging options.
 
-**Basic Logging with the `logger()` Helper:**
+**Basic Logging with the `Zuno\Support\Facades\Log` Facades:**
 
-Zuno provides a convenient `logger()` helper function to simplify the logging process. To log a message, simply use the following syntax:
+Zuno provides a convenient `Log` Facades class to simplify the logging process. To log a message, simply use the following syntax:
 
 ```php
-logger()->info('Informational message.');
-logger()->error('An error occurred.');
-logger()->warning('Warning message.');
-logger()->debug('Debugging information.');
+use Zuno\Support\Facades\Log;
+
+Log::info('Howdy');
 ```
-#### Passing array as params
-If you need to log array data, follow as like below
+
+Zuno allow you to create Log using multiple method like
 ```php
-logger()->info('message', ['name' => 'Mahedi Hasan', 'spouse' => 'Nure Yesmin']);
+Log::warning('Howdy');
+Log::notice('Howdy');
+Log::alert('Howdy');
+Log::emergency('Howdy');
+Log::error('Howdy');
+Log::debug('Howdy');
+Log::critical('Howdy');
+```
+
+### Log channel
+You can use channel to show Log message, like you want to show Log a daily file or slack channel or single channel, you can use like below
+```php
+Log::channel('stack')->info('Howdy');
+Log::channel('daily')->warning('Howdy');
+Log::channel('single')->notice('Howdy');
+Log::channel('slack')->alert('Howdy');
+```
+
+### Log Helper
+You can show above all the log data using log helper function like
+```php
+info('Howdy');
+warning('Howdy');
+notice('Howdy');
+alert('Howdy');
+emergency('Howdy');
+error('Howdy');
+debug('Howdy');
+critical('Howdy');
 ```
 
 #### Automatic System Error Logging
@@ -2170,6 +2318,55 @@ Zuno includes a robust, built-in system for automatically capturing and recordin
 **In Essence:**
 
 Zuno's automatic system error logging acts as a vital safety net, ensuring that critical errors are meticulously recorded for thorough analysis and swift resolution. This proactive approach significantly contributes to the development of a more robust, dependable, and maintainable application.
+
+<a name="section-48"></a>
+
+## URL Generation
+Zuno provides several helpers to assist you in generating URLs for your application. These helpers are primarily helpful when building links in your templates, or when generating redirect responses to another part of your application. The most basic URL generation will be like assume we want to generate url using route name.
+```php
+use Zuno\Support\Facades\URL;
+
+URL::route('login');
+
+// its equivalent helper method is
+route('login');
+```
+
+### Signed URL
+Assume you want to generate a URL that will be expire after some times with a signature, you can use `singed` method like
+```php
+URL::signed('/download', ['file' => 'report.pdf'], 3600);
+
+// This will generate URL like this
+http://example.com/download?file=report.pdf&expires=1742400695&signature=14a4f4a5c6b6c96eb8668af1759232591d52eb8456bcf088addb02275b673562
+```
+
+You can also create this above URL using
+```php
+URL::to('/download')
+    ->withQuery(['file' => 'report.pdf'])
+    ->withSignature(3600)
+    ->withFragment('about')
+    ->make();
+
+// output
+http://localhost:8000/download?file=report.pdf&expires=1742401435&signature=363ef0e47fd9fca7197882490ee8f4c132df6b9b6e9e0041ac0df5c31cc349d3#about
+```
+
+There are some basic helper method to access URL like
+```php
+URL::full(); // http://example.com/hello?name=zuno
+URL::current(); // http://example.com/hello
+```
+
+### Accessing public assets
+Zuno provides `enqueue()` method to access your public assstes like
+```php
+URL::enqueue('/assets/example.png'); // http://localhost:8000/assets/example.png
+
+// its equivalent helper method is
+enqueue('/assets/example.png');
+```
 
 <a name="section-28"></a>
 
@@ -2542,6 +2739,15 @@ class LoginController extends Controller
 }
 
 ```
+
+### Auth Via Remember Me
+If you want to create auth using remember me, then you just need to pass, true as the second parameter in try method like
+```php
+if (Auth::try($request->passed(), true)) {
+    // User is logged in
+}
+```
+
 ### Get Authenticated User Data
 To get the current authenticated user data, Zuno has `Auth::user()` method. Simply call
 ```php
@@ -2564,6 +2770,9 @@ class LoginController extends Controller
 
         // or you can use also request() helper
         request()->user();
+
+        // or you can use also auth() helper
+        request()->auth();
     }
 }
 ```

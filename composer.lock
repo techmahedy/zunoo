@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cd448de53264fa3f78fcce14ba2b3ae7",
+    "content-hash": "42284f4a776c0e5f0458c2f77606cb40",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -2177,7 +2177,7 @@
         },
         {
             "name": "zuno/zuno",
-            "version": "v5.1",
+            "version": "v5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/techmahedy/zuno.git",
