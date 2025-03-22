@@ -23,6 +23,6 @@ class Authenticate implements Middleware
             return $next($request);
         }
 
-        return redirect()->to('/login');
+        return redirect('/login');
     }
 }

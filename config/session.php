@@ -38,7 +38,7 @@ return [
     |
     */
 
-    'files' => base_path() . '/storage/framework/sessions',
+    'files' => base_path('storage/framework/sessions'),
 
     /*
     |--------------------------------------------------------------------------

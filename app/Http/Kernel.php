@@ -14,7 +14,6 @@ class Kernel extends Middleware
      * @var array
      */
     public array $middleware = [
-        \Zuno\Middleware\CorsMiddleware::class,
         \Zuno\Middleware\CsrfTokenMiddleware::class,
     ];
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38c1837f9ec54b0d9b68aee0302b4d17",
+    "content-hash": "7484440895a9e27ec336914bb5d8d895",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -1092,16 +1092,16 @@
         },
         {
             "name": "ramsey/collection",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/collection.git",
-                "reference": "3c5990b8a5e0b79cd1cf11c2dc1229e58e93f109"
+                "reference": "344572933ad0181accbf4ba763e85a0306a8c5e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/collection/zipball/3c5990b8a5e0b79cd1cf11c2dc1229e58e93f109",
-                "reference": "3c5990b8a5e0b79cd1cf11c2dc1229e58e93f109",
+                "url": "https://api.github.com/repos/ramsey/collection/zipball/344572933ad0181accbf4ba763e85a0306a8c5e2",
+                "reference": "344572933ad0181accbf4ba763e85a0306a8c5e2",
                 "shasum": ""
             },
             "require": {
@@ -1162,9 +1162,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/collection/issues",
-                "source": "https://github.com/ramsey/collection/tree/2.1.0"
+                "source": "https://github.com/ramsey/collection/tree/2.1.1"
             },
-            "time": "2025-03-02T04:48:29+00:00"
+            "time": "2025-03-22T05:38:12+00:00"
         },
         {
             "name": "robmorgan/phinx",
@@ -2675,16 +2675,16 @@
         },
         {
             "name": "zuno/zuno",
-            "version": "v5.3",
+            "version": "v5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/techmahedy/zuno.git",
-                "reference": "d3efb99a8c6e19425b2ba7a4e3cf6fc121c2ca49"
+                "reference": "915ae654d86b06749b4557c52a19d4922ed13ede"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/d3efb99a8c6e19425b2ba7a4e3cf6fc121c2ca49",
-                "reference": "d3efb99a8c6e19425b2ba7a4e3cf6fc121c2ca49",
+                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/915ae654d86b06749b4557c52a19d4922ed13ede",
+                "reference": "915ae654d86b06749b4557c52a19d4922ed13ede",
                 "shasum": ""
             },
             "require": {
@@ -2742,7 +2742,7 @@
                 "issues": "https://github.com/techmahedy/zuno/issues",
                 "source": "https://github.com/techmahedy/zuno"
             },
-            "time": "2025-03-19T15:51:12+00:00"
+            "time": "2025-03-22T17:37:05+00:00"
         }
     ],
     "packages-dev": [

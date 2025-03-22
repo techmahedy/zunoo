@@ -629,7 +629,7 @@ In this example, the UserInterface from controller `index` method and User class
 Zuno allows you to create object of a class using global `app()` function. If you want to create object that works like a singleton object, you can use the `app()` function
 ```php
 $singletonObject = app(SMSService:class); // this is the object of SMSService class
-$singletonObject->your_define_method;
+$singletonObject->sendSms();
 ```
 But if you call just `app()`, it will return the Application instance.
 
@@ -694,9 +694,6 @@ $this->app->when(fn() => rand(0, 1) === 1)?->singleton(ProductInterface::class,f
 
 The Zuno Service Container simplifies dependency management by providing a clean and intuitive API for binding and resolving services. Whether you're working with regular bindings, singletons, or conditional logic, the container ensures your application remains modular, testable, and scalable.
 
-
-<a name="section-8"></a>
-
 <a name="section-9"></a>
 
 ## Service Providers
@@ -748,7 +745,7 @@ namespace App\Providers;
 
 use Zuno\Providers\ServiceProvider;
 
-class AnotherServiceProvider extends ServiceProvider
+class MyOwnServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
@@ -860,20 +857,35 @@ Below you will find every facade and its underlying class. This is a useful tool
 | URL  | Zuno\Support\UrlGenerator    | url |
 | Storage  | Zuno\Support\Storage\StorageFileService    | storage |
 | Log  | Zuno\Support\LoggerService    | log |
+| Sanitize | Zuno\Support\Validation\Sanitizer    | sanitize |
 
 <a name="section-10"></a>
 
 ## Routing
-Zuno now supports GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS and ANY request route. All the routes will be initialized from `route/web.php`. To define a route you have a `facade` class `Route`. Using this you can define your route.
+Zuno provides a comprehensive and flexible routing system that allows you to define how your application responds to various HTTP requests. All routes are initialized from the routes/web.php file, making it easy to manage and organize your application's endpoints.
+
+### Supported HTTP Methods
+Zuno supports the following HTTP methods for defining routes:
+
+* `GET`: Used to retrieve data from the server.
+* `POST`: Used to submit data to the server.
+* `PUT`: Used to update existing data on the server.
+* `PATCH`: Used to partially update existing data on the server.
+* `DELETE`: Used to delete data on the server.
+* `HEAD`: Similar to GET, but retrieves only the headers without the body.
+* `OPTIONS`: Used to describe the communication options for the target resource.
+* `ANY`: Matches any HTTP method for the specified route.
+
 ```php
 
 <?php
 
 use Zuno\Support\Facades\Route;
-use App\Http\Controllers\ExampleController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PageController;
 
-Route::get('/', [ExampleController::class, 'index']);
-Route::get('/about', [ExampleController::class, 'about']);
+Route::get('/', [HomeController::class, 'dashboard']);
+Route::get('/about', [PageController::class, 'about']);
 ```
 
 ### Available Router Methods
@@ -1108,6 +1120,13 @@ class User extends Model
      * @var array
      */
     protected $unexposable = ['password'];
+    
+    /**
+     * Indicates whether the model should maintain timestamps (`created_at` and `updated_at` fields.).
+     *
+     * @var bool
+     */
+    protected $timeStamps = true;
 }
 
 ```
@@ -1542,7 +1561,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         return view('user.profile', [
-            'user' => User::findOrFail($id)
+            'user' => User::find($id)
         ]);
     }
 }
@@ -1612,6 +1631,8 @@ These methods provide access to server-related request information.
 * **Headers:**
     * `$request->headers()`: Retrieves all request headers as an array.
     * `$request->header('key')`: Retrieves the value of a specific header by key.
+    * `$request->headers->get('host')`: Retrieves the value of a specific header by key.
+    * `$request->headers->set('key','value')`: Set the value to the header.
 * **Request Details:**
     * `$request->scheme()`: Retrieves the request scheme (e.g., "http" or "https").
     * `$request->isSecure()`: Returns `true` if the request is using HTTPS, `false` otherwise.
@@ -1633,6 +1654,7 @@ These methods provide access to server-related request information.
 This method is used to access authenticated user data.
 
 * `$request->auth()`: Retrieves the authenticated user data.
+* `$request->user()`: Retrieves the authenticated user data.
 
 #### File Uploads
 
@@ -1697,6 +1719,15 @@ Route::get('/', function () {
 });
 ```
 
+### Collection 
+You can also return collection like
+```php
+Route::get('/', function () {
+    return $collection = collect([1, 2, 3, 4]);
+    return $collection->count();
+});
+```
+
 ### Response Objects
 Typically, you won't just be returning simple strings or arrays from your route actions. Instead, you will be returning full `Zuno\Http\Response` instances.
 ```php
@@ -1706,7 +1737,7 @@ Route::get('/', function () {
 ```
 
 ### Eloquent Models and Collections
-For Eloquent, Zuno usage its own Eloquent Model and Ramsey Collection. So you can return Eloquent collection data as `Zuno\Http\Response`
+For Eloquent, Zuno usage its own Eloquent Model and Collection. So you can return Eloquent collection data as `Zuno\Http\Response`, Zuno automatically convert this data as collection
 ```php
 use App\Models\User;
 
@@ -1753,6 +1784,27 @@ class UserController extends Controller
     }
 }
 ```
+
+You can also return response like this, directly using `response()` helper.
+```php
+ 
+ return response($content, $status, $headers);
+ 
+ return response([
+            'name' =>  'zuno'
+        ],200, [
+            'Header-Value' => 'Your Header value'
+        ]);
+```
+
+### Response Collection Inside Array
+If you want to return colelction inside a array, you can use `toArray()` method to convert your collection to array
+```php
+return response()->json([
+        'data' => User::all()->toArray()
+    ], 200);
+```
+
 ### Attaching Headers to Responses using Response Facades
 You can also use `Facades` to get the response. You can use `Response` facades like
 ```php
@@ -1774,25 +1826,53 @@ class UserController extends Controller
 }
 ```
 
-### Redirects
+### Check Response Status
+You can check the response status like
+```php
+$response = response()->json([
+        'data' => 'Zuno'
+   ], 200);
+
+return $response->isOk();
+```
+
+### Some Avaialbe Response Method
+There are so many response method that you can use to check your HTTP response. Some of are
+```php
+public function isSuccessful(): bool
+public function isRedirection(): bool
+public function isClientError(): bool
+public function isServerError(): bool
+public function isOk(): bool
+public function isForbidden(): bool
+public function isNotFound(): bool
+public function isRedirect(?string $location = null): bool
+public function isFresh(): bool
+public function isValidateable(): bool
+public function setPrivate(): Response
+public function setPublic(): Response
+public function setImmutable(bool $immutable = true): Response
+public function isImmutable(): bool
+public function setCache(array $options): static
+public function isInvalid(): bool
+```
+
+### Redirects Response
 Redirect responses are instances of the `Zuno\Http\Redirect` class, and contain the proper headers needed to redirect the user to another URL. There are several ways to generate a Redirect instance. The simplest method is to use the global `redirect` helper or even you can use `Redirect` facades
 ```php
 use Zuno\Support\Facades\Redirect;
 
 Route::get('/dashboard', function () {
+
     // Both will give you the same output
     return redirect()->to('/home/dashboard');
     return Redirect::to('/home/dashboard');
+    
+    // Even you can use
+    redirect('/home/dashboard');
 });
 ```
-Sometimes you may wish to redirect the user to their previous location, such as when a submitted form is invalid. You may do so by using the global back helper function.
-```php
-Route::post('/user/profile', function () {
-    // Validate the request...
-    return redirect()->back()->withInput();
-    return redirect()->back()->withInput()->withErrors($errors);
-});
-```
+
 ### Redirecting to Named Routes
 When you call the redirect helper with no parameters, an instance of `Zuno\Routing\Redirect` is returned, allowing you to call any method on the `Redirect` instance. For example, to generate a `Redirect` to a named route, you may use the route method:
 ```php
@@ -1808,6 +1888,7 @@ Sometimes you may need to redirect to a domain outside of your application. You 
 ```php
 return redirect()->away('https://www.google.com');
 ```
+
 ### Redirecting With Flashed Session Data
 Redirecting to a new URL and flashing data to the session are usually done at the same time. Typically, this is done after successfully performing an action when you flash a success message to the session. For convenience, you may create a `RedirectResponse` instance and flash data to the session in a single, fluent method chain:
 ```php
@@ -1824,6 +1905,12 @@ class LoginController extends Controller
     {
        flash()->message('success', 'You are logged in');
        return redirect()->to('/home');
+       
+       // Or simplye you can use
+       session()->flash('success', 'You are logged in');
+       
+       // You you can use like that
+       return back()->withFlash('error', 'Email or password is incorrect');
     }
 }
 
@@ -1831,7 +1918,7 @@ class LoginController extends Controller
 You can show this in many ways. This ways will automatically check is there is any session flash message then display it
 ```php
 @hasflash
-    {!! flash()->display() !!} // this will render html bootstrap 5 alert message by type
+    {!! flash()->display() !!} // this flash display will cover all the session flash message as well as error messages
 @endhasflash
 ```
 Or you can show it like this ways
@@ -1839,6 +1926,15 @@ Or you can show it like this ways
 @if (flash->has('success'))
     <div class="alert alert-success">
         {{ flash->get('success') }}
+    </div>
+@endif
+```
+
+For session flash
+```blade
+@if (session()->has('success'))
+    <div class="alert alert-success">
+        {{ session()->get('success') }}
     </div>
 @endif
 ```
@@ -1934,13 +2030,19 @@ php pool session:clear --force
 To store data in the session and retrieve it later, use the `put` and `get` methods.
 #### Syntax
 ```php
-$rquest->session()->put($key, $value);
+$request->session()->put($key, $value);
 ```
 Example
 ```php
-$rquest->session()->put('name', 'Mahedi Hasan');
-return $rquest->session()->get('name');
+$request->session()->put('name', 'zuno');
+return $request->session()->get('name');
 ```
+You can also get the session data like
+```php
+return session('name', 'default');
+```
+
+
 You can check a key exists or not in a session data by doing this
 ```php
 if($rquest->session()->has('name')){
@@ -2059,14 +2161,10 @@ public function register(Request $request)
         'username' => 'required|unique:users|min:2|max:100',
         'name' => 'required|min:2|max:20'
     ]);
-
-    if ($data instanceof \Zuno\Http\Response) {
-        // Validation failed
-        dd($request->failed()); 
-    } else {
-        dd($request->passed());
-    }
-
+    
+    $data // validation passed data
+    $request->passed(); // validation passed data
+    
     // Safely create the user now
     User::create($request->passed());
 }
@@ -2088,6 +2186,57 @@ But if you want to show all error message in a single call, you can use below wa
 ```
 
 Zuno will automatically trace the error message and display here.
+
+## Validation Facades
+Zuno provides `Zuno\Support\Facades\Sanitize` facades to sanitize your form request data. you can sanitize your form request data like
+```php
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use Zuno\Support\Facades\Sanitize;
+use Zuno\Http\Request;
+use App\Http\Controllers\Controller;
+
+class LoginController extends Controller
+{
+    public function login(Request $request)
+    {
+        $sanitizer = Sanitize::request($request->all(), [
+            'email' => 'required|email|min:2|max:100',
+            'password' => 'required|min:2|max:20'
+        ]);
+
+        if ($sanitizer->fails()) {
+            return back()->withErrors($sanitizer->errors())->withInput();
+        }
+
+        // validation passed and you can get the sanitized data like
+        $validated = $sanitizer->passed();
+    }
+}
+```
+
+Now you can show all the error message with session flash or `flash()->display()` method. Let's see the example of session flash error message showing
+```html
+// You can use
+@hasflash
+    {!! flash()->display() !!}
+@endhasflash
+
+// Use any one of them 
+@if (session()->has('errors'))
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (session()->get('errors') as $field => $messages)
+                @foreach ($messages as $message)
+                    <li>{{ $message }}</li>
+                @endforeach
+            @endforeach
+        </ul>
+    </div>
+@endif
+```
 
 ### Image validation
 In Zuno, you can use the $request->sanitize() method to validate and sanitize incoming request data. This ensures that the submitted data meets specific criteria before being processed.
@@ -2569,7 +2718,6 @@ Now you can seed data from this class by updating run method. You can update run
 declare(strict_types=1);
 
 use Phinx\Seed\AbstractSeed;
-use Zuno\Auth\Security\Hash;
 
 class UserSeeder extends AbstractSeed
 {
@@ -2585,10 +2733,9 @@ class UserSeeder extends AbstractSeed
     {
         $data = [
             [
-                'name' => $name = fake()->name(),
-                'username' => strtolower(str_replace(' ', '_', $name)),
-                'email' => fake()->email(),
-                'password' => Hash::make('password')
+                'name' => fake()->name(),
+                'email' => 'hello@zuno.com',
+                'password' => '$argon2id$v=19$m=65536,t=4,p=1$YUhEMzAycmJ3QnkyWFpVbQ$22mqZRiUoSDBehig20+GLjRpYQmQBIqQ41Y/Mhtde7k' // password
             ]
         ];
 
@@ -3082,4 +3229,3 @@ You can also use `move` method to upload your file.
 $file = $request->file('invoice');
 $file->move($destinationPath, $fileName)
 ```
-

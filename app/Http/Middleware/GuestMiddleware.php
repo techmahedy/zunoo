@@ -20,7 +20,7 @@ class GuestMiddleware implements Middleware
     public function __invoke(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            return redirect()->to('/home');
+            return redirect('/home');
         }
 
         return $next($request);

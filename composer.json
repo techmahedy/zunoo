@@ -15,7 +15,7 @@
   ],
   "require": {
     "php": "^8.3",
-    "zuno/zuno": "^5.3"
+    "zuno/zuno": "^5.4"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23"
@@ -37,7 +37,8 @@
       "Zuno\\Installer::postCreateProject"
     ],
     "post-root-package-install": [
-      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+      "@php -r \"file_exists('config.php') || copy('config.example', 'config.php');\""
     ]
   }
 }

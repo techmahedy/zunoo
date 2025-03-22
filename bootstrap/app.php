@@ -2,6 +2,10 @@
 
 use Zuno\Application;
 
+$basePath = empty(env('APP_BASE_PATH')) ? dirname(__DIR__) : env('APP_BASE_PATH');
+
+define('BASE_PATH', $basePath);
+
 /*
 |--------------------------------------------------------------------------
 | Create The Application
@@ -11,12 +15,7 @@ use Zuno\Application;
 | components: Route, Request, Middleware and Container.
 |
 */
-
-$basePath = env('APP_BASE_PATH') ?? dirname(__DIR__);
-
-define('BASE_PATH', $basePath);
-
-$app = Application::configure($basePath)->build();
+$app = new Application();
 
 /*
 |--------------------------------------------------------------------------
@@ -27,4 +26,7 @@ $app = Application::configure($basePath)->build();
 | incoming requests and send responses back to the client.
 |
 */
-return $app;
+return $app
+    ->setBasePath($basePath)
+    ->configure($app)
+    ->build();
