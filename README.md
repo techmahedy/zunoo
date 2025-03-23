@@ -479,22 +479,28 @@ Checks if a user is not authenticated (guest).
 @endguest
 ```
 ### Flash Message Directives
-### @hasflash
-Checks if there are any flash messages.
+### @errors
+Checks if there are any errors messages.
 
 #### Syntax:
 ```blade
-@hasflash
-    // Code to execute if flash messages exist
-@endhasflash
+@errors
+    // Code to execute if errors messages exist
+@enderrors
 ```
 Example
 ```blade
-@hasflash
-    <div class="alert">
-        {!! flash()->get($key) ||}
+@errors
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (session()->get('errors') as $field => $messages)
+                @foreach ($messages as $message)
+                    <li>{{ $message }}</li>
+                @endforeach
+            @endforeach
+        </ul>
     </div>
-@endhasflash
+@enderrors
 ```
 
 ### @error
@@ -1901,36 +1907,16 @@ use App\Http\Controllers\Controller;
 
 class LoginController extends Controller
 {
-    public function login(Request $request)
+    public function logout(Request $request)
     {
-       flash()->message('success', 'You are logged in');
-       return redirect()->to('/home');
-       
-       // Or simplye you can use
-       session()->flash('success', 'You are logged in');
-       
-       // You you can use like that
-       return back()->withFlash('error', 'Email or password is incorrect');
+       redirect()->to('/login')
+            ->with('success', 'You are successfully logged out');
     }
 }
 
 ```
 You can show this in many ways. This ways will automatically check is there is any session flash message then display it
-```php
-@hasflash
-    {!! flash()->display() !!} // this flash display will cover all the session flash message as well as error messages
-@endhasflash
-```
-Or you can show it like this ways
-```php
-@if (flash->has('success'))
-    <div class="alert alert-success">
-        {{ flash->get('success') }}
-    </div>
-@endif
-```
 
-For session flash
 ```blade
 @if (session()->has('success'))
     <div class="alert alert-success">
@@ -2161,10 +2147,10 @@ public function register(Request $request)
         'username' => 'required|unique:users|min:2|max:100',
         'name' => 'required|min:2|max:20'
     ]);
-    
+
     $data // validation passed data
     $request->passed(); // validation passed data
-    
+
     // Safely create the user now
     User::create($request->passed());
 }
@@ -2180,9 +2166,17 @@ To show validation error message in your blade file, zuno has a very elegent syn
 ```
 But if you want to show all error message in a single call, you can use below way
 ```html
-@hasflash
-    {!! flash()->display() !!}
-@endhasflash
+ @errors
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (session()->get('errors') as $field => $messages)
+                @foreach ($messages as $message)
+                    <li>{{ $message }}</li>
+                @endforeach
+            @endforeach
+        </ul>
+    </div>
+@enderrors
 ```
 
 Zuno will automatically trace the error message and display here.
@@ -2217,13 +2211,8 @@ class LoginController extends Controller
 }
 ```
 
-Now you can show all the error message with session flash or `flash()->display()` method. Let's see the example of session flash error message showing
+Now you can show all the error message with session flash method. Let's see the example of session flash error message showing
 ```html
-// You can use
-@hasflash
-    {!! flash()->display() !!}
-@endhasflash
-
 // Use any one of them 
 @if (session()->has('errors'))
     <div class="alert alert-danger">
@@ -2246,7 +2235,6 @@ $request->sanitize([
     'file' => 'required|image|mimes:jpg,png,jpeg|dimensions:min_width=100,min_height=100,max_width=1000,max_height=1000|max:2048'
 ]);
 ```
-
 The following validation rules are applied to image uploads to ensure that only properly formatted and sized images are processed.
 
 **Rules:**
@@ -2276,6 +2264,37 @@ These validation rules are crucial for maintaining data integrity and ensuring t
 * Excessively large images that can impact performance.
 * Images with inappropriate dimensions that may distort layouts.
 * Security Risks.
+
+### Date Validation
+To validate date, you follow this example
+```php
+'date' => 'required|date|gte:today'
+```
+Here date must date type of field and `gte` means `greater than equal` today. if you use `gt` that means `greater than` today like
+```php
+'date' => 'required|date|gt:today'
+```
+You can also use `lte` and `lt` means `less than today` and `less than`. As for example
+```php
+'date' => 'required|date|lte:today' // date should be less than equal today
+```
+
+### Number Validation
+To validate number, you follow this example
+```php
+$request->sanitize([
+    'number' => 'null|int|between:2,5'
+]);
+```
+The above validation will be applied like that, the number can be nullable and if number provides, it must be integer and digit must in between greater than equal 2 and less than equal 5
+
+To validate `float` number, you follow this example
+```php
+$request->sanitize([
+    'number' => 'null|float:2|between:2,5'
+]);
+```
+The above validation will be applied like that, the number can be nullable and if number provides, it must be float and digit must in between greater than equal 2 and less than equal 5 and decimal after number will be 2 digit to "have exactly two decimal places" or "with two decimal places" like `3.33` not `3.333`
 
 ### Validation Using Form Request Class
 We can also validate requested data using a class to make our code more clean and maintable. Zuno provides a pool command to create a new form request class.
@@ -2563,8 +2582,8 @@ It will shows all the application commands
 * `make:middleware`: Creates a new middleware class.
 * `make:provider`: Creates a new service provider class.
 * `make:model`: Creates a new model class.
-* `create:migration`: Creates a new Phinx migration class.
-* `create:seed`: Creates a new Phinx seed class.
+* `make:migration`: Creates a new Phinx migration class.
+* `make:seed`: Creates a new Phinx seed class.
 
 **Session Management Commands:**
 
@@ -2670,21 +2689,342 @@ Now once you have configured this file, now migration pool console command will 
 ### Create Migration
 To create a new migration file, run this command
 ```bash
-php pool create:migration PostMigration
+php pool make:migration UserMigration
 ```
-Now this command will create `PostMigration` file inside your `database/migrations` folder. Now to know avaiable fields type, see this [Phinx](https://book.cakephp.org/phinx/0/en/migrations.html#working-with-columns) documentation page.
+Now assume we are going to update UserMigration class
+```php
+<?php
 
+declare(strict_types=1);
+
+use Zuno\Migration\Migration;
+
+final class User extends Migration
+{
+    public function change(): void
+    {
+        $this->table('users')
+            ->addColumn('name', 'string', ['limit' => 50])
+            ->addColumn('email', 'string', ['limit' => 100])
+            ->addColumn('password', 'string', ['limit' => 260])
+            ->addColumn('remember_token', 'string', ['limit' => 100, 'null' => true])
+            ->addColumn('created_at', 'timestamp', ['null' => true])
+            ->addColumn('updated_at', 'timestamp', ['null' => true])
+            ->addIndex(['email'], ['unique' => true])
+            ->create();
+    }
+}
+```
 ### Create Migrate
 To migrate your all file or newly created migration files, run this `migrate` command
 ```bash
 php pool migrate
 ```
+
+You can also insert data after migration created by checking `isMigratingUp` method.
+```php
+public function change()
+{
+    // create the table
+    $table = $this->table('user_logins');
+    $table->addColumn('user_id', 'integer')
+            ->addColumn('created', 'datetime')
+            ->create();
+    if ($this->isMigratingUp()) {
+        $table->insert([['user_id' => 1, 'created' => '2020-01-19 03:14:07']])
+                ->save();
+    }
+}
+```
+**Warning:** Zuno automatically creates an auto-incrementing primary key column called `id` for every table.
+
+The `id` option sets the name of the automatically created identity field, while the `primary_key` option selects the field or fields used for primary key. `id` will always override the `primary_key` option unless it’s set to false. If you don’t need a primary key set id to false without specifying a `primary_key`, and no primary key will be created.
+
+To specify an alternate primary key, you can specify the `primary_key` option when accessing the Table object. Let’s disable the automatic id column and create a primary key using two columns instead:
+```php
+$table = $this->table('followers', ['id' => false, 'primary_key' => ['user_id', 'follower_id']]);
+$table->addColumn('user_id', 'integer')
+      ->addColumn('follower_id', 'integer')
+      ->addColumn('created', 'datetime')
+      ->create();
+```
+Setting a single `primary_key` doesn’t enable the AUTO_INCREMENT option. To simply change the name of the primary key, we need to override the default id field name:
+```php
+$table = $this->table('followers', ['id' => 'user_id']);
+$table->addColumn('follower_id', 'integer')
+      ->addColumn('created', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
+      ->create();
+```
+
+### Signed Primary Key
+By default, the primary key is `unsigned`. To simply set it to be `signed` just pass `signed` option with a true value:
+```php
+public function change()
+{
+    $table = $this->table('followers', ['signed' => false]);
+    $table->addColumn('follower_id', 'integer')
+          ->addColumn('created', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
+          ->create();
+}
+```
+
+### Determining Whether a Table Exists
+You can determine whether or not a table exists by using the `hasTable()` method.
+```php
+public function change()
+{
+    $exists = $this->hasTable('users');
+    if ($exists) {
+        // do something
+    }
+}
+```
+
+### Dropping a Table
+Tables can be dropped quite easily using the `drop()` method. It is a good idea to recreate the table again in the `down()` method.
+
+Note that like other methods in the Table class, drop also needs `save()` to be called at the end in order to be executed. This allows phinx to intelligently plan migrations when more than one table is involved.
+```php
+public function change()
+{
+    $this->table('users')->drop()->save();
+}
+
+public function down()
+{
+    $users = $this->table('users');
+    $users->addColumn('username', 'string', ['limit' => 20])
+          ->addColumn('created', 'datetime')
+          ->save();
+}
+```
+### Renaming a Table
+To rename a table access an instance of the Table object then call the `rename()` method.
+```php
+public function change()
+{
+    $table = $this->table('users');
+    $table
+        ->rename('legacy_users')
+        ->update();
+}
+
+public function down()
+{
+    $table = $this->table('legacy_users');
+    $table
+        ->rename('users')
+        ->update();
+}
+```
+
+### Change the primary key on an existing table
+To change the primary key on an existing table, use the `changePrimaryKey()` method. Pass in a column name or array of columns names to include in the primary key, or `null` to drop the primary key. Note that the mentioned columns must be added to the table, they will not be added implicitly.
+```php
+public function change()
+{
+    $users = $this->table('users');
+    $users
+        ->addColumn('username', 'string', ['limit' => 20, 'null' => false])
+        ->addColumn('password', 'string', ['limit' => 40])
+        ->save();
+
+    $users
+        ->addColumn('new_id', 'integer', ['null' => false])
+        ->changePrimaryKey(['new_id', 'username'])
+        ->save();
+}
+```
+
+
+### Avaiable Fields
+Column types are specified as strings and can be one of:
+- binary
+- boolean
+- char
+- date
+- datetime
+- decimal
+- float
+- double
+- smallinteger
+- integer
+- biginteger
+- string
+- text
+- time
+- timestamp
+- uuid
+
+In addition, the MySQL adapter supports `enum`, `set`, `blob`, `tinyblob`, `mediumblob`, `longblob`, `bit` and `json` column types (json in MySQL 5.7 and above). When providing a limit value and using `binary`, `varbinary` or `blob` and its subtypes, the retained column type will be based on required length. Some of the example of timestamps columns and how you can handle it.
+```php
+// Use defaults (without timezones)
+$table = $this->table('users')->addTimestamps()->create();
+// Use defaults (with timezones)
+$table = $this->table('users')->addTimestampsWithTimezone()->create();
+
+// Override the 'created_at' column name with 'recorded_at'.
+$table = $this->table('books')->addTimestamps('recorded_at')->create();
+
+// Override the 'updated_at' column name with 'amended_at', preserving timezones.
+// The two lines below do the same, the second one is simply cleaner.
+$table = $this->table('books')->addTimestamps(null, 'amended_at', true)->create();
+$table = $this->table('users')->addTimestampsWithTimezone(null, 'amended_at')->create();
+
+// Only add the created_at column to the table
+$table = $this->table('books')->addTimestamps(null, false);
+// Only add the updated_at column to the table
+$table = $this->table('users')->addTimestamps(false);
+// Note, setting both false will throw a \RuntimeError
+```
+
+For `binary` or `varbinary` types, if limit is set greater than allowed 255 bytes, the type will be changed to the best matching blob type given the length.
+```php
+$table = $this->table('cart_items');
+$table->addColumn('user_id', 'integer')
+      ->addColumn('product_id', 'integer', ['limit' => MysqlAdapter::INT_BIG])
+      ->addColumn('subtype_id', 'integer', ['limit' => MysqlAdapter::INT_SMALL])
+      ->addColumn('quantity', 'integer', ['limit' => MysqlAdapter::INT_TINY])
+      ->create();
+```
+
+### Checking whether a column exists
+```php
+public function change()
+{
+    $table = $this->table('user');
+    $column = $table->hasColumn('username');
+
+    if ($column) {
+        // do something
+    }
+
+}
+```
+
+### Renaming a Column
+To rename a column, access an instance of the Table object then call the `renameColumn()` method.
+
+
+```php
+public function change()
+{
+    $table = $this->table('users');
+    $table->renameColumn('bio', 'biography')
+          ->save();
+}
+
+
+public function down()
+{
+    $table = $this->table('users');
+    $table->renameColumn('biography', 'bio')
+           ->save();
+}
+```
+
+### Adding a Column After Another Column
+When adding a column with the MySQL adapter, you can dictate its position using the after option, where its value is the name of the column to position it after.
+```php
+public function change()
+{
+    $table = $this->table('users');
+    $table->addColumn('city', 'string', ['after' => 'email'])
+          ->update();
+}
+```
+
+### Changing Column Attributes
+To change column type or options on an existing column, use the `changeColumn()` method
+```php
+public function change()
+{
+    $users = $this->table('users');
+    $users->changeColumn('email', 'string', ['limit' => 255])
+          ->save();
+}
+```
+
+### Working With Indexes
+To add an index to a table you can simply call the `addIndex()` method on the table object.
+```php
+$table = $this->table('users');
+$table->addColumn('city', 'string')
+      ->addIndex(['city'])
+      ->save();
+```
+
+By default Phinx instructs the database adapter to create a normal index. We can pass an additional parameter unique to the `addIndex()` method to specify a unique index. We can also explicitly specify a name for the index using the name parameter, the index columns sort order can also be specified using the order parameter. The order parameter takes an array of column names and sort order key/value pairs.
+```php
+public function change()
+{
+    $table = $this->table('users');
+    $table->addColumn('email', 'string')
+          ->addColumn('username','string')
+          ->addIndex(['email', 'username'], [
+                'unique' => true,
+                'name' => 'idx_users_email',
+                'order' => ['email' => 'DESC', 'username' => 'ASC']]
+                )
+          ->save();
+}
+```
+The MySQL adapter also supports fulltext indexes. If you are using a version before 5.6 you must ensure the table uses the MyISAM engine.
+```php
+public function change()
+{
+    $table = $this->table('users', ['engine' => 'MyISAM']);
+    $table->addColumn('email', 'string')
+          ->addIndex('email', ['type' => 'fulltext'])
+          ->create();
+}
+```
+### Working With Foreign Keys
+For creating foreign key constraints on your database tables. Let’s add a foreign key to an example table:
+```php
+public function change()
+{
+    $table = $this->table('tags');
+    $table->addColumn('tag_name', 'string')
+          ->save();
+
+    $refTable = $this->table('tag_relationships');
+    $refTable->addColumn('tag_id', 'integer', ['null' => true])
+             ->addForeignKey('tag_id', 'tags', 'id', ['delete'=> 'SET_NULL', 'update'=> 'NO_ACTION'])
+             ->save();
+
+}
+```
+“`On delete`” and “`On update`” actions are defined with a ‘delete’ and ‘update’ options array. Possibles values are ‘`SET_NULL`’, ‘NO_ACTION’, ‘`CASCADE`’ and ‘`RESTRICT`’. If ‘`SET_NULL`’ is used then the column must be created as nullable with the option ['null' => true]. Constraint name can be changed with the ‘constraint’ option.
+
+It is also possible to pass `addForeignKey()` an array of columns. This allows us to establish a foreign key relationship to a table which uses a combined key.
+```php
+public function change()
+{
+    $table = $this->table('follower_events');
+    $table->addColumn('user_id', 'integer')
+          ->addColumn('follower_id', 'integer')
+          ->addColumn('event_id', 'integer')
+          ->addForeignKey(['user_id', 'follower_id'],
+                          'followers',
+                          ['user_id', 'follower_id'],
+                          ['delete'=> 'NO_ACTION', 'update'=> 'NO_ACTION', 'constraint' => 'user_follower_id'])
+          ->save();
+}
+```
+
+We can add named foreign keys using the `constraint` parameter
+```php
+$table->addForeignKey('foreign_id', 'reference_table', ['id'],
+                            ['constraint' => 'your_foreign_key_name']);
+```
+
 <a name="section-34"></a>
 
 ### Database Seeder
 No you know that seeder is the most important thing when you develop a web application. Zuno support Database Seeding. Zuno includes the ability to seed your database with data using seed classes. All seed classes are stored in the `database/seeds` directory. To create a Seeder class, run this command
 ```php
-php pool create:seed UserSeeder
+php pool make:seed UserSeeder
 ```
 Now it will generate a file like
 ```php
