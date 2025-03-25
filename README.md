@@ -2149,7 +2149,7 @@ cookie()->store('cookie_name', 'cookie_value');
 If you want to store cookie using your defined expiration time, follow it
 ```php
 // Using timestamp
-$cookies->store('user_token', 'abc123', ['expires' => time() + 3600]);
+Cookie::store('user_token', 'abc123', ['expires' => time() + 3600]);
 
 // Using DateTime
 $expireDate = new \DateTime('+1 day');
