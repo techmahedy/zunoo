@@ -2245,7 +2245,7 @@ When a cookie is no longer needed, it should be deleted to ensure proper data ma
 Cookie::remove('user_token');
 
 // With Path/Domain
-Cookie::forget('old_cookie', [
+Cookie::remove('old_cookie', [
     'path' => '/special',
     'domain' => '.example.com'
 ]);
