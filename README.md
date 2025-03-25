@@ -33,6 +33,7 @@ Zuno is a PHP framework built to revolutionize the way developers create robust,
   - [Views](#section-22)
   - [Asset Bundling](#section-23)
   - [Session](#section-24)
+  - [Cookie](#section-50)
   - [Validation](#section-25)
   - [Error Handling](#section-26)
     - [Error Log and Logging](#section-27)
@@ -865,6 +866,7 @@ Below you will find every facade and its underlying class. This is a useful tool
 | Storage  | Zuno\Support\Storage\StorageFileService    | storage |
 | Log  | Zuno\Support\LoggerService    | log |
 | Sanitize | Zuno\Support\Validation\Sanitizer    | sanitize |
+| Cookie | Zuno\Support\CookieJar   | cookie |
 
 <a name="section-10"></a>
 
@@ -2104,7 +2106,7 @@ $rquest->session()->flush();
 
 Even you can destroy session using `destroy` function
 ```php
-$rquest->session()->destroy()
+$request->session()->destroy()
 ```
 ### Set and Get Session ID
 You can set seesion id and get is also. 
@@ -2124,6 +2126,171 @@ use Zuno\Support\Facades\Session;
 
 Session::put('name','mahedi');
 Session::get('name');
+```
+
+<a name="section-50"></a>
+
+## Cookie
+Zuno provides two ways to manage cookies in the application. One is `Zuno\Support\Facades\Cookie` facades and another is `cookie()` helper fucntion. Each approach allows you to store, retrieve, and delete cookies efficiently. Let's explore both methods in detail.
+
+### Storing Cookies
+The Cookie facade provides a structured way to manage cookies. It allows you to store, retrieve, and remove cookies with additional options like expiration time, path, and security settings. To store cookies, simply use `store()` function.
+```php
+use Zuno\Support\Facades\Cookie;
+
+Cookie::store('cookie_name', 'cookie_value');
+
+// Using helper
+
+cookie()->store('cookie_name', 'cookie_value');
+```
+
+### Cookie With Expiration Time
+If you want to store cookie using your defined expiration time, follow it
+```php
+// Using timestamp
+$cookies->store('user_token', 'abc123', ['expires' => time() + 3600]);
+
+// Using DateTime
+$expireDate = new \DateTime('+1 day');
+Cookie::store('user_token', 'abc123', ['expires' => $expireDate]);
+
+// Using string (strtotime compatible)
+Cookie::store('user_token', 'abc123', ['expires' => '+1 week']);
+```
+
+You can use Carbon also like that
+```php
+Cookie::store('temp_data', 'value456', [
+    'expires' => Carbon::parse('next friday 3pm')
+]);
+```
+
+### Cookie With Path
+To define cookie with path, you can follow below ways
+```php
+Cookie::store('prefs', 'dark', ['path' => '/settings']);
+```
+
+### Cookie With Domain
+To add domain in your cookie you can follow as below
+```php
+Cookie::store('session', 'xyz789', ['domain' => '.example.com']);
+```
+
+### Secure & HttpOnly
+When storing cookies, security is a crucial aspect, especially for authentication and sensitive user data. The secure and httponly attributes help protect cookies from attacks such as cross-site scripting (XSS) and man-in-the-middle (MITM) attacks.
+```php
+Cookie::store('auth', 'secure123', [
+    'secure' => true,    // HTTPS only
+    'httponly' => true   // JavaScript cannot access
+]);
+```
+
+### SameSite Attribute
+For samesite attribute, you can also set like that
+```php
+Cookie::store('csrftoken', 'rand123', [
+    'samesite' => Cookie::SAMESITE_STRICT
+]);
+```
+
+### Partitioned (for CHIPS)
+Setting `'partitioned' => true` allows a cookie to be accessed only within a specific cross-site context, without being shared across different origins. This helps prevent third-party tracking while still enabling functionalities like embedded content authentication.
+```php
+Cookie::store('tracking', 'user123', [
+    'partitioned' => true  // For cross-site cookies
+]);
+```
+
+### Raw Cookie (no URL encoding)
+By default, cookies are URL-encoded, meaning special characters like `=` and & are automatically converted to a safe format. However, if you need to store data without encoding, you can use the raw option.
+```php
+Cookie::store('raw_data', 'some=value', [
+    'raw' => true  // Disables URL encoding
+]);
+```
+
+### Forever Cookie
+A forever cookie is a cookie that does not expire or is set with a very distant expiration date, ensuring it remains stored in the user's browser for an extended period. These cookies are useful for remembering user preferences, authentication tokens, and long-term tracking. You can store `forever` cookie as like below by using `forever` method.
+```php
+Cookie::forever('remember_me', 'yes', [
+    'path' => '/',
+    'httponly' => true
+]);
+```
+
+### Retrieving Cookies
+We can very easily get our stored cookie data using `get` function.
+```php
+Cookie::get('user_token');
+
+cookie()->get('user_token');
+
+
+Cookie::retrieve('non_existent', 'default_value'); // with default value
+```
+
+### Check Cookie Existence
+Before accessing a cookie, it’s best practice to check if it exists to avoid errors. Zuno provides a method to verify whether a specific cookie is present using `Cookie::has()`
+```php
+if (Cookie::has('user_token')) {
+    // Cookie exists
+}
+```
+
+### Delete Cookie
+When a cookie is no longer needed, it should be deleted to ensure proper data management and security. Zuno provides a way to remove cookies using the `remove()` method.
+```php
+Cookie::remove('user_token');
+
+// With Path/Domain
+Cookie::forget('old_cookie', [
+    'path' => '/special',
+    'domain' => '.example.com'
+]);
+```
+
+### Advanced Cookie Usage: Create Without Sending
+In some cases, you might want to create a cookie but not immediately send it to the user's browser. This can be useful for situations where you need to modify the cookie before sending it or store it for later in the same request cycle. Zuno provides a way to create cookies in advanced scenarios like this by using the `make()` method.
+```php
+$cookie = Cookie::make('preview_mode', 'enabled', [
+    'expires' => '+30 minutes',            // Sets the expiration time to 30 minutes from now
+    'samesite' => Cookie::SAMESITE_LAX     // Specifies SameSite attribute for better cross-site cookie handling
+]);
+
+// Send later
+Cookie::store($cookie);
+```
+
+### Modifying an Existing Cookie
+In some cases, you may need to update the value or properties of an already created cookie. Zuno provides a convenient way to modify an existing cookie using methods like `withValue()` and `withExpires()`. These methods allow you to change the value or expiration of a cookie after it has been created.
+```php
+Cookie::make('existing_cookie', '1')
+    ->modify()
+    ->withValue('10')
+    ->withExpires('+1 day')
+    ->update();
+```
+You can extend it also like that
+```php
+Cookie::make('existing_cookie', 'light')
+    ->modify()
+    ->withValue('dark')
+    ->withPath('/settings')
+    ->withDomain('.example.com')
+    ->withSecure(true)
+    ->withSameSite('lax')
+    ->update();
+```
+
+### Fetch All Cookies
+To get all the cookies, you can like that
+```php
+$request->cookies->all();
+
+//or
+Cookie::all();
 ```
 
 <a name="section-25"></a>
@@ -3816,6 +3983,20 @@ session(['user_id' => 123, 'user_name' => 'John']);
 
 // Access the entire session instance
 $session = session();
+```
+
+### cookie()
+The cookie() function is a helper designed to interact with HTTP cookies in Zuno. It allows you to retrieve, create, and manage cookies within your application. Cookies are used to store small pieces of data on the user's browser, such as session identifiers, authentication tokens, or user preferences.
+#### Example
+```php
+// Access the entire cookie instance
+$cookie = cookie();
+
+// Store cookie values
+cookie()->store('cookie_name', 'cookie_value');
+
+// Get cookie value
+cookie()->get('cookie_name', 'default');
 ```
 
 ### csrf_token()
