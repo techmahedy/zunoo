@@ -21,6 +21,8 @@ Zuno is a PHP framework built to revolutionize the way developers create robust,
   - [Model](#section-44)
     - [Model Properties](#section-45)
     - [Eloquent ORM Query](#section-46)
+      - [Eloquent Relationships](#section-51)
+        - [Transform Eloquent Collection](#section-52)
     - [Pagination](#section-47)
   - [Middleware](#section-14)
     - [Route Middleware](#section-15)
@@ -1129,7 +1131,7 @@ class User extends Model
      * @var array
      */
     protected $unexposable = ['password'];
-    
+
     /**
      * Indicates whether the model should maintain timestamps (`created_at` and `updated_at` fields.).
      *
@@ -1222,6 +1224,12 @@ User::query()->oldest()->get()
 User::query()->oldest('id')->get()
 ```
 
+### select()
+You may need to fetch only some specific columns not all the columns from a model. you can use select() method in this case like
+```php
+User::query()->select(['name','email'])->get();
+```
+
 ### find() and exists()
 If you need to retrieve data for a specific primary key, you can use the `find()` function. This method allows you to quickly fetch a single record by its unique identifier, making it a convenient and efficient way to access individual entries in your database.
 ```php
@@ -1274,6 +1282,149 @@ To delete data, zuno provides `delete` method
 ```php
 User::find(1)->delete();
 ```
+<a name="section-51"></a>
+### Introduction
+Database tables are often interconnected, representing real-world relationships between data. For instance, a blog post can have multiple comments, or an order may be linked to the user who placed it. Eloquent simplifies handling these relationships, providing built-in support for various types. Zuno supports two eloquent relationships.
+
+- One-to-One
+- One-to-Many
+
+### Defining Relationships (One-to-One)
+Eloquent allows you to define relationships as methods within your model classes, enabling seamless method chaining and advanced query capabilities. This makes it easy to interact with related models while maintaining clean and efficient code.
+
+For instance, let's assume each `Article` has a single associated `User` (author). We can define this one-to-one relationship in the `Article` model as follows:
+```php
+<?php
+
+namespace App\Models;
+
+use Zuno\Database\Eloquent\Model;
+
+class Article extends Model
+{
+    protected $table = 'articles';
+
+    public function user()
+    {
+         return $this->oneToOne(
+            User::class,    // Related model class
+            'id',           // Foreign key on related table (users.id)
+            'user_id'       // Local key on this table (articles.user_id)
+        );
+    }
+}
+```
+## Key Parameters for Defining Relationships
+
+When defining relationships in your Eloquent models, you'll typically use these key parameters:
+
+* **Related Model:**
+    * This specifies the class name of the model you're establishing a relationship with.
+    * Example: `User::class`
+* **Foreign Key:**
+    * This refers to the column in the *related* table that stores the foreign key, which references the primary key of the current model.
+    * It is the column that makes the connection between the 2 tables.
+* **Local Key:**
+    * This is the column in the *current* model's table that is being referenced by the foreign key in the related table.
+    * Usually this is the primary key of the current table.
+
+Once defined, you can access the relationship in several ways:
+
+#### As a Property (Lazy Loading)
+```php
+$article = Article::find(1);
+$author = $article->user; // Automatically loads the related user
+```
+
+Fetching all the articles of user id 1
+```php
+return User::find(1)
+    ->articles() // fetching all the articles of user id 1
+    ->get();
+```
+
+Or you can fetch above data as follows also
+```php
+return User::find(1)->articles;
+```
+
+#### As a Method (Query Builder)
+```php
+$article = Article::find(1);
+$activeAuthor = $article->user()
+    ->where('status', '=', 1)
+    ->first();
+```
+
+#### With Eager Loading
+```php
+// Load articles with their authors in a single query
+$articles = Article::query()->embed('user')->get();
+
+foreach ($articles as $article) {
+    echo $article->user->name; // No additional query executed
+}
+```
+#### embed() with sub query
+This will return articles with user data where the user status is 1. If the user status is 0, it will return null for the user but still load the articles.
+```php
+return Article::query()->embed(['user' => function ($query) {
+            $query->where('status', '=', 1);
+        }])->get();
+```
+
+#### Fetching Multiple Relationships
+This query retrieves `users` along with their related `articles` and `address` using the embed method. By embedding multiple relationships, it ensures that all necessary data is fetched in a single query, improving efficiency and reducing additional database calls.
+```php
+return $articles = User::query()
+        ->embed('articles')
+        ->embed('address')
+        ->get();
+```
+
+### Defining Relationships (One-to-Many)
+For instance, let's assume each `User` has its associated `articles`. We can define this one-to-many relationship in the `User` model as follows:
+```php
+<?php
+
+namespace App\Models;
+
+use Zuno\Database\Eloquent\Model;
+
+class User extends Model
+{
+    protected $table = 'users';
+
+    public function articles()
+    {
+         return $this->oneToMany(
+            Article::class, // Related model class
+            'user_id', // Foreign key on related table (articles.user_id)
+            'id'       // Local key on this table (users.id)
+        );
+    }
+}
+```
+
+Now you can fetch all the users with their associated articles.
+```php
+return User::query()->embed('articles')->get();
+```
+
+<a name="section-52"></a>
+## Transform Eloquent Collection
+
+You can transform a fetched Eloquent collection using the `map` function. This allows you to modify or format the data before returning it.
+
+Here’s an example of how to extract and return only the name attribute from each user:
+```php
+return User::all()->map(function ($item) {
+    return [
+        'name' => $item->name
+    ];
+});
+```
+This approach is useful when you need to customize the response structure while working with Eloquent collections.
 
 <a name="section-47"></a>
 
@@ -3893,6 +4044,69 @@ You can Resolve a service with parameters as well
 $service = app(MyService::class, ['param1' => 'value']);
 ```
 This retrieves `MyService` while passing custom parameters. This function simplifies dependency injection, making it easier to manage and access services within the application.
+
+### url()
+The `url()` function is a convenient helper for creating a new instance of the UrlGenerator class, which is responsible for handling urls in Zuno. By calling this function, you can easily manage urls.
+```php
+ return url()
+    ->to('/profile')
+    ->withQuery('foo=bar&baz=qux') // you can pass here array also like ['foo' => 'bar', 'baz' => 'qux']
+    ->withFragment('about')
+    ->withSignature(3600)
+    ->setSecure(true)
+    ->make();
+
+// it will generate url like that
+// http://example.com/profile?foo=bar&baz=qux&expires=1742923201&signature=2cd1656d3557f64a433de7dcb01abbb64c2dc9daa85983b8dad88f8ac732a935#about
+```
+
+You can also generate url by passing parameters like
+```php
+url('/profile'); // http://example.com/profile
+
+url()->to('profile')->make(); // http://example.com/profile
+
+url('profile', ['id' => 123]); http://example.com/profile?id=123
+```
+
+### Full URL and Current URL
+If you need to get the `full` url and `current` url, you can follow this
+```php
+url()->full(); // it will return url with query string
+url()->current(); // it will return url without query string
+```
+### Base URL
+You can get the application base url like
+```php
+url()->base(); // you can also do it base_url('/foo') -> http://example.com/foo
+```
+
+### Route URL
+You can also create URL from the route name.
+```php
+Route::get('/home', [HomeController::class, 'home'])->name('dashboard');
+
+url()->route('dashboard'); // here dashboard is the route name
+```
+
+### Signed URL
+You can generate signed url like that
+```php
+url()->signed('dashboard') // http://example.com/dashboard?expires=1742924701&signature=403e835e62dd107314167399cb04a4a50897467c5248c3059a5e53f7388d0760
+```
+
+### URL with Secure HTTPS
+You can also generate url with https by calling `setSecure()` method like
+```php
+url()->setSecure(true)->signed('dashboard');
+// https://example.com/dashboard?expires=1742924773&signature=e92792a28fe270e3539a297d452a5856fd1787a24ed65ea65a87ee333f068086
+```
+
+### Check Valid URL
+You can check a URL is valid or not using `isValid()` method like
+```php
+url()->isValid('example.com');
+```
 
 ### request()
 The `request()` function is a convenient helper for creating a new instance of the Request class, which is responsible for handling HTTP requests in Zuno. By calling this function, you can easily access the incoming request data, such as `GET`, `POST` parameters, `headers`, `cookies`, and more.

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "841f7d7075123a597ef5296351016e6b",
+    "content-hash": "e2b73813a334c5254361e6b413522664",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -2675,16 +2675,16 @@
         },
         {
             "name": "zuno/zuno",
-            "version": "v5.7",
+            "version": "v5.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/techmahedy/zuno.git",
-                "reference": "0902eb7db7a7eddad5f72f30e6367e6268574999"
+                "reference": "fa58cbd50c58d97feb599a6bb79c4ba344a24e7b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/0902eb7db7a7eddad5f72f30e6367e6268574999",
-                "reference": "0902eb7db7a7eddad5f72f30e6367e6268574999",
+                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/fa58cbd50c58d97feb599a6bb79c4ba344a24e7b",
+                "reference": "fa58cbd50c58d97feb599a6bb79c4ba344a24e7b",
                 "shasum": ""
             },
             "require": {
@@ -2704,8 +2704,7 @@
             },
             "suggest": {
                 "ext-pdo": "Required to use all database features.",
-                "fakerphp/faker": "Required to use the eloquent factory builder (^1.9.1).",
-                "mockery/mockery": "Required to use mocking (^1.6)."
+                "fakerphp/faker": "Required to use the eloquent factory builder (^1.9.1)."
             },
             "type": "package",
             "extra": {
@@ -2742,7 +2741,7 @@
                 "issues": "https://github.com/techmahedy/zuno/issues",
                 "source": "https://github.com/techmahedy/zuno"
             },
-            "time": "2025-03-25T14:12:56+00:00"
+            "time": "2025-03-28T06:36:29+00:00"
         }
     ],
     "packages-dev": [
