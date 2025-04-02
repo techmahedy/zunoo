@@ -1,12 +1,14 @@
 #!/usr/bin/env php
 <?php
 
-use Symfony\Component\Console\Application;
+use Zuno\DI\Container;
 use Zuno\Console\Command;
+use Symfony\Component\Console\Application;
 
 require __DIR__ . '/vendor/autoload.php';
 
 $app = require_once __DIR__ . '/bootstrap/app.php';
+Container::setInstance($app);
 
 $console = new Application();
 $console->setCatchExceptions(true);
