@@ -50,7 +50,7 @@ return [
     |
     */
 
-    'cookie' => env('SESSION_COOKIE', generateSessionName()),
+    'cookie' => env('SESSION_COOKIE', strtolower(env('APP_NAME')) . '_session'),
 
     /*
     |--------------------------------------------------------------------------
@@ -114,18 +114,3 @@ return [
 
     'same_site' => env('SESSION_SAME_SITE', 'lax'),
 ];
-
-/**
- * Generate a dynamic session cookie name based on the application name.
- * This ensures session cookies have a unique and application-specific name.
- *
- * @return string
- */
-function generateSessionName(): string
-{
-    $appName = getenv('APP_NAME') ?: 'zuno';
-    $appName = str_replace(' ', '_', $appName);
-    $appName = preg_replace('/[^a-z0-9_]+/i', '', $appName);
-
-    return strtolower($appName) . '_session';
-}

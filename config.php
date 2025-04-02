@@ -1,5 +1,9 @@
 <?php
 
+use Zuno\DI\Container;
+
+$app = require_once __DIR__ . '/bootstrap/app.php';
+
 return [
     'paths' => [
         'migrations' => './database/migrations',
@@ -9,12 +13,15 @@ return [
     'environments' => [
         'default_migration_table' => 'migrations',
         'zuno' => [
-            'adapter' => 'mysql',
-            'host' => 'localhost',
-            'name' => 'zuno',
-            'user' => 'mahedi',
-            'pass' => '123456',
-            'port' => '3306'
+            'adapter' => env('DB_CONNECTION'),
+            'host' => env('DB_HOST'),
+            'name' => env('DB_DATABASE'),
+            'user' => env('DB_USERNAME'),
+            'pass' => env('DB_PASSWORD'),
+            'port' => env('DB_PORT'),
         ]
-    ]
+    ],
+    'migration_order' => 'creation',
+    'migration_file_name' => 'datetime',
+    'callback' => fn() => Container::setInstance($app)
 ];

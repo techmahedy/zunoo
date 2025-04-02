@@ -3,27 +3,19 @@
 declare(strict_types=1);
 
 use Phinx\Seed\AbstractSeed;
+use App\Models\User;
 
 class UserSeeder extends AbstractSeed
 {
     /**
-     * Run Method.
-     *
-     * Write your database seeder using this method.
-     *
-     * More information on writing seeders is available here:
+     * Write your database seeder
      */
     public function run(): void
     {
-        $data = [
-            [
-                'name' => fake()->name(),
-                'email' => 'hello@zuno.com',
-                'password' => '$argon2id$v=19$m=65536,t=4,p=1$YUhEMzAycmJ3QnkyWFpVbQ$22mqZRiUoSDBehig20+GLjRpYQmQBIqQ41Y/Mhtde7k' // password
-            ]
-        ];
-
-        $user = $this->table('users');
-        $user->insert($data)->saveData();
+        User::create([
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' => bcrypt('password')
+        ]);
     }
 }

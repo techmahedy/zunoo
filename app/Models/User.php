@@ -20,12 +20,10 @@ class User extends Model
      * Table Name
      *
      * Specifies the database table associated with this model.
-     * By default, Eloquent assumes the table name is the plural form of the model name,
-     * but you can explicitly define it here if it differs.
      *
      * @var string
      */
-    protected $table = 'users';
+    protected $table = 'user';
 
     /**
      * Creatable Attributes
@@ -57,7 +55,7 @@ class User extends Model
      *
      * @var int
      */
-    protected $pageSize = 2;
+    protected $pageSize = 10;
 
     /**
      * Indicates whether the model should maintain timestamps (`created_at` and `updated_at` fields.).

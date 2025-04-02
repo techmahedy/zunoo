@@ -24,6 +24,8 @@ Zuno is a PHP framework built to revolutionize the way developers create robust,
       - [Eloquent Relationships](#section-51)
         - [Transform Eloquent Collection](#section-52)
     - [Pagination](#section-47)
+    - [Database Transactions](#section-53)
+    - [Manual Join](#section-54)
   - [Middleware](#section-14)
     - [Route Middleware](#section-15)
     - [Global Web Middleware](#section-16)
@@ -1102,9 +1104,7 @@ class User extends Model
     /**
      * Table Name
      *
-     * Specifies the database table associated with this model.
-     * By default, Eloquent assumes the table name is the plural form of the model name,
-     * but you can explicitly define it here if it differs.
+     * Specifies the database table associated with this model
      *
      * @var string
      */
@@ -1208,6 +1208,8 @@ To see how many records your table has, you can use `count` function as like
 User::count();
 // or
 User::query()->orderBy('id', 'desc')->groupBy('name')->count();
+// or you can pass the column name which you need to count
+User::query()->where('active', '=', true)->count('id');
 ```
 
 ### Newest and Oldest Records
@@ -1259,6 +1261,25 @@ $user->name = $request->name;
 $user->Save();
 ```
 
+### saveMany()
+You may need to insert bacth insert in your model, in this case, you can use `saveMany()` method as like below
+```php
+User::saveMany([
+    ['name' => 'John', 'email' => 'john@example.com', 'password' => bcrypt('password')],
+    ['name' => 'Jane', 'email' => 'jane@example.com', 'password' => bcrypt('password')],
+    ['name' => 'Bob', 'email' => 'bob@example.com', 'password' => bcrypt('password')]
+]);
+```
+
+If your dataset is large, you can optionally pass the chunk size as the second parameter like
+```php
+User::saveMany([
+    ['name' => 'John', 'email' => 'john@example.com', 'password' => bcrypt('password')],
+    ['name' => 'Jane', 'email' => 'jane@example.com', 'password' => bcrypt('password')],
+    ['name' => 'Bob', 'email' => 'bob@example.com', 'password' => bcrypt('password')]
+], 100);
+```
+
 ### Update Data
 To update data, you can use `fill` function like
 ```php
@@ -1277,17 +1298,173 @@ User::query()
     ]);
 ```
 
+### updateOrCreate()
+The updateOrCreate() method is used to either update an existing record or create a new one if no matching record is found. It simplifies handling scenarios where you need to ensure a record exists with specific attributes while updating other fields.
+```php
+$user = User::updateOrCreate(
+    ['email' => 'hi@zuno.com'], // attributes to match
+    ['name' => 'Test User'] // values to update/create
+);
+```
+
 ### Delete Data
 To delete data, zuno provides `delete` method
 ```php
 User::find(1)->delete();
 ```
+
+### whereIn()
+The `whereIn()` method filters records where a column's value matches any value in the given array.
+```php
+return User::query()->whereIn('id', [1, 2, 4])->get();
+```
+This retrieves all users with id values of 1, 2, or 4.
+
+### orWhereIn()
+The `orWhereIn()` method filters records where a column's value optionally matches any value in the given array.
+```php
+return User::query()->orWhereIn('id', [1, 2, 4])->get();
+```
+
+### whereBetween()
+The `whereBetween()` method allows you to filter records where a given column's value falls within a specified range. This is commonly used for date or numerical ranges.
+```php
+ return User::query()
+    ->whereBetween('created_at', ['2025-02-29', '2025-04-29'])
+    ->get();
+```
+
+### whereNotBetween()
+The `whereNotBetween()` method allows you to filter records where a given column's value do not falls within a specified range. This is commonly used for date or numerical ranges.
+```php
+ return User::query()
+    ->whereNotBetween('created_at', ['2025-02-29', '2025-04-29'])
+    ->get();
+```
+
+### orWhereBetween()
+You can use `orWhereBetween()` methods together to create complex conditional queries. This allows for more flexible filtering, including combining conditions with OR for specific ranges.
+```php
+return Post::query()
+    ->where('status', ,'=', 'published') // Filter posts that are published
+    ->orWhereBetween('views', [100, 500]) // Or filter posts where views are between 100 and 500
+    ->get();
+```
+
+### orWhereNotBetween()
+You can use `orWhereNotBetween()` methods together to create complex conditional queries. This allows for more flexible filtering, including combining conditions with OR for specific ranges.
+```php
+return Post::query()
+    ->where('status', ,'=', 'published')
+    ->orWhereNotBetween('views', [100, 500])
+    ->get();
+```
+
+With request input example
+```php
+Post::query()
+    ->if($request->has('date_range'), function($query) use ($request) {
+        $query->whereBetween('created_at', [
+            $request->input('date_range.start'),
+            $request->input('date_range.end')
+        ]);
+    })
+    ->get();
+```
+
+### whereNull()
+The `whereNull()` method in Eloquent is used to filter records where a specific column contains a NULL value. In your example:
+```php
+return Post::query()
+    ->whereNull('created_at')
+    ->get();
+```
+
+### whereNotNull()
+The `whereNotNull()` method in Eloquent is used to filter records where a specific column contains a value. In your example:
+```php
+Post::query()
+    ->whereNotNull('published_at')
+    ->get();
+```
+
+### orWhereNull()
+The `orWhereNull()` method in Eloquent is used to add an OR condition to the query, checking if a column is NULL. In your example:
+```php
+Post::query()
+    ->where('status', '=', 'draft')
+    ->orWhereNull('reviewed_at') // you can also use orWhereNotNull()
+    ->get();
+```
+
+### orWhereNotNull()
+The `orWhereNotNull()` method in Eloquent is used to add an OR condition to the query, checking if a column is not NULL. In your example:
+```php
+Post::query()
+    ->where('status', '=', 'draft')
+    ->orWhereNotNull('reviewed_at')
+    ->get();
+```
+
+### match()
+The `match()` method in Eloquent is commonly used to filter your query result. It's typically implemented to provide a more flexible and reusable way to filter results based on various conditions.
+```php
+return Post::match([
+        'id' => 1,
+        'user_id' => 1
+    ])->get();
+```
+
+Complex filtering with callbacks
+```php
+return Post::match(function ($query) {
+        $query->where('views', '>', 100)
+            ->whereBetween('created_at', ['2023-01-01', '2023-12-31']);
+    })->get();
+```
+
+Request data filter, this will fetch data as per requested `title` and `user_id`
+```php
+Post::match($request->only(['title', 'user_id']))
+    ->paginate();
+```
+
+Combine simple and complex filters
+```php
+Post::match([
+        'user_id' => [1, 2, 3], // WHERE IN
+        'created_at' => null,      // WHERE NULL
+        'active' => function ($query) {
+            $query->where('active', '=', 1)
+                ->orWhere('legacy', '=', 1);
+        }
+    ])->orderBy('created_at', 'desc')
+    ->get();
+```
+
+### pluck()
+The `pluck()` method is used to retrieve the values of a single column from the result set. It returns an array or collection of the specified column's values, making it useful for quickly getting a list of specific data
+```php
+return Post::query()->pluck('title');
+```
+
+### useRaw() for Custom Queries with Parameter Bindings
+The useRaw() method allows you to run raw SQL queries with parameter bindings, which helps prevent SQL injection by safely binding parameters to the query.
+```php
+return User::query()->useRaw(
+    'SELECT * FROM user WHERE created_at > ? AND status = ?',
+    ['2023-01-01', 'active']
+);
+```
+is runs a custom SQL query that retrieves users created after January 1, 2023, and with an active status. The values 2023-01-01 and active are securely bound to the query to prevent SQL injection.
+
 <a name="section-51"></a>
 ### Introduction
-Database tables are often interconnected, representing real-world relationships between data. For instance, a blog post can have multiple comments, or an order may be linked to the user who placed it. Eloquent simplifies handling these relationships, providing built-in support for various types. Zuno supports two eloquent relationships.
+Database tables are often interconnected, representing real-world relationships between data. For instance, a blog post can have multiple comments, or an order may be linked to the user who placed it. Eloquent simplifies handling these relationships, providing built-in support for various types. Zuno supports three eloquent relationships.
 
 - One-to-One
 - One-to-Many
+- Many-to-Many
 
 ### Defining Relationships (One-to-One)
 Eloquent allows you to define relationships as methods within your model classes, enabling seamless method chaining and advanced query capabilities. This makes it easy to interact with related models while maintaining clean and efficient code.
@@ -1373,15 +1550,6 @@ return Article::query()->embed(['user' => function ($query) {
         }])->get();
 ```
 
-#### Fetching Multiple Relationships
-This query retrieves `users` along with their related `articles` and `address` using the embed method. By embedding multiple relationships, it ensures that all necessary data is fetched in a single query, improving efficiency and reducing additional database calls.
-```php
-return $articles = User::query()
-        ->embed('articles')
-        ->embed('address')
-        ->get();
-```
-
 ### Defining Relationships (One-to-Many)
 For instance, let's assume each `User` has its associated `articles`. We can define this one-to-many relationship in the `User` model as follows:
 ```php
@@ -1409,6 +1577,355 @@ class User extends Model
 Now you can fetch all the users with their associated articles.
 ```php
 return User::query()->embed('articles')->get();
+```
+
+### Defining Relationships (Many-to-Many)
+Zuno ORM supports many-to-many relationships through an intermediate pivot table. Here's how to implement and work with them. Assume we have a `Post` model and a `Tag` model, where a many-to-many relationship exists between them. This means one post can have multiple tags, and one tag can be associated with multiple posts.
+```php
+// App\Models\Post.php
+public function tags()
+{
+    return $this->manyToMany(
+        Tag::class,  // Related model
+        'post_id',   // Foreign key for posts in pivot table (post_tag.post_id)
+        'tag_id',    // Foreign key for tags in pivot table (post_tag.tag_id)
+        'post_tag'   // Pivot table name
+    );
+}
+```
+And the Tag model will be look like this
+```php
+// App\Models\Tag.php
+public function tags()
+{
+    public function posts()
+    {
+        return $this->manyToMany(
+            Post::class,  // Related model
+            'tag_id',   // Foreign key for tags in pivot table
+            'post_id',  // Foreign key for posts in pivot table
+            'post_tag'  // Pivot table name
+        );
+    }
+}
+```
+In a many-to-many relationship between `Post` and `Tag`, the `post_tag` pivot table acts as a bridge, storing the associations between `posts` and `tags`. It contains two columns:
+
+- `post_id` – References the id of a post.
+- `tag_id` – References the id of a tag.
+
+Each row in this table represents a link between a specific post and a specific tag, allowing multiple posts to have multiple tags and vice versa.
+
+#### Retrieving Related Models From Many To Many Relationship
+We can fetch data from many to many relationship using eager loading like that
+```php
+return Post::query()->embed('tags')->get();
+```
+
+You can fetch Tag with posts as well
+```php
+return Tag::query()->embed('posts')->get();
+```
+
+### Many To Many Relationship with Lazy loading
+In Zuno, when dealing with a many-to-many relationship, lazy loading allows you to retrieve related records only when they are accessed. For instance, if a Post model has a many-to-many relationship with a Tag model, you can fetch all the tags of a specific post using the following query:
+```php
+$post = Post::find(1);
+return $post->tags;
+
+// or simply you can call like that
+return $post = Post::find(1)->tags;
+```
+
+For instance, if a Tag model has a many-to-many relationship with a Post model, you can fetch all the posts of a specific tag using the following query:
+```php
+$tag = Tag::find(1);
+return $tag->posts;
+
+// Get the posts related to a specific tag
+foreach ($tag->posts as $post) {
+    echo $post->title;
+}
+```
+
+### link() with manyToMany
+In Zuno, the `link()` method is used to associate records in a many-to-many relationship. This method adds entries to the pivot table, establishing a connection between related models
+```php
+// Link tags to a post
+$post = Post::find(1);
+$post->tags()->link([1, 2, 3]); // Link tags with IDs 1, 2, and 3
+```
+
+### unlink() with manyToMany
+In Zuno, the `unlink()` method is used to unlink specific records from a many-to-many relationship. It removes the association between the current model (e.g., Post) and the related model (e.g., Tag) by removing the corresponding entries from the pivot table.
+```php
+$post = Post::find(1);
+$post->tags()->unlink([1, 2, 3]); // Unlink tags with IDs 1, 2, and 3
+```
+
+If you simply call `unlink()`, it will delete all the tags
+```php
+$post = Post::find(1);
+$post->tags()->unlink(); // unlink all tags
+```
+
+### relate() with manyToMany
+In Zuno, the `relate()` method is used to sync the relationships between models in a many-to-many relationship. The `relate()` method will attach the provided IDs and can optionally detach existing relationships, depending on the second argument passed.
+```php
+$post = Post::find(1);
+$post->tags()->relate([1, 2, 3]);
+$changes = $post->tags()->relate([1, 2, 4]); // 3 will be removed
+$post->tags()->relate([1, 2, 3], false); // link tithout unlinking
+```
+
+### Syncing with Pivot Data Using 
+In Zuno, the `relate()` method not only allows you to sync records in a many-to-many relationship, but also provides the ability to attach additional data to the pivot table. This is useful when you need to store extra attributes (such as timestamps or other metadata) along with the relationship between two models.
+```php
+$post = Post::find(1);
+$post->tags()->relate([
+    1 => ['created_at' => now()],
+    2 => ['featured' => true],
+    3 => ['meta' => ['color' => 'blue']]
+]);
+```
+
+### Nested Relationship
+To efficiently retrieve all posts along with their associated comments, replies, and the users who made those replies, use the following query:
+```php
+return Post::query()->embed('comments.reply.user')->get();
+```
+#### Breakdown:
+- comments → Fetches all comments related to the post.
+- reply → Fetches replies associated with each comment.
+- user → Fetches the user who authored each reply.
+
+By using eager loading (embed), this query minimizes database queries and optimizes performance, ensuring efficient data retrieval.
+
+
+### Specific Column Selection
+The embed() method in Zuno ORM allows you to eager load related models and even specify which columns to load for each relationship. This helps optimize queries by only selecting the necessary data.
+```php
+User::query()
+    ->embed([
+        'comments.reply', // Load all columns of the related comments
+        'posts' => function ($query) {
+            $query->select(['id', 'title', 'user_id']); // Only load specific columns for posts
+        }
+    ])
+    ->get();
+```
+
+#### Fetching Multiple Relationships
+This query retrieves `users` along with their related `articles` and `address` using the embed method. By embedding multiple relationships, it ensures that all necessary data is fetched in a single query, improving efficiency and reducing additional database calls.
+```php
+return User::query()
+        ->embed(['articles','address'])
+        ->get();
+```
+
+### Using `present()` for Handling Present Relationships
+In Zuno ORM, the `present()` method can be used to load relationships that are present (i.e., do not exist) in the model, or when you want to ensure related data is included, even if it is not empty.
+```php
+return Post::query() // Fetch only those posts which have comments
+    ->present('comments') // Load the 'comments' relationship
+    ->get();
+```
+This method is useful when you want to include relationships and need to fetch only those data that has relational data.
+
+#### Passing callback with present()
+The `present()` method can be used to load a relationship with custom query conditions. You can define specific conditions inside the closure passed to `present()` to filter the related data.
+```php
+return Post::query()
+    ->present('comments', function ($query) {
+        $query->where('comment', '=', 'Mrs.') // Filter comments with the text 'Mrs.'
+              ->where('created_at', '=', NULL); // Only fetch comments with no creation date
+    })
+    ->get();
+```
+
+### absent() to Fetch Records with Missing Relationships
+The `absent()` method is used to fetch records where a particular relationship does not exist. This is useful when you want to retrieve records that are missing related data.
+```php
+return User::query() // Fetch only those users who have no posts
+    ->absent('posts') // Filter users with no related posts
+    ->get();
+```
+
+### if() for Conditional Query Execution in Zuno ORM
+Zuno ORM's `if()` method allows you to conditionally add query constraints based on a given condition. If the condition evaluates to true, the corresponding query modification is applied; otherwise, it is skipped.
+```php
+Post::query()
+    ->if($request->input('search'),
+        fn($q) => $q->where('title', 'LIKE', "%{$request->search}%"),
+        fn($q) => $q->where('is_featured', '=', true) // default if no search is applied, and it is optional
+    )
+    ->get();
+```
+#### Explanation:
+- First condition `($request->input('search'))`: If the search parameter is provided, the query will filter posts by the title using the LIKE operator.
+- Default case: If no search parameter is provided, it will filter posts where is_featured is true.
+
+### How `if()` Works with Different Conditions
+Will execute when the condition is truthy:
+```php
+Post::query()
+    ->if(true, fn($q) => $q->where('active', '=', true)) // Executes because true
+    ->if('text', fn($q) => $q->where('title', '=', 'text')) // Executes because 'text' is truthy
+    ->if(1, fn($q) => $q->where('views', '=', 1)) // Executes because 1 is truthy
+    ->if([1], fn($q) => $q->whereIn('id', '=', [1])) // Executes because [1] is truthy
+    ->get();
+```
+
+Will NOT execute when the condition is falsy:
+```php
+Post::query()
+    ->if(false, fn($q) => $q->where('active', '=', false)) // Does not execute because false
+    ->if(0, fn($q) => $q->where('views', '=', 0)) // Does not execute because 0 is falsy
+    ->if('', fn($q) => $q->where('title', '=', '')) // Does not execute because empty string is falsy
+    ->if(null, fn($q) => $q->where('deleted_at', '=', null)) // Does not execute because null is falsy
+    ->if([], fn($q) => $q->whereIn('id', '=',  [])) // Does not execute because empty array is falsy
+    ->get();
+```
+This makes the if() method powerful for dynamically building queries based on various conditions. It allows for more concise and flexible query building without having to manually check each condition before applying the relevant query changes.
+
+### present() with if()
+You can chain the `present()` method with `if()` to conditionally load a relationship with specific query constraints, based on dynamic conditions. This allows for more flexible and powerful query building.
+```php
+return Post::query()
+    ->present('comments', function ($query) {
+        $query->where('comment', '=', 'Mrs.') // Filter comments with 'Mrs.'
+            ->where('created_at', '=', NULL); // Only include comments with no creation date
+    })
+    ->if($request->title, function ($query) use ($request) {
+        $query->where('title', '=', $request->title); // Apply title filter if provided in the request
+    })
+    ->get();
+```
+
+### ifExists() check relationship existance
+The `ifExists()` method in Zuno is used as a conditional check to determine whether a related model (e.g., posts) exists in the database for a given parent model (e.g., users). This method is useful for filtering results based on the existence of related data without requiring explicit joins or additional queries.
+```php
+// Find users who have at least one post
+return User::query()->ifExists('posts')->get();
+```
+With conditions - find users who have at least one published post
+```php
+ return User::query()
+    ->ifExists('posts', function ($query) {
+        $query->where('status', '=', 'published');
+    })
+    ->get();
+```
+
+### ifNotExists() check relationship non-existance
+In the Zuno framework, the `ifNotExists()` method works similarly to the `ifExists()` method but with the inverse logic. Instead of filtering users who have at least one post, it retrieves users who don't have any related posts. This can be useful when you want to find records without any associated data.
+```php
+// Find users who don't have any posts
+return User::query()->ifNotExists('posts')->get();
+```
+
+### Aggregation Queries using ORM
+Zuno ORM provides powerful aggregation functions to perform statistical calculations efficiently. Below are various examples of aggregation queries you can use in your application.
+#### Total Sum of a Column
+Calculate the total sum of a column (e.g., summing up all views values):
+```php
+Post::query()->sum('views');
+```
+
+#### Average Value of a Column
+Compute the average value of a column (e.g., the average views):
+```php
+return Post::query()->avg('views');
+```
+
+#### Maximum Value in a Column
+Find the highest price in the Product table:
+```php
+Product::query()->max('price');
+```
+
+#### Minimum Value in a Column
+Find the lowest `price` in the Product table:
+```php
+Product::query()->max('price');
+```
+
+#### Standard Deviation Calculation
+Compute the standard deviation of `price`:
+```php
+return Product::query()->stdDev('price');
+```
+#### Variance Calculation
+Find the variance of `price`:
+```php
+return Product::query()->variance('price');
+```
+
+#### Multiple Aggregation in One Query
+Retrieve multiple statistics (`count`, `average`, `min`, `max`) in a single query:
+```php
+Product::query()
+    ->select([
+        'COUNT(*) as count',
+        'AVG(price) as avg_price',
+        'MIN(price) as min_price',
+        'MAX(price) as max_price'
+    ])
+    ->groupBy('variants')
+    ->first();
+```
+
+#### Fetching Distinct Rows
+You can also fetch `distinct` rows from your table by chanining the `distinct()` function as like below. This will fetch unique values from `post` table of `user_id` column
+```php
+Post::query()->distinct('user_id');
+```
+
+#### Calculating Sum
+Sum up sales where title is "maiores":
+```php
+Product::query()
+    ->where('title', '=', 'maiores')
+    ->sum('price');
+```
+
+#### Total Sales by Category
+Calculate total sales per category by grouping results:
+```php
+return Product::query()
+    ->select(['category_id', 'SUM(price * quantity) as total_sales'])
+    ->groupBy('category_id')
+    ->get();
+```
+
+### increment()
+Sometimes, we need to `increment` a specific column. In this case, you can use `increment` as shown below. The example below will `increment` the post by 1.
+```php
+$post = Post::find(1);
+$post->increment('views'); // default increment by 1
+$post->increment('views',10); // increment by 10
+```
+Increment a post's views count by 1 while updating the timestamp and modifier:
+```php
+$post->increment('views', 1, [
+    'updated_at' => date('Y-m-d H:i:s'),
+    'modified_by' => Auth::id()
+]);
+```
+
+### decrement()
+Sometimes, we need to `decrement` a specific column. In this case, you can use `decrement` as shown below. The example below will `decrement` the post by 1.
+```php
+$post = Post::find(1);
+$post->decrement('views'); // default decrement by 1
+$post->decrement('views',10); // decrement by 10
+```
+Increment a post's views count by 1 while updating the timestamp and modifier:
+```php
+$post->decrement('views', 1, [
+    'updated_at' => date('Y-m-d H:i:s'),
+    'modified_by' => Auth::id()
+]);
 ```
 
 <a name="section-52"></a>
@@ -1458,7 +1975,6 @@ When working with paginated data in your views, Zuno provides two convenient met
 #### Available Methods:
  * `linkWithJumps()` method generates pagination links with additional "jump" options, such as `dropdown with paging`. It is ideal for datasets with a large number of pages, as it allows users to quickly navigate to the beginning or end of the paginated results.
  * `links()` This method generates standard pagination links, including "Previous" and "Next" buttons, along with page numbers. It is suitable for most use cases and provides a clean and simple navigation interface.
-<a name="section-14"></a>
 
 Now call the pagination for views
 ```html
@@ -1484,6 +2000,111 @@ php pool publish:pagination
 
 Once you modify the `jump.blade.php` and `number.blade.php` files, the changes will immediately reflect in your pagination view. This allows you to fully customize the appearance and behavior of the pagination links to align with your application's design and requirements. Feel free to update these files as needed to create a seamless and visually consistent user experience.
 
+<a name="section-53"></a>
+
+## Database Transactions
+A database transaction is a sequence of database operations that are executed as a single unit. Transactions ensure data integrity by following the ACID properties (Atomicity, Consistency, Isolation, Durability). If any operation within the transaction fails, the entire transaction is rolled back, preventing partial updates that could leave the database in an inconsistent state.
+
+Zuno provides built-in support for handling database transactions using the `DB::transaction()` method, `DB::beginTransaction()`, `DB::commit()`, and `DB::rollBack()`.
+
+### Using DB::transaction() for Simplicity
+The `DB::transaction()` method automatically handles committing the transaction if no exception occurs and rolls it back if an exception is thrown.
+```php
+DB::transaction(function () {
+    $user = User::create(['name' => 'Mahedi']);
+    $post = Post::create(['user_id' => $user->id, 'title' => 'First Post']);
+});
+```
+
+### Manually Handling Transactions
+In cases where more control is needed, transactions can be manually started using DB::beginTransaction(). The operations must then be explicitly committed or rolled back.
+```php
+DB::beginTransaction();
+try {
+    $user = User::create([
+        'name' => 'Mahedi',
+        'email' => fake()->email,
+        'password' => bcrypt('password'),
+    ]);
+
+    Post::create([
+        'title' => 'My very first post',
+        'user_id' => $user->id
+    ]);
+
+    DB::commit();
+} catch (\Exception $e) {
+    DB::rollBack();
+    throw $e;
+}
+```
+
+### Handling Deadlocks with Transaction Retries
+Deadlocks can occur when multiple transactions compete for the same database resources. Zuno allows setting a retry limit for transactions using a second parameter in `DB::transaction()`.
+```php
+DB::transaction(function () {
+    // Operations that might deadlock
+}, 3); // Will attempt up to 3 times before throwing an exception
+```
+This approach helps mitigate issues caused by deadlocks by retrying the transaction a set number of times before ultimately failing.
+
+Using transactions properly ensures database consistency and prevents data corruption due to incomplete operations. Zuno provides flexible methods for handling transactions, allowing both automatic and manual control based on the use case.
+
+<a name="section-54"></a>
+
+## Manual Join
+In Zuno, Eloquent manual joins allow you to retrieve data from multiple tables based on a related column. The join method in Eloquent's Query Builder provides an easy way to combine records from different tables. This document explains how to perform various types of joins manually using Eloquent's Eloquent ORM and Query Builder.
+
+### Basic Join Example
+A simple join operation can be performed using the `join` method to combine records from two tables based on a common key. Below is an example of joining `users` and `posts` tables:
+```php
+$users = User::query()
+    ->join('posts', 'users.id', '=', 'posts.user_id')
+    ->get();
+```
+This will return a dataset containing user data which has at least one post.
+
+### Specifying Join Type
+By default, Zuno performs an `INNER JOIN`. You can specify the type of join you want by passing the join type as an argument:
+```php
+$users = User::query()
+    ->join('posts', 'users.id', '=', 'posts.user_id', 'left')
+    ->get();
+```
+Here, a `LEFT JOIN` is used to include all users, even if they do not have associated posts.
+
+### Applying Conditions in Joins
+You can apply additional conditions to filter the joined data. The example below joins the posts table and fetches only the users who have published posts:
+```php
+$users = User::query()
+    ->join('posts', 'users.id', '=', 'posts.user_id')
+    ->where('posts.published', '=', true)
+    ->orderBy('users.name', 'ASC')
+    ->get();
+```
+
+### Performing Multiple Joins
+You can join multiple tables in a single query. The example below joins the `users`, `posts`, and `comments` tables:
+```php
+$users = User::query()
+    ->join('posts', 'users.id', '=', 'posts.user_id')
+    ->join('comments', 'posts.id', '=', 'comments.post_id')
+    ->get();
+```
+This will return data containing users, their posts, and associated comments.
+
+### Selecting Specific Columns
+To optimize queries and improve performance, you can select specific columns instead of retrieving all fields:
+```php
+$users = User::query()
+    ->select(['users.name', 'posts.title'])
+    ->join('posts', 'users.id', '=', 'posts.user_id')
+    ->get();
+```
+This query retrieves only the `users.name` and `posts.title` fields, reducing the amount of data transferred.
+
+<a name="section-14"></a>
+
 ## Middleware
 Middleware acts as a bridge between a request and a response, allowing you to filter or modify incoming requests before they reach the controller. It is useful for authentication, logging, and request modification.
 
@@ -1505,7 +2126,7 @@ We can define multiple route middleware. To define route middleware, just update
 #### Create New Middleware
 Zuno has command line interface to create a new middleware. Zuno has `make:middleware` command to create a new middleware.
 ```
-php pool create:middleware Authenticate
+php pool make:middleware Authenticate
 ```
 Then this command will create a new `Authenticate` for you located inside `App\Http\Authenticate` directory
 
@@ -1574,7 +2195,7 @@ We can register multiple global middleware. To register global middleware, just 
 #### Create New Middleware
 Zuno has command line interface to create a new middleware. Zuno has `make:middleware` command to create a new middleware.
 ```
-php pool create:middleware CorsMiddlware
+php pool make:middleware CorsMiddlware
 ```
 Then this command will create a new `CorsMiddleware` for you located inside `App\Http\Middleware` directory
 
@@ -3076,7 +3697,7 @@ use Zuno\Migration\Migration;
 
 final class User extends Migration
 {
-    public function change(): void
+    public function up(): void
     {
         $this->table('users')
             ->addColumn('name', 'string', ['limit' => 50])
@@ -3098,7 +3719,7 @@ php pool migrate
 
 You can also insert data after migration created by checking `isMigratingUp` method.
 ```php
-public function change()
+public function up()
 {
     // create the table
     $table = $this->table('user_logins');
@@ -3134,7 +3755,7 @@ $table->addColumn('follower_id', 'integer')
 ### Signed Primary Key
 By default, the primary key is `unsigned`. To simply set it to be `signed` just pass `signed` option with a true value:
 ```php
-public function change()
+public function up()
 {
     $table = $this->table('followers', ['signed' => false]);
     $table->addColumn('follower_id', 'integer')
@@ -3146,7 +3767,7 @@ public function change()
 ### Determining Whether a Table Exists
 You can determine whether or not a table exists by using the `hasTable()` method.
 ```php
-public function change()
+public function up()
 {
     $exists = $this->hasTable('users');
     if ($exists) {
@@ -3160,7 +3781,7 @@ Tables can be dropped quite easily using the `drop()` method. It is a good idea 
 
 Note that like other methods in the Table class, drop also needs `save()` to be called at the end in order to be executed. This allows phinx to intelligently plan migrations when more than one table is involved.
 ```php
-public function change()
+public function up()
 {
     $this->table('users')->drop()->save();
 }
@@ -3176,7 +3797,7 @@ public function down()
 ### Renaming a Table
 To rename a table access an instance of the Table object then call the `rename()` method.
 ```php
-public function change()
+public function up()
 {
     $table = $this->table('users');
     $table
@@ -3196,7 +3817,7 @@ public function down()
 ### Change the primary key on an existing table
 To change the primary key on an existing table, use the `changePrimaryKey()` method. Pass in a column name or array of columns names to include in the primary key, or `null` to drop the primary key. Note that the mentioned columns must be added to the table, they will not be added implicitly.
 ```php
-public function change()
+public function up()
 {
     $users = $this->table('users');
     $users
@@ -3265,7 +3886,7 @@ $table->addColumn('user_id', 'integer')
 
 ### Checking whether a column exists
 ```php
-public function change()
+public function up()
 {
     $table = $this->table('user');
     $column = $table->hasColumn('username');
@@ -3282,7 +3903,7 @@ To rename a column, access an instance of the Table object then call the `rename
 
 
 ```php
-public function change()
+public function up()
 {
     $table = $this->table('users');
     $table->renameColumn('bio', 'biography')
@@ -3301,7 +3922,7 @@ public function down()
 ### Adding a Column After Another Column
 When adding a column with the MySQL adapter, you can dictate its position using the after option, where its value is the name of the column to position it after.
 ```php
-public function change()
+public function up()
 {
     $table = $this->table('users');
     $table->addColumn('city', 'string', ['after' => 'email'])
@@ -3312,7 +3933,7 @@ public function change()
 ### Changing Column Attributes
 To change column type or options on an existing column, use the `changeColumn()` method
 ```php
-public function change()
+public function up()
 {
     $users = $this->table('users');
     $users->changeColumn('email', 'string', ['limit' => 255])
@@ -3331,7 +3952,7 @@ $table->addColumn('city', 'string')
 
 By default Phinx instructs the database adapter to create a normal index. We can pass an additional parameter unique to the `addIndex()` method to specify a unique index. We can also explicitly specify a name for the index using the name parameter, the index columns sort order can also be specified using the order parameter. The order parameter takes an array of column names and sort order key/value pairs.
 ```php
-public function change()
+public function up()
 {
     $table = $this->table('users');
     $table->addColumn('email', 'string')
@@ -3346,7 +3967,7 @@ public function change()
 ```
 The MySQL adapter also supports fulltext indexes. If you are using a version before 5.6 you must ensure the table uses the MyISAM engine.
 ```php
-public function change()
+public function up()
 {
     $table = $this->table('users', ['engine' => 'MyISAM']);
     $table->addColumn('email', 'string')
@@ -3357,7 +3978,7 @@ public function change()
 ### Working With Foreign Keys
 For creating foreign key constraints on your database tables. Let’s add a foreign key to an example table:
 ```php
-public function change()
+public function up()
 {
     $table = $this->table('tags');
     $table->addColumn('tag_name', 'string')
@@ -3374,7 +3995,7 @@ public function change()
 
 It is also possible to pass `addForeignKey()` an array of columns. This allows us to establish a foreign key relationship to a table which uses a combined key.
 ```php
-public function change()
+public function up()
 {
     $table = $this->table('follower_events');
     $table->addColumn('user_id', 'integer')
