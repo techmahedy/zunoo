@@ -65,6 +65,7 @@ return [
     */
 
     'locale' => env('APP_LOCALE', 'en'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
     /*
     |--------------------------------------------------------------------------
@@ -81,6 +82,18 @@ return [
 
     'key' => env('APP_KEY'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Application Service Providers
+    |--------------------------------------------------------------------------
+    |
+    | Here we register all of the application's service providers. These providers
+    | bootstrap core application services and register important bindings. Providers
+    | are loaded in the order they are listed below.
+    |
+    | Additional providers may be added for specific user implemented features and for packages.
+    |
+    */
     'providers' => [
         App\Providers\AppServiceProvider::class,
     ],

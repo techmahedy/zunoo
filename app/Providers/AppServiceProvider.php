@@ -36,8 +36,7 @@ class AppServiceProvider extends ServiceProvider
    * Bootstrap any application services.
    *
    * This method is called after all service providers have been registered.
-   * It is used to perform additional setup, such as registering event listeners,
-   * middleware, or other application-specific logic.
+   * It is used to perform additional setup
    *
    * @return void
    */

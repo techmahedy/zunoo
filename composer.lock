@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "72428f9cae78647b65848ff946d03f92",
+    "content-hash": "d8919b97b2cd192af6dacbaf11da4f6f",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -2675,16 +2675,16 @@
         },
         {
             "name": "zuno/zuno",
-            "version": "v6.3",
+            "version": "v6.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/techmahedy/zuno.git",
-                "reference": "5085239fb9d999c9d137bb63769f5a2fe1787a55"
+                "reference": "b84b2acc2212535ef70a6a9327f74134cd6cb5cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/5085239fb9d999c9d137bb63769f5a2fe1787a55",
-                "reference": "5085239fb9d999c9d137bb63769f5a2fe1787a55",
+                "url": "https://api.github.com/repos/techmahedy/zuno/zipball/b84b2acc2212535ef70a6a9327f74134cd6cb5cf",
+                "reference": "b84b2acc2212535ef70a6a9327f74134cd6cb5cf",
                 "shasum": ""
             },
             "require": {
@@ -2741,7 +2741,7 @@
                 "issues": "https://github.com/techmahedy/zuno/issues",
                 "source": "https://github.com/techmahedy/zuno"
             },
-            "time": "2025-04-02T05:25:31+00:00"
+            "time": "2025-04-03T17:52:54+00:00"
         }
     ],
     "packages-dev": [

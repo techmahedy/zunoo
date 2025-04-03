@@ -10,7 +10,7 @@
     <body>
         <div style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
             <div style="text-align: center;">
-                <p>Thank you for choosing Zuno {{ \Zuno\Application::VERSION }}. Build something amazing!</p>
+                <p>{{ trans('messages.welcome', ['version' => \Zuno\Application::VERSION]) }}</p>
                 <div>
                     <a href="https://github.com/techmahedy/zunoo" class="btn btn-light"
                         style="padding: 10px 20px; margin: 5px;">Github</a>
@@ -21,3 +21,4 @@
         </div>
     </body>
 </html>
+

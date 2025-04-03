@@ -62,6 +62,8 @@ Zuno is a PHP framework built to revolutionize the way developers create robust,
   - [Uploads](#section-43)
 - **Helpers**
   - [Helpers](#section-49)
+- **Localization**
+  - [Localization](#section-55)
 
 <a name="section-1"></a>
 
@@ -3252,15 +3254,6 @@ The following validation rules are applied to image uploads to ensure that only 
 
 If the uploaded file fails to meet any of these criteria, the validation process will fail. An error response will be generated, indicating the specific validation failures.
 
-**Purpose:**
-
-These validation rules are crucial for maintaining data integrity and ensuring that your application only processes images that comply with the defined specifications. This helps prevent issues such as:
-
-* Corrupted or invalid image files.
-* Excessively large images that can impact performance.
-* Images with inappropriate dimensions that may distort layouts.
-* Security Risks.
-
 ### Date Validation
 To validate date, you follow this example
 ```php
@@ -4212,7 +4205,7 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->sanitize([
-            'email' => 'required|email|min:2|max:100', // you can also pass 'username' rather than 'email'
+            'email' => 'required|email|min:2|max:100',
             'password' => 'required|min:2|max:20',
         ]);
 
@@ -4232,33 +4225,66 @@ if (Auth::try($request->passed(), true)) {
 }
 ```
 
+### Auth using login()
+If you want to create auth using user object, then you just need to pass the use object, like
+```php
+if (Auth::login($user)) {
+    // User is logged in
+}
+```
+
+You can also use login() via `remember_token` by passing true as the second argument.
+```php
+if (Auth::login($user, true)) {
+    // User is logged in with remember_token token
+}
+```
+### Auth using loginUsingId()
+This method logs in a user persistently, meaning the authentication is stored in the `session`.
+```php
+if (Auth::loginUsingId($user->id)) {
+    // User is logged in
+}
+```
+
+### Auth using onceUsingId()
+This method logs in a user for a single request only, meaning authentication is not stored in the `session` or `cookies`.
+```php
+if (Auth::onceUsingId(1)) {
+    // User is logged in
+}
+```
+
+### Custom Authentication Key
+In some applications, authentication is not based on email but instead uses a `mobile number` or `username`. By default, Zuno uses `email` and `password` for authentication. However, you can change this behavior by overriding the `getAuthKeyName()` method in your `User` model.
+#### How to Customize the Authentication Key
+To switch from `email-based authentication` to `username-based authentication`, override the getAuthKeyName() method in your model:
+
+```php
+/**
+ * Get the authentication key name used for identifying the user.
+ * @return string
+ */
+public function getAuthKeyName(): string
+{
+    return "username"; // set any key for authentication like phone
+}
+```
+Now, instead of logging in with an `email`, Zuno will use the `username` field for authentication.
+
 ### Get Authenticated User Data
 To get the current authenticated user data, Zuno has `Auth::user()` method. Simply call
 ```php
-<?php
+Auth::user(); // Current authenticated user data
 
-namespace App\Http\Controllers\Auth;
+// or you can use
+$request->user();
 
-use Zuno\Http\Request;
-use Zuno\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
+// or you can use also request() helper
+request()->user();
 
-class LoginController extends Controller
-{
-    public function index(Request $request)
-    {
-        Auth::user(); // Current authenticated user data
-
-        // or you can use
-        $request->user();
-
-        // or you can use also request() helper
-        request()->user();
-
-        // or you can use also auth() helper
-        request()->auth();
-    }
-}
+// or you can use also auth() helper
+request()->auth();
 ```
 
 ### Logout
@@ -5347,4 +5373,65 @@ $highlighted = highlight_keyword($text, "Zuno");
 // Using a <span> tag for custom styling
 $highlighted = highlight_keyword($text, "Zuno", "span class='highlight'"); 
 // Returns: "<span class='highlight'>Zuno</span> is awesome. Learn <span class='highlight'>Zuno</span> now!"
+```
+
+<a name="section-55"></a>
+
+## Localization
+Zuno provides multiple ways to handle localization in your application. You can set, retrieve, and translate language strings efficiently using various helpers and facades. Language files located in your root `lang` directory
+
+### Setting the Locale
+To change the application's active language, use:
+```php
+use Zuno\Support\Facades\App;
+
+App::setLocale('en');
+```
+
+### Example
+Set language based on user preference
+```php
+if ($user->language === 'es') {
+    App::setLocale('es');
+} else {
+    App::setLocale('en');
+}
+```
+
+### Get the Current local
+To retrieve the currently set language:
+```php
+use Zuno\Support\Facades\App;
+
+$currentLang = App::getLocale()
+```
+
+### Fetching Translations
+Assume we have a language file inside `lang/en/messages.php` and that conatins this.
+```php
+<?php
+
+return [
+    'welcome' => 'Thank you for choosing Zuno :version. Build something amazing',
+];
+```
+
+Now you can retrieve translations using multiple approaches:
+#### Using the lang() Helper
+```php
+lang()->get('messages.welcome', ['version' => Application::VERSION]);
+// or
+lang()->trans('messages.welcome', ['version' => Application::VERSION]);
+```
+
+#### Using the Lang Facade
+```php
+use Zuno\Supports\Facades\Lang;
+
+$message = Lang::trans('messages.welcome', ['version' => Application::VERSION]);
+```
+
+### Using the trans() Helper
+```php
+$message = trans('messages.welcome', ['version' => Application::VERSION]);
 ```
