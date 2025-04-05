@@ -2,11 +2,13 @@
 
 /*
 |--------------------------------------------------------------------------
-| Loading application web routes
+| Loading application api routes
 |--------------------------------------------------------------------------
 */
 
 use Zuno\Support\Facades\Route;
+use Zuno\Http\Request;
 
-Route::get('/', fn() => view('welcome'))->name('home');
-
+Route::get('user', function (Request $request) {
+    return $request->user();
+});

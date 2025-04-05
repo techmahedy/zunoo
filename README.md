@@ -994,7 +994,6 @@ class ProfileController extends Controller
 }
 ```
 
-
 <a name="section-13"></a>
 
 ## Naming Route
@@ -1040,10 +1039,47 @@ Now you are ready to define `PUT` route in `web.php` file
 ```php
 Route::put('/update-profile', [ProfileController::class, 'updateProfile']);
 
-
 // For DELETE and PATCH
 Route::delete('/user/{id}', [ProfileController::class, 'delete']);
 Route::patch('/update-profile', [ProfileController::class, 'updateProfile']);
+```
+
+### Route Group
+`Route::group` is used to group multiple routes under a shared configuration like middleware, URL prefix, namespace, etc. This helps in organizing routes cleanly and applying common logic to them.
+
+#### Syntax
+```php
+Route::group([
+    'prefix' => 'your-prefix',
+    'middleware' => ['middleware-name']
+], function () {
+    // Routes go here
+});
+```
+
+#### Example
+Look at the below example, we are using `prefix` and `middleware` as a group route. You can use either `prefix` or `middleware` or both. See the example
+```php
+Route::group([
+    'prefix' => 'login',
+    'middleware' => ['guest']
+], function () {
+    Route::get('/', [LoginController::class, 'index'])->name('login'); // url will be example.com/login
+    Route::post('/', [LoginController::class, 'login']); // url will be example.com/login
+});
+```
+`'prefix' => 'login'` This means all routes inside this group will be prefixed with `/login` and `'middleware' => ['guest']` Applies the guest` middleware to both routes.
+
+### Route Caching
+Zuno supports route caching for improved performance in production environments. Route caching is controlled by the `APP_ROUTE_CACHE` environment variable: Set to `true` to enable route caching (recommended for production). Set to `false` to disable (default for development) Route cache files are stored in: `storage/framework/cache/`
+#### Cache Routes
+Generate a route cache file for faster route registration:
+```bash
+php pool route:cache // Note: This should be run after any route modifications.
+```
+#### Clear Route Cache
+```bash
+php pool route:clear // Use this when making route changes in production or if experiencing route-related issues.
 ```
 
 <a name="section-44"></a>
@@ -4273,9 +4309,10 @@ public function getAuthKeyName(): string
 Now, instead of logging in with an `email`, Zuno will use the `username` field for authentication.
 
 ### Get Authenticated User Data
-To get the current authenticated user data, Zuno has `Auth::user()` method. Simply call
+To get the current authenticated user data, Zuno has `Auth::user()` method and `auth()` helper. Simply call
 ```php
 Auth::user(); // Current authenticated user data
+auth()->user() // Current authenticated user data using auth() helper
 
 // or you can use
 $request->user();

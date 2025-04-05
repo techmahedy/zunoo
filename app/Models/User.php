@@ -45,7 +45,7 @@ class User extends Model
      *
      * @var array
      */
-    protected $unexposable = ['password'];
+    protected $unexposable = ['password', 'remember_token'];
 
     /**
      * Page Size
