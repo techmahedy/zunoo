@@ -4,8 +4,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Welcome</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-            integrity="sha384-KyZXEJ6Jtpu9ay0w7OCk8nR2HfejF2pxp5Z2t8pqLwzG3xxN3XkL9Pso8toftx2j" crossorigin="anonymous">
     </head>
     <body>
         <div style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">

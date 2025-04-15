@@ -26,6 +26,9 @@ Zuno is a PHP framework built to revolutionize the way developers create robust,
     - [Pagination](#section-47)
     - [Database Transactions](#section-53)
     - [Manual Join](#section-54)
+- **Query Builder**
+    - [Database Operations with DB Facade](#section-56)
+- **Digging Deeper**
   - [Middleware](#section-14)
     - [Route Middleware](#section-15)
     - [Global Web Middleware](#section-16)
@@ -42,7 +45,6 @@ Zuno is a PHP framework built to revolutionize the way developers create robust,
   - [Error Handling](#section-26)
     - [Error Log and Logging](#section-27)
   - [URL Generation](#section-48)
-- **Digging Deeper**
   - [Pool Console](#section-28)
   - [Encryption & Decryption](#section-30)
 - **Database**
@@ -2141,6 +2143,159 @@ $users = User::query()
 ```
 This query retrieves only the `users.name` and `posts.title` fields, reducing the amount of data transferred.
 
+<a name="section-56"></a>
+
+## Database Operations with `DB` Facade
+The Zuno Framework provides a powerful and elegant DB Facade under the namespace `Zuno\Support\Facades\DB`. This facade offers a fluent and expressive interface to interact with your database, allowing you to perform a variety of operations such as `querying`, `inserting`, `updating`, `deleting`, and handling transactions or stored `procedures` with ease.
+
+### Basic Database Operation
+Get a list of all tables in the database
+```php
+echo DB::getTables(); // Returns an array of all table names in the connected database.
+```
+
+Check if a specific table exists
+```php
+echo DB::tableExists('user'); // Returns true if the user table exists, otherwise false.
+```
+
+Get the column names of a given table
+```php
+echo DB::getTableColumns('user');
+```
+
+Get the table name associated with a model instance
+```php
+DB::getTable(new User()); // Useful for dynamically retrieving the table name from a model class instance.
+```
+
+Get the current active PDO connection instance
+```php
+return DB::getConnection(); // Returns the raw PDO connection object used internally.
+```
+
+### Querying the Database using `query()`
+Zuno provides `query()` function and using it, you can pass raw sql and execute it. See the basic example. Get a single row from the user table
+```php
+DB::query("SELECT * FROM user WHERE name = ?", ['Kasper Snider'])->fetch();
+```
+Executes a query and returns the first matching row as an associative array.
+
+Get all rows that match a query
+```php
+DB::query("SELECT * FROM user WHERE name = ?", ['Kasper Snider'])->fetchAll();
+```
+
+### Modifying the Database using `execute()`
+Zuno provides `execute()` function and using it, you can modify database. See the basic example. Inserts a new user record. Returns the number of affected rows (1 if successful).
+```php
+$inserted = DB::execute(
+    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+    ['John Doe', 'john@example.com', bcrypt('secret')]
+);
+```
+
+You can use transaction here as well
+```php
+DB::transaction(function () {
+    $moved = DB::execute(
+        "INSERT INTO archived_posts SELECT * FROM posts WHERE created_at < ?",
+        [date('Y-m-d', strtotime('-1 year'))]
+    );
+
+    $deleted = DB::execute(
+        "DELETE FROM posts WHERE created_at < ?",
+        [date('Y-m-d', strtotime('-1 year'))]
+    );
+
+    echo "Archived {$moved} posts and deleted {$deleted} originals";
+});
+```
+Executes multiple statements in a single transaction. Ensures either all queries succeed or none are committed.
+
+### Executing Stored Procedures
+Zuno provides `executeProcedure` method to run your store procedure. See the basic example
+```php
+// Get nested results (original behavior)
+$nestedResults = DB::executeProcedure('sp_GetAllUsers')->all();
+```
+
+Get flattened first result set
+```php
+$users = DB::executeProcedure('sp_GetAllUsers')->flatten();
+```
+Calls a procedure and flattens the first result set into a simple array.
+
+
+Get first row only
+```php
+$firstUser = DB::executeProcedure('sp_GetUserById', [1])->first();
+```
+
+Get the second result set (index 1) by passing 123 parameter
+```php
+$stats = DB::executeProcedure('sp_GetUserWithStats', [123])->resultSet(1);
+```
+Useful when a stored procedure returns multiple result sets. This fetches the one at index 1.
+
+### With Multiple Params
+```php
+$totalUsers = 0;
+$results = DB::executeProcedure(
+    'sp_GetPaginatedUsers',
+    [1, 10, 'active', 'created_at', 'DESC'],
+    [&$totalUsers]
+)->all();
+// $results[0] contains user data
+// $totalUsers contains total count
+```
+
+### Executing View
+Zuno provides `executeView` method to run your `view`. See the basic example
+```php
+$stats = DB::executeView('vw_user_statistics');
+```
+
+### View with WHERE Conditions
+You can pass `where` condition in your custom view like
+```php
+// 2. View with single WHERE condition
+$nyUsers = DB::executeView(
+    'vw_user_locations', 
+    ['state' => 'New York']
+);
+
+// Equivalent to: SELECT * FROM vw_user_locations WHERE state = 'New York'
+
+// 3. View with multiple WHERE conditions
+$premiumNyUsers = DB::executeView(
+    'vw_user_locations',
+    [
+        'state' => 'New York',
+        'account_type' => 'premium'
+    ]
+);
+
+// Equivalent to: 
+// SELECT * FROM vw_user_locations 
+// WHERE state = 'New York' AND account_type = 'premium'
+```
+
+### View with Parameter Binding
+You can also pass params with where condition as follows
+```php
+// 4. Using parameter binding for security
+$recentOrders = DB::executeView(
+    'vw_recent_orders',
+    ['status' => 'completed'],
+    [':min_amount' => 100] // Additional parameters
+);
+
+// Equivalent to:
+// SELECT * FROM vw_recent_orders 
+// WHERE status = 'completed' AND amount > :min_amount
+```
+
 <a name="section-14"></a>
 
 ## Middleware
@@ -2518,10 +2673,23 @@ if ($file = $request->file('file')) {
 ```
 
 #### Global `request()` Helper
+The `request()` helper function in Zuno provides a convenient and globally accessible way to retrieve data from the current HTTP request. It’s an alias for accessing the `Zuno\Http\Request` instance without needing to inject or typehint it.
+### Basic Usage
+```php
+request('key', 'default');
+```
+- Retrieves the value of key from the current request.
+- Returns 'default' if the key does not exist.
 
-The `request()` helper function provides a global way to access the `Request` object throughout your application.
+### Example:
+```php
+$name = request('name', 'Guest'); // Returns the 'name' from the request or 'Guest' if not set
+```
 
-* `request()->only('name')`: Equivalent to `$request->only('name')`.
+You can do the same thing using `request()` object like
+```php
+$name = request()->input('name', 'Guest'); // as request object
+```
 
 <a name="section-21"></a>
 
@@ -4083,29 +4251,20 @@ Now you can seed data from this class by updating run method. You can update run
 declare(strict_types=1);
 
 use Phinx\Seed\AbstractSeed;
+use App\Models\User;
 
 class UserSeeder extends AbstractSeed
 {
     /**
-     * Run Method.
-     *
-     * Write your database seeder using this method.
-     *
-     * More information on writing seeders is available here:
-     * https://book.cakephp.org/phinx/0/en/seeding.html
+     * Write your database seeder
      */
     public function run(): void
     {
-        $data = [
-            [
-                'name' => fake()->name(),
-                'email' => 'hello@zuno.com',
-                'password' => '$argon2id$v=19$m=65536,t=4,p=1$YUhEMzAycmJ3QnkyWFpVbQ$22mqZRiUoSDBehig20+GLjRpYQmQBIqQ41Y/Mhtde7k' // password
-            ]
-        ];
-
-        $user = $this->table('users');
-        $user->insert($data)->saveData();
+        User::create([
+            'name' => fake()->name(),
+            'email' => fake()->email(),
+            'password' => bcrypt('password')
+        ]);
     }
 }
 ```
@@ -4803,6 +4962,23 @@ $name = request()->query('name');
 ```
 This function simplifies the process of working with HTTP requests by providing direct access to the request object, streamlining data retrieval and manipulation.
 
+### More Usage
+```php
+request('key', 'default');
+```
+- Retrieves the value of key from the current request.
+- Returns 'default' if the key does not exist.
+
+### Example:
+```php
+$name = request('name', 'Guest'); // Returns the 'name' from the request or 'Guest' if not set
+```
+
+You can do the same thing using `request()` object like
+```php
+$name = request()->input('name', 'Guest'); // as request object
+```
+
 ### response()
 The `response()` function in Zuno is a helper used to generate and return HTTP response instances. It provides a flexible way to create a response, whether it’s with content or just an empty response, and allows setting the HTTP status code and headers.
 ```php
@@ -5074,7 +5250,7 @@ abort_if($userNotAuthenticated, 401, 'Unauthorized access');
 abort_if(!file_exists($filePath), 404, 'File not found');
 ```
 ## String Helper function
-Zuno provides a collection of global string helper functions in PHP. While many of these functions are integral to the framework’s internal operations, they are also available for use in your own projects whenever they prove useful. All the string function, you can access it via global helper or you can use `Zuno\Support\Facades\Str` facades
+Zuno provides a collection of global string helper functions in PHP. While many of these functions are integral to the framework’s internal operations, they are also available for use in your own projects whenever they prove usefull. All the string function, you can access it via global `str()` function or you can use `Zuno\Support\Facades\Str` facades
 
 ### mask()
 The `mask()` function is a helper designed to mask parts of a given string while keeping a specified number of characters visible at the start and the end. This can be useful for hiding sensitive information (like credit card numbers, emails, or phone numbers) while displaying a portion of it for the user to verify.
@@ -5082,31 +5258,31 @@ The `mask()` function is a helper designed to mask parts of a given string while
 use Zuno\Support\Facades\Str;
 
 // Mask a credit card number except for the last four digits
-$maskedCard = mask('1234 5678 9876 5432', 4, 4, '*');
+$maskedCard = str()->mask('1234 5678 9876 5432', 4, 4, '*');
 $maskedCard = Str::mask('1234 5678 9876 5432', 4, 4, '*');
 
 // Mask a phone number except for the first three and last four digits
-$maskedPhone = mask('123-456-7890', 3, 4, '#');
+$maskedPhone = str()->mask('123-456-7890', 3, 4, '#');
 $maskedPhone = Str::mask('123-456-7890', 3, 4, '#');
 ```
 ### Example
 Masking Credit Card Numbers: To display only the last 4 digits of a credit card number for security reasons, you can use the mask() function:
 ```php
-$maskedCard = mask('1234 5678 9876 5432', 4, 4); // Output: 1234 ******** 5432
+$maskedCard = str()->mask('1234 5678 9876 5432', 4, 4); // Output: 1234 ******** 5432
 ```
 Masking Phone Numbers: For masking a phone number except for the first 3 and last 4 digits:
 ```php
-$maskedPhone = mask('123-456-7890', 3, 4, '#'); // Output: 123-###-7890
+$maskedPhone = str()->mask('123-456-7890', 3, 4, '#'); // Output: 123-###-7890
 ```
 Masking Email Addresses: To hide part of an email address except for the first and last characters:
 ```php
-$maskedEmail = mask('john.doe@example.com', 1, 1); // Output: j********e.com
+$maskedEmail = str()->mask('john.doe@example.com', 1, 1); // Output: j********e.com
 ```
 
 ### truncate()
 The `truncate()` function is a helper designed to truncate a string to a specified maximum length. If the string exceeds this length, it appends a suffix (such as ellipsis ...) to indicate that the string has been shortened.
 ```php
-$shortDescription = truncate('This is a long description that should be shortened for previews.', 30, '... Read More');
+$shortDescription = str()->truncate('This is a long description that should be shortened for previews.', 30, '... Read More');
 $shortDescription = Str::truncate('This is a long description that should be shortened for previews.', 30, '... Read More');
 // Output: "This is a long description... Read More"
 ```
@@ -5114,41 +5290,41 @@ $shortDescription = Str::truncate('This is a long description that should be sho
 The `snake()` function is a helper designed to convert a camelCase string into a snake_case string. This is useful when you need to transform variable names, keys, or identifiers from camelCase (often used in programming) into snake_case (commonly used in database column names or URL routing).
 ```php
 // Convert a camelCase string to snake_case
-$snakeString = snake('camelCaseString'); // Output: 'camel_case_string'
+$snakeString = str()->snake('camelCaseString'); // Output: 'camel_case_string'
 ```
 ### camel()
 The `camel()` function is a helper designed to convert a snake_case string into a camelCase string. This is useful when you need to transform variable names, keys, or identifiers from snake_case (commonly used in databases or file names) into camelCase (often used in programming languages like JavaScript and PHP for variable names).
 ```php
 // Convert a snake_case string to camelCase
-$camelString = camel('snake_case_string'); // Output: 'snakeCaseString'
+$camelString = str()->camel('snake_case_string'); // Output: 'snakeCaseString'
 ```
 
 ### random()
 The `random()` function is a helper designed to generate a random alphanumeric string of a specified length. This is useful when you need to generate secure random tokens, passwords, or unique identifiers.
 ```php
 // Generate a random alphanumeric string of default length 16
-$randomString = random(); // Output: 'a1B2c3D4e5F6g7H8'
+$randomString = str()->random(); // Output: 'a1B2c3D4e5F6g7H8'
 
 // Generate a random alphanumeric string of a custom length (e.g., 8)
-$randomString = random(8); // Output: 'Xy7GzH8Q'
+$randomString = str()->random(8); // Output: 'Xy7GzH8Q'
 ```
-### is_palindrome()
-The `is_palindrome()` function is a helper designed to check whether a given string is a palindrome. A palindrome is a word, phrase, or sequence that reads the same backward as forward (ignoring spaces, punctuation, and capitalization).
+### isPalindrome()
+The `isPalindrome()` function is a helper designed to check whether a given string is a palindrome. A palindrome is a word, phrase, or sequence that reads the same backward as forward (ignoring spaces, punctuation, and capitalization).
 ```php
 // Check if a string is a palindrome
-$isPalindrome = is_palindrome('racecar'); // Output: true
+$isPalindrome = str()->isPalindrome('racecar'); // Output: true
 
 // Check if a string is not a palindrome
-$isPalindrome = is_palindrome('hello'); // Output: false
+$isPalindrome = str()->isPalindrome('hello'); // Output: false
 ```
-### count_word()
-The `count_word()` function is a helper designed to count the number of words in a given string. This is useful when you need to determine the word count of a sentence, paragraph, or any text input.
+### countWord()
+The `countWord()` function is a helper designed to count the number of words in a given string. This is useful when you need to determine the word count of a sentence, paragraph, or any text input.
 ```php
 // Count the number of words in a string
-$wordCount = count_word('This is a test sentence.'); // Output: 5
+$wordCount = str()->countWord('This is a test sentence.'); // Output: 5
 
 // Count the number of words in a string with punctuation
-$wordCount = count_word('Hello, world!'); // Output: 2
+$wordCount = str()->countWord('Hello, world!'); // Output: 2
 ```
 ### Log Helpers
 These are helper functions designed to simplify logging at different levels of severity. They utilize Zuno's built-in Log facade to log messages with various log levels. Each function accepts a payload (which can be any type of data) and logs it accordingly at the specified level.
@@ -5193,7 +5369,7 @@ See some basic example of collection, how you can use it
 The `filter()` method allows you to filter a collection based on a given condition.
 
 ```php
- $collection = collect([1, 2, 3, 4, 5, 6]);
+$collection = collect([1, 2, 3, 4, 5, 6]);
 
 // Filter to get only even numbers
 $evenNumbers = $collection->filter(function ($value) {
@@ -5213,30 +5389,6 @@ $doubledNumbers = $collection->map(function ($value) {
 });
 
 return $doubledNumbers;
-```
-### sort()
-The `sort()` method sorts the collection in ascending order.
-
-```php
- $collection = collect([5, 3, 8, 1]);
-
-// Sort the numbers in ascending order
-$sortedCollection = $collection->sort();
-
-return $sortedCollection; // Output: [1, 3, 5, 8]
-```
-
-### reduce()
-The `reduce()` method reduces the collection to a single value by iterating over each item.
-```php
-$collection = collect([1, 2, 3, 4]);
-
-// Calculate the sum of the numbers
-$sum = $collection->reduce(function ($carry, $item) {
-    return $carry + $item;
-}, 1);
-
-return $sum; // Output: 11
 ```
 ### first()
 The first() method retrieves the first item in the collection.
@@ -5260,78 +5412,80 @@ $result = delete_folder_recursively('/path/to/folder'); // Returns true on succe
 The `title()` function is a helper designed to convert a given string into title case, where the first letter of each word is capitalized, and the rest of the letters are in lowercase. This is commonly used for formatting titles or headings.
 ```php
 // Convert a string to title case
-$title = title("hello world"); // Returns "Hello World"
+$title = str()->title("hello world"); // Returns "Hello World"
 ```
 
 ### slug()
 The `slug()` function is a helper designed to generate a URL-friendly slug from a given string. A slug is typically used in URLs, where spaces and special characters are replaced with hyphens (or another separator), and all letters are converted to lowercase.
 ```php
 // Generate a URL-friendly slug
-$slug = slug("Hello World!"); // Returns "hello-world"
+$slug = str()->slug("Hello World!"); // Returns "hello-world"
 ```
 
 The word separator used in the slug. By default, this is a hyphen (-), but you can specify another separator if needed.
 ```php
 // Generate a URL-friendly slug with the default separator (hyphen)
-$slug = slug("Hello World!"); // Returns "hello-world"
+$slug = str()->slug("Hello World!"); // Returns "hello-world"
 
 // Generate a URL-friendly slug with a custom separator (underscore)
-$slug = slug("Hello World!", '_'); // Returns "hello_world"
+$slug = str()->slug("Hello World!", '_'); // Returns "hello_world"
 ```
 
 ### contains()
 The `contains()` function is a helper designed to check if a given string (the haystack) contains another string (the needle), performing a case-insensitive search.
 ```php
 // Check if a string contains another string (case-insensitive)
-$contains = contains("Hello World", "world"); // Returns true
+$contains = str()->contains("Hello World", "world"); // Returns true
 ```
-### limit_words()
-The `limit_words()` function is a helper designed to limit the number of words in a string. If the string contains more words than the specified limit, the function truncates the string and appends an optional ending suffix (such as ...).
+### limitWords()
+The `limitWords()` function is a helper designed to limit the number of words in a string. If the string contains more words than the specified limit, the function truncates the string and appends an optional ending suffix (such as ...).
 ```php
 // Limit the number of words in a string
-$truncatedString = limit_words("This is a test string", 3); // Returns "This is a..."
+$truncatedString = str()->limitWords("This is a test string", 3); // Returns "This is a..."
 ```
 
 The function returns the truncated string with a specified number of words and the optional suffix. If the string has fewer words than the specified limit, it remains unchanged.
 ```php
 // Limit the number of words to 3, append "..."
-$truncatedString = limit_words("This is a test string", 3); // Returns "This is a..."
+$truncatedString = str()->limitWords("This is a test string", 3); // Returns "This is a..."
 
 // Limit the number of words to 2, append custom suffix
-$truncatedString = limit_words("Hello there, how are you?", 2, '...more'); // Returns "Hello there...more"
+$truncatedString = str()->limitWords("Hello there, how are you?", 2, '...more'); // Returns "Hello there...more"
 ```
 
-### remove_white_space()
-The `remove_white_space()` function is a helper designed to remove all whitespace characters (spaces, tabs, newlines, etc.) from a given string. This is useful when you need to clean up strings for processing or formatting purposes
+### removeWhiteSpace()
+The `removeWhiteSpace()` function is a helper designed to remove all whitespace characters (spaces, tabs, newlines, etc.) from a given string. This is useful when you need to clean up strings for processing or formatting purposes
 ```php
 // Remove spaces from a string
-$cleanedString = remove_white_space("Hello   World"); // Returns "HelloWorld"
+$cleanedString = str()->removeWhiteSpace("Hello   World"); // Returns "HelloWorld"
 
 // Remove all whitespace including tabs and newlines
-$cleanedString = remove_white_space("Hello \tWorld\n"); // Returns "HelloWorld"
+$cleanedString = str()->removeWhiteSpace("Hello \tWorld\n"); // Returns "HelloWorld"
 ```
 
 ### uuid()
 The `uuid()` function is a helper designed to generate a UUID v4 (Universally Unique Identifier), which is a random 128-bit value represented as a string. UUIDs are commonly used for generating unique identifiers in distributed systems, databases, and APIs.
 ```php
 // Generate a UUID v4 string
+$uuid = str()->uuid();
+// or
 $uuid = uuid(); // Returns something like "f47ac10b-58cc-4372-a567-0e02b2c3d479"
 ```
 
-## starts_with()
-The `starts_with()` function is a helper designed to check if a given string (the haystack) starts with another string (the needle). This check is case-sensitive.
+## startsWith()
+The `startsWith()` function is a helper designed to check if a given string (the haystack) starts with another string (the needle). This check is case-sensitive.
 ```php
 // Check if a string starts with a specific substring
-$startsWith = starts_with("Hello World", "Hello"); // Returns true
-$startsWith = starts_with("Hello World", "world"); // Returns false (case-sensitive)
+$startsWith = str()->startsWith("Hello World", "Hello"); // Returns true
+$startsWith = str()->startsWith("Hello World", "world"); // Returns false (case-sensitive)
 ```
 
-### ends_with()
-The `ends_with()` function is a helper designed to check if a given string (the haystack) ends with another string (the needle). This check is case-sensitive.
+### endsWith()
+The `endsWith()` function is a helper designed to check if a given string (the haystack) ends with another string (the needle). This check is case-sensitive.
 ```php
 // Check if a string ends with a specific substring
-$endsWith = ends_with("Hello World", "World"); // Returns true
-$endsWith = ends_with("Hello World", "world"); // Returns false (case-sensitive)
+$endsWith = str()->endsWith("Hello World", "World"); // Returns true
+$endsWith = str()->endsWith("Hello World", "world"); // Returns false (case-sensitive)
 ```
 
 ### studly()
@@ -5351,37 +5505,37 @@ The reverse() function is a helper designed to reverse the characters in a given
 $reversedString = reverse("Hello World"); // Returns "dlroW olleH"
 ```
 
-### extract_numbers()
-The `extract_numbers()` function is a helper designed to extract all numeric digits from a given string. It removes any non-numeric characters, leaving only the digits.
+### extractNumbers()
+The `extractNumbers()` function is a helper designed to extract all numeric digits from a given string. It removes any non-numeric characters, leaving only the digits.
 ```php
 // Extract digits from a string containing letters and symbols
-$numbers = extract_numbers("Hello 123, World 456!"); // Returns "123456"
+$numbers = str()->extractNumbers("Hello 123, World 456!"); // Returns "123456"
 
 // Extract digits from a string with mixed content
-$numbers = extract_numbers("Price: $123.45, Discount: 10%"); // Returns "1234510"
+$numbers = str()->extractNumbers("Price: $123.45, Discount: 10%"); // Returns "1234510"
 ```
 
-### longest_common_substring()
-The `longest_common_substring()` function is a helper designed to find the longest common substring shared between two given strings. A common substring is a contiguous sequence of characters that appears in both strings.
+### longestCommonSubstring()
+The `longestCommonSubstring()` function is a helper designed to find the longest common substring shared between two given strings. A common substring is a contiguous sequence of characters that appears in both strings.
 ```php
 // Example with overlapping words
-$commonSubstring = longest_common_substring("hello world", "yellow world"); // Returns "llo world"
+$commonSubstring = str()->longestCommonSubstring("hello world", "yellow world"); // Returns "llo world"
 
 // Example with no common substring
-$commonSubstring = longest_common_substring("abcdef", "xyz"); // Returns ""
+$commonSubstring = str()->longestCommonSubstring("abcdef", "xyz"); // Returns ""
 
 // Example with a single common character
-$commonSubstring = longest_common_substring("banana", "bandana"); // Returns "bana"
+$commonSubstring = str()->longestCommonSubstring("banana", "bandana"); // Returns "bana"
 ```
 
-### leet_speak()
-The `leet_speak()` function is a helper designed to convert a given string into leetspeak (1337), a playful encoding style where certain letters are replaced with similar-looking numbers or symbols.
+### leetSpeak()
+The `leetSpeak()` function is a helper designed to convert a given string into leetspeak (1337), a playful encoding style where certain letters are replaced with similar-looking numbers or symbols.
 ```php
 // Convert a simple phrase
-$leetString = leet_speak("leet speak"); // Possible output: "l33t sp34k"
+$leetString = str()->leetSpeak("leet speak"); // Possible output: "l33t sp34k"
 
 // Convert a more complex phrase
-$leetString = leet_speak("programming is fun"); // Possible output: "pr0gr4mm1ng 15 fun"
+$leetString = str()->leetSpeak("programming is fun"); // Possible output: "pr0gr4mm1ng 15 fun"
 ```
 
 Common Leetspeak Replacements:
@@ -5391,24 +5545,24 @@ I -> 1   L -> 1   O -> 0   S -> 5   T -> 7   Z -> 2
 ```
 This function is great for fun text transformations, gaming usernames, or encoding messages in a way that is still somewhat readable.
 
-### extract_emails()
-The `extract_emails()` function is a helper designed to extract all email addresses from a given string. It scans the string for valid email formats and returns them as an array.
+### extractEmails()
+The `extractEmails()` function is a helper designed to extract all email addresses from a given string. It scans the string for valid email formats and returns them as an array.
 ```php
 // Extract email addresses from a string
-$emails = extract_emails("Contact us at support@example.com or sales@example.org");
+$emails = str()->extractEmails("Contact us at support@example.com or sales@example.org");
 // Returns: ["support@example.com", "sales@example.org"]
 ```
 
-### highlight_keyword()
-The `highlight_keyword()` function is a helper designed to highlight all occurrences of a specified keyword in a given string using HTML tags. This is useful for emphasizing search results, user input matches, or key terms in displayed content.
+### highlightKeyword()
+The `highlightKeyword()` function is a helper designed to highlight all occurrences of a specified keyword in a given string using HTML tags. This is useful for emphasizing search results, user input matches, or key terms in displayed content.
 ```php
 // Default behavior with <strong> tag
 $text = "Zuno is awesome. Learn Zuno now!";
-$highlighted = highlight_keyword($text, "Zuno"); 
+$highlighted = str()->highlightKeyword($text, "Zuno"); 
 // Returns: "<strong>Zuno</strong> is awesome. Learn <strong>Zuno</strong> now!"
 
 // Using a <span> tag for custom styling
-$highlighted = highlight_keyword($text, "Zuno", "span class='highlight'"); 
+$highlighted = str()->highlightKeyword($text, "Zuno", "span class='highlight'"); 
 // Returns: "<span class='highlight'>Zuno</span> is awesome. Learn <span class='highlight'>Zuno</span> now!"
 ```
 
