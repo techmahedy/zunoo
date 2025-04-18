@@ -23,7 +23,7 @@ class User extends Model
      *
      * @var string
      */
-    protected $table = 'user';
+    protected $table = 'users';
 
     /**
      * Creatable Attributes

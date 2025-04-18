@@ -3854,409 +3854,417 @@ DB_PASSWORD=
 <a name="section-33"></a>
 
 ## Database Migration
-Zuno allow you to create migration. To create migration, Zuno uses `CakePHP's phinx`. So to create a migration file first you need to update the configuration file environments array that is located in your root project path `config.php`
-```php
-<?php
+Managing database changes by hand is risky and error-prone. Zuno's migration system takes the guesswork out of the equation by automating and organizing your schema changes — so you can focus more on building features and less on database headaches.
 
-return [
-    'paths' => [
-        'migrations' => './database/migrations',
-        'seeds' => './database/seeds',
-    ],
-    'migration_base_class' => 'Zuno\Migration\Migration',
-    'environments' => [
-        'default_migration_table' => 'phinxlog',
-        'zuno' => [
-            'adapter' => 'mysql',
-            'host' => 'localhost',
-            'name' => '',
-            'user' => '',
-            'pass' => '',
-            'port' => ''
-        ]
-    ]
-];
-```
-Now once you have configured this file, now migration pool console command will be avaiable for you.
+Zuno provides a seamless and structured way to manage your database migrations, making it easy to evolve your database schema over time. With Zuno’s migration system, you can track changes, collaborate with your team, and keep your development, staging, and production environments in sync.
 
 ### Create Migration
 To create a new migration file, run this command
 ```bash
-php pool make:migration UserMigration
+php pool make:migration create_users_table --create=users
 ```
-Now assume we are going to update UserMigration class
+Here, `users` is the table name. This command will generate a new migration file by returning an anonymous class 
+instance. Now assume we are going to update this for define our database schema.
+
 ```php
 <?php
 
-declare(strict_types=1);
+use Zuno\Support\Facades\Schema;
+use Zuno\Database\Migration\Blueprint;
+use Zuno\Database\Migration\Migration;
 
-use Zuno\Migration\Migration;
-
-final class User extends Migration
+return new class extends Migration
 {
+    /**
+     * Run the migrations
+     *
+     * @return void
+     */
     public function up(): void
     {
-        $this->table('users')
-            ->addColumn('name', 'string', ['limit' => 50])
-            ->addColumn('email', 'string', ['limit' => 100])
-            ->addColumn('password', 'string', ['limit' => 260])
-            ->addColumn('remember_token', 'string', ['limit' => 100, 'null' => true])
-            ->addColumn('created_at', 'timestamp', ['null' => true])
-            ->addColumn('updated_at', 'timestamp', ['null' => true])
-            ->addIndex(['email'], ['unique' => true])
-            ->create();
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password', 100);
+            $table->string('remember_token', 100)->nullable();
+            $table->timestamps();
+        });
     }
-}
+
+    /**
+     * Reverse the migrations
+     *
+     * @return void
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('users');
+    }
+};
 ```
-### Create Migrate
+### Run Migration
 To migrate your all file or newly created migration files, run this `migrate` command
 ```bash
 php pool migrate
 ```
 
-You can also insert data after migration created by checking `isMigratingUp` method.
+### Available Fields
+Let's see all the available columns types and options
+#### id()
+Creates an auto-incrementing primary key (unsigned big integer).
 ```php
-public function up()
-{
-    // create the table
-    $table = $this->table('user_logins');
-    $table->addColumn('user_id', 'integer')
-            ->addColumn('created', 'datetime')
-            ->create();
-    if ($this->isMigratingUp()) {
-        $table->insert([['user_id' => 1, 'created' => '2020-01-19 03:14:07']])
-                ->save();
-    }
-}
-```
-**Warning:** Zuno automatically creates an auto-incrementing primary key column called `id` for every table.
-
-The `id` option sets the name of the automatically created identity field, while the `primary_key` option selects the field or fields used for primary key. `id` will always override the `primary_key` option unless it’s set to false. If you don’t need a primary key set id to false without specifying a `primary_key`, and no primary key will be created.
-
-To specify an alternate primary key, you can specify the `primary_key` option when accessing the Table object. Let’s disable the automatic id column and create a primary key using two columns instead:
-```php
-$table = $this->table('followers', ['id' => false, 'primary_key' => ['user_id', 'follower_id']]);
-$table->addColumn('user_id', 'integer')
-      ->addColumn('follower_id', 'integer')
-      ->addColumn('created', 'datetime')
-      ->create();
-```
-Setting a single `primary_key` doesn’t enable the AUTO_INCREMENT option. To simply change the name of the primary key, we need to override the default id field name:
-```php
-$table = $this->table('followers', ['id' => 'user_id']);
-$table->addColumn('follower_id', 'integer')
-      ->addColumn('created', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
-      ->create();
+Schema::create('users', function (Blueprint $table) {
+    $table->id();
+});
 ```
 
-### Signed Primary Key
-By default, the primary key is `unsigned`. To simply set it to be `signed` just pass `signed` option with a true value:
+#### string()
+Defines a column with the `VARCHAR` type, ideal for storing short strings like names, titles, or labels. By default, the maximum length is 255 characters.
 ```php
-public function up()
-{
-    $table = $this->table('followers', ['signed' => false]);
-    $table->addColumn('follower_id', 'integer')
-          ->addColumn('created', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
-          ->create();
-}
+Schema::create('users', function (Blueprint $table) {
+    $table->string('title');
+    // with custom length
+    $table->string('title', 100);
+});
+```
+
+### char()
+Defines a column with the `CHAR` type, ideal for storing short strings like names, titles, or labels. By default, the maximum length is 255 characters.
+```php
+Schema::create('users', function (Blueprint $table) {
+    $table->char('name');
+});
+```
+
+### tinyText()
+Defines a column with the `TINYTEXT` type, ideal for storing small blocks of text such as summaries, excerpts, or 
+content.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->tinyText('excerpt');
+});
+```
+
+### mediumText()
+Defines a column with the `MEDIUMTEXT` type, ideal for storing longer blocks of text such as summaries, excerpts, or content that exceeds the 255-character limit of a string.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->mediumText('body');
+});
+```
+
+### text()
+Defines a column with the `TEXT` type, ideal for storing longer blocks of text such as summaries, excerpts, or content 
+that exceeds the 255-character limit of a string.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->text('body');
+});
+```
+
+### longText()
+Defines a column with the `LONGTEXT` type, perfect for storing very large amounts of text, such as full articles, blog post content, or rich HTML.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->longText('description');
+});
+```
+
+### json()
+Defines a column with the `JSON` type, ideal for storing structured data like arrays, objects, or key-value pairs. Useful when the data format is dynamic or flexible.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->json('attributes');
+});
+```
+
+### integer()
+Defines a column with the `INT` type, ideal for storing whole numbers such as counts, IDs, or any data that doesn’t require decimal precision.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->integer('post_views');
+});
+```
+
+### boolean()
+Defines a column with the `BOOLEAN` type, which stores binary values: `true (1)` or `false (0)`. Typically used for flags or status indicators, such as whether a post is active or published.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->boolean('status');
+});
+```
+
+### timestamps()
+Defines two columns: `created_at` and `updated_at`. These are automatically managed by Eloquent to track when a record is created and last updated.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->timestamps();
+});
+```
+
+### unique()
+Enforces a unique constraint on a column, ensuring that no two rows can have the same value for that column. It's often used on columns like email addresses, slugs, or usernames to maintain data integrity.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->string('slug')->unique();
+});
+```
+
+### nullable()
+Allows a column to accept `null` values. By default, columns in Zuno are required, but using nullable() makes the 
+column optional, meaning it can store `NULL` values.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->string('excerpt')->nullable();
+});
+```
+
+### default()
+Sets a default value for a column if no value is provided during the creation of a record. This is useful for ensuring a column has a predetermined value when it’s not explicitly set.
+```php
+Schema::create('posts', function (Blueprint $table) {
+    $table->boolean('status')->default(true);
+});
+```
+
+### Number Types
+Zuno migration includes various numeric column types to handle different ranges and precisions of data. Here's a quick 
+overview:
+```php
+// Signed Integers:
+$table->tinyInteger('tiny_int_column'); // 1 byte, range: -128 to 127
+$table->smallInteger('small_int_column'); // 2 bytes, range: -32,768 to 32,767
+$table->mediumInteger('medium_int_column'); // 3 bytes, range: -8,388,608 to 8,388,607
+$table->integer('int_column'); // 4 bytes, range: -2,147,483,648 to 2,147,483,647
+$table->bigInteger('big_int_column'); // 8 bytes, range: -9.2 quintillion to 9.2 quintillion
+
+// Unsigned Integers (no negative values):
+$table->unsignedInteger('unsigned_int_column'); // 0 to 255
+$table->unsignedTinyInteger('unsigned_tiny_int_column'); // 0 to 65,535
+$table->unsignedSmallInteger('unsigned_small_int_column'); // 0 to 16,777,215
+$table->unsignedMediumInteger('unsigned_medium_int_column'); // 0 to 4,294,967,295
+
+// Floating Point Types:
+$table->float('float_column', 8, 2); // Approximate numeric, total 8 digits, 2 after decimal
+$table->double('double_column', 15, 8); // Higher precision float, total 15 digits, 8 after decimal
+$table->decimal('decimal_column', 10, 2); // Exact numeric, total 10 digits, 2 after decimal (ideal for currency)
+```
+
+### Date/Time Types
+Zuno migration includes a variety of date and time-related columns to cover different temporal data needs:
+```php
+$table->date('date_column'); // Stores only the date (format: YYYY-MM-DD)
+$table->dateTime('datetime_column'); //  Stores date and time (format: YYYY-MM-DD HH:MM:SS)
+$table->dateTimeTz('datetime_tz_column'); // Like dateTime, but includes time zone support
+$table->time('time_column'); // Stores only time (format: HH:MM:SS)
+
+// Time Zone Aware Columns:
+$table->timeTz('time_tz_column'); //  Like time, but with time zone awareness
+$table->timestamp('timestamp_column'); // Stores date and time, often used for tracking created/updated times
+$table->timestampTz('timestamp_tz_column'); // Time-stamped with time zone support
+
+$table->year('year_column');
+$table->softDeletes(); // Adds a deleted_at timestamp column
+```
+
+### Binary Types
+Zuno migration defines several binary and BLOB (Binary Large Object) column types to handle various sizes of binary data:
+```php
+// Standard Binary:
+$table->binary('binary_column'); // Creates a BLOB column suitable for storing small binary data (up to 65,535 bytes). 
+
+// Extended BLOB Types (MySQL-specific):
+$table->tinyBlob('tiny_blob_column'); // Stores up to 255 bytes.
+$table->blob('blob_column'); // Stores up to 65,535 bytes.
+$table->mediumBlob('medium_blob_column'); // Stores up to 16 MB.
+$table->longBlob('long_blob_column'); // Stores up to 4 GB
+```
+
+### Special Types
+Zuno migration utilizes several specialized column types to handle unique data requirements:
+```php
+
+// Defines a column with a set of predefined string  values. Commonly used for status indicators or categorical data.
+$table->enum('enum_column', ['active', 'pending', 'cancelled']); 
+
+// Allows storage of multiple values from a predefined list in a single column.
+$table->set('set_column', ['red', 'green', 'blue']);
+
+$table->uuid('uuid_column'); // Creates a column to store Universally Unique Identifiers (UUIDs).
+
+$table->ipAddress('ip_address_column'); // Stores IPv4 and IPv6 addresses.
+$table->macAddress('mac_address_column'); // Stores MAC addresses. Typically stored as strings in the format 00:00:00:00:00:00
+$table->json('json_column'); // Stores JSON-formatted data. Supported in MySQL 5.7+
+```
+
+### Spatial Types (GIS)
+Zuno migration utilizes several specialized column types to handle geospatial data, enabling advanced geographical queries and operations:
+```php
+$table->geometry('geometry_column'); // Stores any type of geometry data.
+$table->point('point_column'); // Represents a single location in coordinate space (latitude and longitude).
+$table->lineString('line_string_column'); // Stores a sequence of points forming a continuous line.
+$table->polygon('polygon_column'); // Defines a shape consisting of multiple points forming a closed loop.
+$table->geometryCollection('geometry_collection_column'); // Stores a collection of geometry objects.
+$table->multiPoint('multi_point_column'); // Stores multiple point geometries.
+$table->multiLineString('multi_line_string_column'); // Stores multiple linestring geometries.
+$table->multiPolygon('multi_polygon_column'); // Stores multiple polygon geometries.
 ```
 
 ### Determining Whether a Table Exists
 You can determine whether or not a table exists by using the `hasTable()` method.
 ```php
+
+use Zuno\Support\Facades\Schema;
+
 public function up()
 {
-    $exists = $this->hasTable('users');
-    if ($exists) {
+    if (Schema::hasTable('users')) {
         // do something
     }
 }
 ```
 
 ### Dropping a Table
-Tables can be dropped quite easily using the `drop()` method. It is a good idea to recreate the table again in the `down()` method.
-
-Note that like other methods in the Table class, drop also needs `save()` to be called at the end in order to be executed. This allows phinx to intelligently plan migrations when more than one table is involved.
+Tables can be dropped quite easily using the `drop()` method.
 ```php
-public function up()
-{
-    $this->table('users')->drop()->save();
-}
 
-public function down()
-{
-    $users = $this->table('users');
-    $users->addColumn('username', 'string', ['limit' => 20])
-          ->addColumn('created', 'datetime')
-          ->save();
-}
-```
-### Renaming a Table
-To rename a table access an instance of the Table object then call the `rename()` method.
-```php
-public function up()
-{
-    $table = $this->table('users');
-    $table
-        ->rename('legacy_users')
-        ->update();
-}
+use Zuno\Support\Facades\DB;
 
-public function down()
-{
-    $table = $this->table('legacy_users');
-    $table
-        ->rename('users')
-        ->update();
-}
+DB::table('users')->drop()
 ```
 
-### Change the primary key on an existing table
-To change the primary key on an existing table, use the `changePrimaryKey()` method. Pass in a column name or array of columns names to include in the primary key, or `null` to drop the primary key. Note that the mentioned columns must be added to the table, they will not be added implicitly.
+### Truncate a Table
+Tables can be Truncated easily using the `truncate()` method.
 ```php
-public function up()
-{
-    $users = $this->table('users');
-    $users
-        ->addColumn('username', 'string', ['limit' => 20, 'null' => false])
-        ->addColumn('password', 'string', ['limit' => 40])
-        ->save();
 
-    $users
-        ->addColumn('new_id', 'integer', ['null' => false])
-        ->changePrimaryKey(['new_id', 'username'])
-        ->save();
-}
+use Zuno\Support\Facades\DB;
+
+DB::table('users')->truncate()
+DB::table('users')->truncate(true) // passing true mean force reset auto increment
 ```
 
-
-### Avaiable Fields
-Column types are specified as strings and can be one of:
-- binary
-- boolean
-- char
-- date
-- datetime
-- decimal
-- float
-- double
-- smallinteger
-- integer
-- biginteger
-- string
-- text
-- time
-- timestamp
-- uuid
-
-In addition, the MySQL adapter supports `enum`, `set`, `blob`, `tinyblob`, `mediumblob`, `longblob`, `bit` and `json` column types (json in MySQL 5.7 and above). When providing a limit value and using `binary`, `varbinary` or `blob` and its subtypes, the retained column type will be based on required length. Some of the example of timestamps columns and how you can handle it.
+### Enable Disable Foreign Key Constraints
+You can easily disable and enable foreign key constraints using Schema facades by calling `disableForeignKeyConstraints()` method to disable and `enableForeignKeyConstraints()` method to enable like
 ```php
-// Use defaults (without timezones)
-$table = $this->table('users')->addTimestamps()->create();
-// Use defaults (with timezones)
-$table = $this->table('users')->addTimestampsWithTimezone()->create();
 
-// Override the 'created_at' column name with 'recorded_at'.
-$table = $this->table('books')->addTimestamps('recorded_at')->create();
+use Zuno\Support\Facades\Schema;
 
-// Override the 'updated_at' column name with 'amended_at', preserving timezones.
-// The two lines below do the same, the second one is simply cleaner.
-$table = $this->table('books')->addTimestamps(null, 'amended_at', true)->create();
-$table = $this->table('users')->addTimestampsWithTimezone(null, 'amended_at')->create();
-
-// Only add the created_at column to the table
-$table = $this->table('books')->addTimestamps(null, false);
-// Only add the updated_at column to the table
-$table = $this->table('users')->addTimestamps(false);
-// Note, setting both false will throw a \RuntimeError
+Schema::disableForeignKeyConstraints();
+Schema::enableForeignKeyConstraints();
 ```
 
-For `binary` or `varbinary` types, if limit is set greater than allowed 255 bytes, the type will be changed to the best matching blob type given the length.
-```php
-$table = $this->table('cart_items');
-$table->addColumn('user_id', 'integer')
-      ->addColumn('product_id', 'integer', ['limit' => MysqlAdapter::INT_BIG])
-      ->addColumn('subtype_id', 'integer', ['limit' => MysqlAdapter::INT_SMALL])
-      ->addColumn('quantity', 'integer', ['limit' => MysqlAdapter::INT_TINY])
-      ->create();
-```
-
-### Checking whether a column exists
-```php
-public function up()
-{
-    $table = $this->table('user');
-    $column = $table->hasColumn('username');
-
-    if ($column) {
-        // do something
-    }
-
-}
-```
-
-### Renaming a Column
-To rename a column, access an instance of the Table object then call the `renameColumn()` method.
-
-
-```php
-public function up()
-{
-    $table = $this->table('users');
-    $table->renameColumn('bio', 'biography')
-          ->save();
-}
-
-
-public function down()
-{
-    $table = $this->table('users');
-    $table->renameColumn('biography', 'bio')
-           ->save();
-}
-```
-
-### Adding a Column After Another Column
-When adding a column with the MySQL adapter, you can dictate its position using the after option, where its value is the name of the column to position it after.
-```php
-public function up()
-{
-    $table = $this->table('users');
-    $table->addColumn('city', 'string', ['after' => 'email'])
-          ->update();
-}
-```
-
-### Changing Column Attributes
-To change column type or options on an existing column, use the `changeColumn()` method
-```php
-public function up()
-{
-    $users = $this->table('users');
-    $users->changeColumn('email', 'string', ['limit' => 255])
-          ->save();
-}
-```
-
-### Working With Indexes
-To add an index to a table you can simply call the `addIndex()` method on the table object.
-```php
-$table = $this->table('users');
-$table->addColumn('city', 'string')
-      ->addIndex(['city'])
-      ->save();
-```
-
-By default Phinx instructs the database adapter to create a normal index. We can pass an additional parameter unique to the `addIndex()` method to specify a unique index. We can also explicitly specify a name for the index using the name parameter, the index columns sort order can also be specified using the order parameter. The order parameter takes an array of column names and sort order key/value pairs.
-```php
-public function up()
-{
-    $table = $this->table('users');
-    $table->addColumn('email', 'string')
-          ->addColumn('username','string')
-          ->addIndex(['email', 'username'], [
-                'unique' => true,
-                'name' => 'idx_users_email',
-                'order' => ['email' => 'DESC', 'username' => 'ASC']]
-                )
-          ->save();
-}
-```
-The MySQL adapter also supports fulltext indexes. If you are using a version before 5.6 you must ensure the table uses the MyISAM engine.
-```php
-public function up()
-{
-    $table = $this->table('users', ['engine' => 'MyISAM']);
-    $table->addColumn('email', 'string')
-          ->addIndex('email', ['type' => 'fulltext'])
-          ->create();
-}
-```
 ### Working With Foreign Keys
 For creating foreign key constraints on your database tables. Let’s add a foreign key to an example table:
 ```php
+
+use Zuno\Support\Facades\Schema;
+use App\Models\User;
+
 public function up()
 {
-    $table = $this->table('tags');
-    $table->addColumn('tag_name', 'string')
-          ->save();
-
-    $refTable = $this->table('tag_relationships');
-    $refTable->addColumn('tag_id', 'integer', ['null' => true])
-             ->addForeignKey('tag_id', 'tags', 'id', ['delete'=> 'SET_NULL', 'update'=> 'NO_ACTION'])
-             ->save();
-
-}
-```
-“`On delete`” and “`On update`” actions are defined with a ‘delete’ and ‘update’ options array. Possibles values are ‘`SET_NULL`’, ‘NO_ACTION’, ‘`CASCADE`’ and ‘`RESTRICT`’. If ‘`SET_NULL`’ is used then the column must be created as nullable with the option ['null' => true]. Constraint name can be changed with the ‘constraint’ option.
-
-It is also possible to pass `addForeignKey()` an array of columns. This allows us to establish a foreign key relationship to a table which uses a combined key.
-```php
-public function up()
-{
-    $table = $this->table('follower_events');
-    $table->addColumn('user_id', 'integer')
-          ->addColumn('follower_id', 'integer')
-          ->addColumn('event_id', 'integer')
-          ->addForeignKey(['user_id', 'follower_id'],
-                          'followers',
-                          ['user_id', 'follower_id'],
-                          ['delete'=> 'NO_ACTION', 'update'=> 'NO_ACTION', 'constraint' => 'user_follower_id'])
-          ->save();
+    Schema::create('posts', function (Blueprint $table) {
+        $table->foreignIdFor(User::class)->nullable();
+        
+        // or you can use like that
+        $table->unsignedBigInteger('user_id');
+        $table->foreign('user_id')->references('id')->on('users');
+    }
 }
 ```
 
-We can add named foreign keys using the `constraint` parameter
+In Zuno, when defining foreign key constraints within your migrations, you can specify actions to be taken when the 
+referenced record is deleted. This ensures referential integrity and allows for automatic management of related records.
+
+#### Setting Up CASCADE Actions
+There are three primary ways to define `CASCADE` actions in Zuno migrations:
 ```php
-$table->addForeignKey('foreign_id', 'reference_table', ['id'],
-                            ['constraint' => 'your_foreign_key_name']);
+public function up()
+{
+     // true for onDeleteCascade and true for onUpdateCascade
+     $table->foreignIdFor(User::class, true, true);
+     
+     // Or 
+     $table->unsignedBigInteger('user_id');
+     $table->foreign('user_id')
+         ->references('id')
+         ->on('users')
+         ->onDelete('CASCADE');
+         
+     // Using the cascadeOnDelete Shortcut:
+     $table->unsignedBigInteger('user_id');
+     $table->foreign('user_id')
+         ->references('id')
+         ->on('users')
+         ->cascadeOnDelete();
+}
 ```
+
+You can also use this method `cascadeOnDelete()`, `restrictOnDelete()`, `nullOnDelete()`, `cascadeOnUpdate()`, 
+`restrictOnUpdate()`, `nullOnUpdate()`.
+
+### Refreshing Migrations
+The `php pool migrate:fresh` command is a powerful tool in Zuno that allows you to reset and re-run all your 
+migrations. This is particularly useful during development when you need to rebuild your database schema without manually rolling back and reapplying each migration.
+
+#### What It Does
+When you run:
+```php
+php pool migrate:fresh
+```
+Zuno performs the following actions
+- Rolls back all existing migrations by executing the down() methods.
+- Re-runs all migrations by executing the up() methods
+
+This process effectively rebuilds your entire database schema.
 
 <a name="section-34"></a>
 
 ### Database Seeder
-No you know that seeder is the most important thing when you develop a web application. Zuno support Database Seeding. Zuno includes the ability to seed your database with data using seed classes. All seed classes are stored in the `database/seeds` directory. To create a Seeder class, run this command
+No you know that seeder is the most important thing when you develop a web application. Zuno support Database 
+Seeding. Zuno includes the ability to seed your database with data using seed classes. All seed classes are stored 
+in the `database/seeders` directory. To create a Seeder class, run this command
 ```php
-php pool make:seed UserSeeder
+php pool make:seeder UserSeeder
 ```
 Now it will generate a file like
 ```php
 <?php
 
-declare(strict_types=1);
+namespace Database\Seeders;
 
-use Phinx\Seed\AbstractSeed;
+use Zuno\Database\Migration\Seeder;
 
-class UserSeeder extends AbstractSeed
+class UserSeeder extends Seeder
 {
     /**
-     * Run Method.
+     * Run the database seeds.
      *
-     * Write your database seeder using this method.
-     *
-     * More information on writing seeders is available here:
-     * https://book.cakephp.org/phinx/0/en/seeding.html
+     * @return void
      */
     public function run(): void
     {
-
+        //
     }
 }
+
 ```
 
 Now you can seed data from this class by updating run method. You can update run method like
 ```php
 <?php
 
-declare(strict_types=1);
+namespace Database\Seeders;
 
-use Phinx\Seed\AbstractSeed;
 use App\Models\User;
+use Zuno\Database\Migration\Seeder;
 
-class UserSeeder extends AbstractSeed
+class UserSeeder extends Seeder
 {
     /**
-     * Write your database seeder
+     * Run the database seeds.
+     *
+     * @return void
      */
     public function run(): void
     {
@@ -4276,12 +4284,6 @@ To run the database seeder, there is also pool console command. Run this command
 ```bash
 php pool db:seed // it will seed all seeder class
 php pool db:seed UserSeeder // It will only seed UserSeed class
-```
-
-### Fresh Database
-To drop all the table and want to rebuild your database schema? You have to run `migrate:fresh` coomand
-```bash
-php pool migrate:fresh
 ```
 
 <a name="section-35"></a>

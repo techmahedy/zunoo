@@ -1,14 +1,16 @@
 <?php
 
-declare(strict_types=1);
+namespace Database\Seeders;
 
-use Phinx\Seed\AbstractSeed;
 use App\Models\User;
+use Zuno\Database\Migration\Seeder;
 
-class UserSeeder extends AbstractSeed
+class UserSeeder extends Seeder
 {
     /**
-     * Write your database seeder
+     * Run the database seeds.
+     *
+     * @return void
      */
     public function run(): void
     {
